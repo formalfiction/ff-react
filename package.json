@@ -1,0 +1,27 @@
+{
+  "name": "ff-react",
+  "version": "0.0.0",
+  "description": "Building-Block components for React.js, put out by formalfiction",
+  "main": "ff-react.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:formalfiction/ff-react.git"
+  },
+  "keywords": [
+    "reactjs",
+    "components",
+    "frontend"
+  ],
+  "author": "Brendan O'Brien <brendanobrienesq@gmail.com> (http://getsharity.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/formalfiction/ff-react/issues"
+  },
+  "homepage": "https://github.com/formalfiction/ff-react"
+}
