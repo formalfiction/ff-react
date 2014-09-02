@@ -12,7 +12,7 @@ var ReactPropTypes = require('react').PropTypes
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 	, days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
 
-var DatePicker = React.createClass({
+var DatePicker = React.createClass({displayName: 'DatePicker',
 	getInitialState : function () {
 		return {
 			focused : false
@@ -71,14 +71,14 @@ var DatePicker = React.createClass({
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = <MonthCalendar onMouseDown={this._calendarMouseDown} value={this.props.value} onChange={this._calendarChange} />
+			calendar = MonthCalendar( {onMouseDown:this._calendarMouseDown, value:this.props.value, onChange:this._calendarChange} )
 		}
 		return (
-			<div className="datePicker">
-				<label>{this.props.label}</label>
-				<input ref="field" type="text" onClick={this._focus} onTouchEnd={this._focus} onFocus={this._focus} onBlur={this._blur} value={stringValue} onChange={this._inputChange} />
-				{calendar}
-			</div>
+			React.DOM.div( {className:"datePicker"}, 
+				React.DOM.label(null, this.props.label),
+				React.DOM.input( {ref:"field", type:"text", onClick:this._focus, onTouchEnd:this._focus, onFocus:this._focus, onBlur:this._blur, value:stringValue, onChange:this._inputChange} ),
+				calendar
+			)
 		)
 	}
 });

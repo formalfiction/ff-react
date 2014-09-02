@@ -7,7 +7,7 @@
 
 var Clock = require('./Clock');
 
-var TimePicker = React.createClass({
+var TimePicker = React.createClass({displayName: 'TimePicker',
 	hours 	: ["01","02","03","04","05","06","07","08","09","10","11","12"],
 	minutes : ["00","15","30","45"],
 	phase 	: ["am","pm"],
@@ -68,15 +68,15 @@ var TimePicker = React.createClass({
 		// if (this.refs["field"]) {
 		// 	if ($(this.refs["field"]).is(":focus")) {
 		if (this.state.focused) {
-			time = <Clock onMouseDown={this._clockMouseDown} value={this.props.value} onChange={this._clockChange} />	
+			time = Clock( {onMouseDown:this._clockMouseDown, value:this.props.value, onChange:this._clockChange} )	
 		}
 
 		return (
-			<div className="timePicker field">
-				<label>{this.props.label}</label>
-				<input ref="field" value={display} onChange={this._fakeFn} onFocus={this._focus} onBlur={this._blur}></input>
-				{time}
-			</div>
+			React.DOM.div( {className:"timePicker field"}, 
+				React.DOM.label(null, this.props.label),
+				React.DOM.input( {ref:"field", value:display, onChange:this._fakeFn, onFocus:this._focus, onBlur:this._blur}),
+				time
+			)
 		)
 	}
 });

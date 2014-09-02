@@ -9,7 +9,7 @@
 
 var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader = React.createClass({
+var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	getInitialState : function () {
 		return {
 			uploadError : undefined,
@@ -67,16 +67,16 @@ var S3PhotoUploader = React.createClass({
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = <a className="ss-icon" onClick={this.removePhoto} onTouchEnd={this.removePhoto}>delete</a>
+			del = React.DOM.a( {className:"ss-icon", onClick:this.removePhoto, onTouchEnd:this.removePhoto}, "delete")
 		}
 		return (
-			<div className="photoUpload">
-				<input disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
-				<img className="photoPreview" src={this.state.photoUrl} />
-				<p>{this.state.uploadProgress}</p>
-				<p>{this.state.uploadStatus}</p>
-				{del}
-			</div>
+			React.DOM.div( {className:"photoUpload"}, 
+				React.DOM.input( {disabled:this.state.disableUpload, ref:"file", onChange:this.s3Upload, type:"file"} ),
+				React.DOM.img( {className:"photoPreview", src:this.state.photoUrl} ),
+				React.DOM.p(null, this.state.uploadProgress),
+				React.DOM.p(null, this.state.uploadStatus),
+				del
+			)
 		);
 	}
 });

@@ -1,7 +1,7 @@
+/** @jsx React.DOM */
 /*
  * Basic Signup Page
  *
- * @jsx React.DOM
  */
 
 var UserActions = require('../actions/UserActions');

@@ -3,7 +3,7 @@
  * 
  */
 
-var Map = React.createClass({
+var Map = React.createClass({displayName: 'Map',
 	componentDidMount : function () {
 		this.initMap();
 	},
@@ -16,9 +16,9 @@ var Map = React.createClass({
 	},
 	render : function () {
 		return (
-			<div className="mapContainer">
-				<div className="map" ref="map"></div>
-			</div>
+			React.DOM.div( {className:"mapContainer"}, 
+				React.DOM.div( {className:"map", ref:"map"})
+			)
 		);
 	}
 });

@@ -7,7 +7,7 @@
 
 var SignaturePad = require('../deps/SignaturePad');
 
-var Signature = React.createClass({
+var Signature = React.createClass({displayName: 'Signature',
 	componentDidMount : function () {
 		this.signaturePad = new SignaturePad(this.refs.canvas.getDOMNode());
 		if (this.props.data) {
@@ -37,16 +37,16 @@ var Signature = React.createClass({
 	render : function () {
 		var buttons;
 		if (!this.props.signed) {
-			buttons = <div className="signatureControls">
-					<a className="right" href="#" onClick={this.done}>done</a>
-			 		<a href="#" onClick={this.reset}>reset</a> 
-			</div>
+			buttons = React.DOM.div( {className:"signatureControls"}, 
+					React.DOM.a( {className:"right", href:"#", onClick:this.done}, "done"),
+			 		React.DOM.a( {href:"#", onClick:this.reset}, "reset") 
+			)
 		}
 		return (
-			<div className="signature">
-				<canvas className="canvas" ref="canvas"></canvas>
-				{buttons}
-			</div>
+			React.DOM.div( {className:"signature"}, 
+				React.DOM.canvas( {className:"canvas", ref:"canvas"}),
+				buttons
+			)
 		);
 	}
 });

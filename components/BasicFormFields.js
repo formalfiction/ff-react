@@ -55,31 +55,31 @@ function handleField (obj, i, fields) {
 		, value = model[obj.name];
 	
 	if (obj.type === "hidden") {
-		fields.push(<input type="hidden" name={obj.name} value={value} />)
+		fields.push(React.DOM.input( {type:"hidden", name:obj.name, value:value} ))
 	} else if (obj.type === "text") {
 		fields.push(
-			<div className="field" key={i}>
-				<label>{obj.label}</label>
-				<input disabled={obj.disabled} type="text" name={obj.name} placeholder={obj.placeholder} value={value} onChange={self.handleChange} />
-				<span>{self.state["_" + obj.name + "ErrMsg"]}</span>
-				<span>{(self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" }</span>
-			</div>);
+			React.DOM.div( {className:"field", key:i}, 
+				React.DOM.label(null, obj.label),
+				React.DOM.input( {disabled:obj.disabled, type:"text", name:obj.name, placeholder:obj.placeholder, value:value, onChange:self.handleChange} ),
+				React.DOM.span(null, self.state["_" + obj.name + "ErrMsg"]),
+				React.DOM.span(null, (self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" )
+			));
 	} else if (obj.type === "textarea") {
 		fields.push(
-			<div className="field" key={i}>
-				<label>{obj.label}</label>
-				<textarea disabled={obj.disabled} name={obj.name} placeholder={obj.placeholder} value={value} onChange={self.handleChange}></textarea>
-				<span>{self.state["_" + obj.name + "ErrMsg"]}</span>
-				<span>{(self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" }</span>
-			</div>);
+			React.DOM.div( {className:"field", key:i}, 
+				React.DOM.label(null, obj.label),
+				React.DOM.textarea( {disabled:obj.disabled, name:obj.name, placeholder:obj.placeholder, value:value, onChange:self.handleChange}),
+				React.DOM.span(null, self.state["_" + obj.name + "ErrMsg"]),
+				React.DOM.span(null, (self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" )
+			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(<div className="fieldSet">
-			<hr />
-			<h3>{obj['name']}</h3>
-			{subFields}
-		</div>);
+		fields.push(React.DOM.div( {className:"fieldSet"}, 
+			React.DOM.hr(null ),
+			React.DOM.h3(null, obj['name']),
+			subFields
+		));
 	}
 }
 

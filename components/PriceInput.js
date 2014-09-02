@@ -9,7 +9,7 @@
 
 var maskMoney = require('../deps/MaskMoney');
 
-var PriceInput = React.createClass({
+var PriceInput = React.createClass({displayName: 'PriceInput',
 	componentDidMount : function () {
 		$(this.refs["input"].getDOMNode()).maskMoney({ prefix : "$", suffix : this.props.suffix });
 	},
@@ -33,14 +33,14 @@ var PriceInput = React.createClass({
 	render : function () {
 		var disabled = (this.props.editable !== undefined || this.props.editable !== false);
 		return (
-			<div className={"field priceInput " + this.props.className}>
-				<input ref="input"
-					name={this.props.name}
-					type="text" 
-					value={this.props.value}
-					onChange={this.fakeFn}
-					onKeyUp={this.keyUp} />
-			</div>
+			React.DOM.div( {className:"field priceInput " + this.props.className}, 
+				React.DOM.input( {ref:"input",
+					name:this.props.name,
+					type:"text", 
+					value:this.props.value,
+					onChange:this.fakeFn,
+					onKeyUp:this.keyUp} )
+			)
 		)
 	}
 });

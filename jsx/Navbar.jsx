@@ -1,3 +1,4 @@
+/** @jsx React.DOM */
 /*
  * Basic Navbar Implementation
  * @jsx React.DOM */
