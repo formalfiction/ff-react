@@ -11,7 +11,7 @@ var maskMoney = require('../deps/MaskMoney');
 
 var PriceInput = React.createClass({
 	componentDidMount : function () {
-		$(this.refs["input"].getDOMNode()).maskMoney({ prefix : "$", suffix : this.props.suffix });
+		$(this.refs["input"].getDOMNode()).maskMoney({ prefix : "$", suffix : this.props.suffix }).maskMoney('mask',this.props.value);
 	},
 	componentDidUpdate : function () {
 		$(this.refs["input"].getDOMNode()).maskMoney('mask',this.props.value);
