@@ -25,6 +25,7 @@ var Signature = React.createClass({
 	reset : function (e) {
 		e.preventDefault();
 		this.signaturePad.clear();
+		this.signaturePad.enabled(true);
 		return false;
 	},
 	done : function (e) {
@@ -32,20 +33,17 @@ var Signature = React.createClass({
 		if (typeof this.props.done === "function") {
 			this.props.done(this.signaturePad.toDataURL());
 		}
+		this.signaturePad.enabled(false);
 		return false;
 	},
 	render : function () {
-		var buttons;
-		if (!this.props.signed) {
-			buttons = <div className="signatureControls">
-					<a className="right" href="#" onClick={this.done}>done</a>
-			 		<a href="#" onClick={this.reset}>reset</a> 
-			</div>
-		}
 		return (
 			<div className="signature">
 				<canvas className="canvas" ref="canvas"></canvas>
-				{buttons}
+				<div className="buttons">
+			 		<button className="reset" disabled={this.props.signed} onClick={this.reset} onTouchEnd={this.reset}>reset</button> 
+					<button className="done" disabled={this.props.signed} onClick={this.done} onTouchEnd={this.done}>done</button>
+				</div>
 			</div>
 		);
 	}

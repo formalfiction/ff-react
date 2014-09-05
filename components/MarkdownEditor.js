@@ -2,7 +2,7 @@
 
 var Showdown = require('../deps/Showdown');
 
-var MarkdownEditor = React.createClass({
+var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 	setInitialState : function () {
 		return {
 			previewing : false
@@ -31,25 +31,25 @@ var MarkdownEditor = React.createClass({
 		var editor
 			, value = this.props.value || ""
 
-		var header = <header>
-					<a className="ss-icon right" onClick={this.handlePreviewClick} onTouchEnd={this.handlePreviewClick}>Preview</a>
-					<a className="ss-icon submit right" onClick={this.handleSubmit} onTouchEnd={this.handleTouchEnd}>Save</a>
-				</header>
+		var header = React.DOM.header(null, 
+					React.DOM.a( {className:"ss-icon right", onClick:this.handlePreviewClick, onTouchEnd:this.handlePreviewClick}, "Preview"),
+					React.DOM.a( {className:"ss-icon submit right", onClick:this.handleSubmit, onTouchEnd:this.handleTouchEnd}, "Save")
+				)
 
 		if (this.state.previewing) {
 			var converter = new Showdown.converter()
 				, rawMarkup = converter.makeHtml(value.toString());
 
-			editor = <form className="markdownEditor">
-				{header}
-				<span dangerouslySetInnerHTML={{ __html : rawMarkup}}></span>
-			</form>
+			editor = React.DOM.form( {className:"markdownEditor"}, 
+				header,
+				React.DOM.span( {dangerouslySetInnerHTML:{ __html : rawMarkup}})
+			)
 
 		} else {
-			editor = <form className="markdownEditor" onSubmit={this.handleSubmit}>
-				{header}
-				<textarea value={value} onChange={this.handleChange}></textarea>
-			</form>
+			editor = React.DOM.form( {className:"markdownEditor", onSubmit:this.handleSubmit}, 
+				header,
+				React.DOM.textarea( {value:value, onChange:this.handleChange})
+			)
 		}
 
 		return editor;
