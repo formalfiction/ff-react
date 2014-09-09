@@ -27,9 +27,15 @@ var _ = require('underscore');
 var _callbacks = [];
 var _promises = [];
 
-var Dispatcher = function() {};
-Dispatcher.prototype = _.extend(Dispatcher.prototype, {
 
+var Dispatcher = function(options) {
+  this.init(options);
+};
+
+Dispatcher.prototype = _.extend(Dispatcher.prototype, {
+  init : function (options) {
+    this.options = options || {};
+  },
   /**
    * Register a Store's callback so that it may be invoked by an action.
    * @param {function} callback The callback to be registered.
@@ -106,7 +112,52 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
       return _promises[index];
     });
     return Promise.all(selectedPromises).then(callback);
+  },
+
+  /**
+   * A bridge function between the views and the dispatcher, marking the action
+   * as a view action.  Another variant here could be handleServerAction.
+   * @param  {object} action The data coming from the view.
+   */
+  handleViewAction: function(action) {
+    this.dispatch({
+      source: 'VIEW_ACTION',
+      action: action
+    });
+  },
+
+  parseServerResponse : function (r) { return r; },
+  parseServerError : function (r) { return r; },
+  handleServerAction : function(action) {
+    var self = this;
+
+    if (!action.url) { console.log('server actions require a url param'); }
+    if (!action.requestType) { console.log('server actions require a type param'); }
+    
+    // console.log(action.url);
+    // console.log(action.data);
+
+    $.ajax({
+      dataType : "json",
+      url : action.url,
+      type : action.requestType,
+      data : JSON.stringify(action.data)
+    }).done(function (response){
+      action.response = response.data;
+      self.dispatch({
+        source : "SERVER_ACTION",
+        action : action,
+      });
+    }).error(function (response){
+      action.error = response.meta.error;
+      self.dispatch({
+        source : "SERVER_ACTION",
+        action : action
+      });
+    });
+
   }
+
 
 });
 
