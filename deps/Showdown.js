@@ -118,21 +118,21 @@ var g_output_modifiers = [];
 //
 
 if (typeof module !== 'undefind' && typeof exports !== 'undefined' && typeof require !== 'undefind') {
-	var fs = require('fs');
+	// var fs = require('fs');
 
-	if (fs) {
-		// Search extensions folder
-		var extensions = fs.readdirSync((__dirname || '.')+'/extensions').filter(function(file){
-			return ~file.indexOf('.js');
-		}).map(function(file){
-			return file.replace(/\.js$/, '');
-		});
-		// Load extensions into Showdown namespace
-		Showdown.forEach(extensions, function(ext){
-			var name = stdExtName(ext);
-			Showdown.extensions[name] = require('./extensions/' + ext);
-		});
-	}
+	// if (fs) {
+	// 	// Search extensions folder
+	// 	var extensions = fs.readdirSync((__dirname || '.')+'/extensions').filter(function(file){
+	// 		return ~file.indexOf('.js');
+	// 	}).map(function(file){
+	// 		return file.replace(/\.js$/, '');
+	// 	});
+	// 	// Load extensions into Showdown namespace
+	// 	Showdown.forEach(extensions, function(ext){
+	// 		var name = stdExtName(ext);
+	// 		Showdown.extensions[name] = require('./extensions/' + ext);
+	// 	});
+	// }
 }
 
 this.makeHtml = function(text) {
