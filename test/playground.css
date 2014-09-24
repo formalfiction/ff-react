@@ -1,0 +1,99 @@
+.clock {
+  margin: 0 5px;
+  background: #fff;
+}
+.clock .segment {
+  float: left;
+  margin: 0 5px;
+}
+.clock .segment h5 {
+  line-height: 1em;
+  margin: 0;
+}
+.clock .separator {
+  margin: 25px 5px;
+}
+.datePicker {
+  position: relative;
+}
+.datePicker .calendar {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 2;
+}
+.modal {
+  z-index: 3;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 400px;
+  max-height: 700px;
+  overflow-y: auto;
+  position: fixed;
+  background: backgroundColor;
+  border-radius: 2px;
+  padding: 10px;
+}
+.calendar {
+  width: 300px;
+  background: #fff;
+}
+.calendar .header {
+  background: transparent;
+  box-shadow: none;
+}
+.calendar .header .backButton {
+  float: left;
+}
+.calendar .header .month {
+  text-align: center;
+}
+.calendar .header .year {
+  text-align: center;
+}
+.calendar .header .nextButton {
+  float: right;
+}
+.calendar table.dates {
+  width: 100%;
+}
+.calendar table.dates .notCurrent {
+  color: rgba(120,120,120,0.50);
+}
+.calendar table.dates td {
+  text-align: center;
+  min-width: 28px;
+  min-height: 28px;
+  color: #b4b4b4;
+}
+.calendar table.dates td.current {
+  color: #3c3c3c;
+}
+.priceInput {
+  max-width: 120px;
+}
+.resultsTextInput {
+  margin: 0;
+}
+.resultsTextInput .selected {
+  font-weight: bold;
+}
+.photoUpload img {
+  width: 300px;
+  margin: 10px auto;
+}
+.timePicker {
+  position: relative;
+}
+.timePicker .clock {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 2;
+}

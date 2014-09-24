@@ -4,12 +4,9 @@
  *
  */
 
-var UserActions = require('../actions/UserActions');
-
 var Signup = React.createClass({
 	handleSignup : function (e) {
 		e.preventDefault();
-
 		return false;
 	},
 	render : function () {

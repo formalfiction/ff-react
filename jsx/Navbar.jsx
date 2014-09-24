@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 /*
  * Basic Navbar Implementation
- * @jsx React.DOM */
+ */
 
 var Navbar = React.createClass({
 	getInitialState : function () {

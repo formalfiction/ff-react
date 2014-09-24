@@ -4,8 +4,6 @@
  *
  */
 
-var UserActions = require('../actions/UserActions');
-
 var Login = React.createClass({displayName: 'Login',
 	handleLogin : function () {
 		
