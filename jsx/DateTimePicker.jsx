@@ -206,7 +206,6 @@ var DateTimePicker = React.createClass({
 		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
 	},
 	render : function () {
-		console.log(this.props.value);
 		var value = this.dateValue(this.props.value)
 			, stringValue = this.stringValue(value)
 			, picker;

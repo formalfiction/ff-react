@@ -45,8 +45,6 @@ var Playground = React.createClass({
  		var options = []
  			, component;
 
- 		console.log(this.state.values);
-
  		components.forEach(function(c,i){
  			options.push(<option key={i} value={c}>{c}</option>);
  		});
