@@ -11,83 +11,80 @@ var Clock = require('./Clock')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
 	, Signup = require('./Signup')
-	, TimePicker = require('./TimePicker');
+	, TimePicker = require('./TimePicker')
+	, DateTimePicker = require('./DateTimePicker');
+
+
+var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker"];
 
 var Playground = React.createClass({
-	render : function () {
+	getInitialState : function () {
+		return {
+			component : "DateTimePicker"
+		}
+	},
+	pickComponent : function (e) {
+		var component = e.target.value;
+		this.setState({ 
+			component : component
+		});
+	},
+ 	render : function () {
+ 		var options = []
+ 			, component;
+
+ 		components.forEach(function(c,i){
+ 			options.push(<option key={i} value={c}>{c}</option>);
+ 		});
+
+ 		switch (this.state.component) {
+		case "Clock":
+			component = <Clock />
+			break;
+		case "DatePicker":
+			component = <DatePicker />
+			break;
+		case "Login":
+			component = <Login />
+			break;
+		case "MarkdownEditor":
+			component = <MarkdownEditor />
+			break;
+		case "MarkdownText":
+			component = <MarkdownText />
+			break;
+		case "PriceInput":
+			component = <PriceInput />
+			break;
+		case "ResultsTextInput":
+			component = <ResultsTextInput />
+			break;
+		case "S3PhotoUploader":
+			component = <S3PhotoUploader />
+			break;
+		case "Signature":
+			component = <Signature />
+			break;
+		case "Signup":
+			component = <Signup />
+			break;
+		case "TimePicker":
+			component = <TimePicker />
+		case "DateTimePicker":
+			component = <DateTimePicker />
+			break;
+ 		}
 		return (
 			<div className="components playground">
 				<h1>Component Playground</h1>
+				<select value={this.state.component} onChange={this.pickComponent}>
+					{options}
+				</select>
+				<hr />
 				<div className="component">
-					<h3 className="title">Clock</h3>
+					<h3 className="title">{this.state.component}</h3>
 					<div className="wrapper">
-						<Clock />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Date Picker</h3>
-					<div className="wrapper">
-						<DatePicker />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Login</h3>
-					<div className="wrapper">
-						<Login />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Map</h3>
-					<div className="wrapper">
-						<Map />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">MarkdownEditor</h3>
-					<div className="wrapper">
-						<MarkdownEditor />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">MarkdownText</h3>
-					<div className="wrapper">
-						<MarkdownText />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">PriceInput</h3>
-					<div className="wrapper">
-						<PriceInput />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Results Text Input</h3>
-					<div className="wrapper">
-						<ResultsTextInput />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">S3PhotoUploader</h3>
-					<div className="wrapper">
-						<S3PhotoUploader />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Signature</h3>
-					<div className="wrapper">
-						<Signature />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">Signup</h3>
-					<div className="wrapper">
-						<Signup />
-					</div>
-				</div>
-				<div className="component">
-					<h3 className="title">TimePicker</h3>
-					<div className="wrapper">
-						<TimePicker />
+						{component}
 					</div>
 				</div>
 			</div>

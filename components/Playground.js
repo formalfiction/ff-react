@@ -11,83 +11,80 @@ var Clock = require('./Clock')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
 	, Signup = require('./Signup')
-	, TimePicker = require('./TimePicker');
+	, TimePicker = require('./TimePicker')
+	, DateTimePicker = require('./DateTimePicker');
+
+
+var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker"];
 
 var Playground = React.createClass({displayName: 'Playground',
-	render : function () {
+	getInitialState : function () {
+		return {
+			component : "DateTimePicker"
+		}
+	},
+	pickComponent : function (e) {
+		var component = e.target.value;
+		this.setState({ 
+			component : component
+		});
+	},
+ 	render : function () {
+ 		var options = []
+ 			, component;
+
+ 		components.forEach(function(c,i){
+ 			options.push(React.DOM.option( {key:i, value:c}, c));
+ 		});
+
+ 		switch (this.state.component) {
+		case "Clock":
+			component = Clock(null )
+			break;
+		case "DatePicker":
+			component = DatePicker(null )
+			break;
+		case "Login":
+			component = Login(null )
+			break;
+		case "MarkdownEditor":
+			component = MarkdownEditor(null )
+			break;
+		case "MarkdownText":
+			component = MarkdownText(null )
+			break;
+		case "PriceInput":
+			component = PriceInput(null )
+			break;
+		case "ResultsTextInput":
+			component = ResultsTextInput(null )
+			break;
+		case "S3PhotoUploader":
+			component = S3PhotoUploader(null )
+			break;
+		case "Signature":
+			component = Signature(null )
+			break;
+		case "Signup":
+			component = Signup(null )
+			break;
+		case "TimePicker":
+			component = TimePicker(null )
+		case "DateTimePicker":
+			component = DateTimePicker(null )
+			break;
+ 		}
 		return (
 			React.DOM.div( {className:"components playground"}, 
 				React.DOM.h1(null, "Component Playground"),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Clock"),
-					React.DOM.div( {className:"wrapper"}, 
-						Clock(null )
-					)
+				React.DOM.select( {value:this.state.component, onChange:this.pickComponent}, 
+					options
 				),
+				React.DOM.hr(null ),
 				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Date Picker"),
+					React.DOM.h3( {className:"title"}, this.state.component),
 					React.DOM.div( {className:"wrapper"}, 
-						DatePicker(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Login"),
-					React.DOM.div( {className:"wrapper"}, 
-						Login(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Map"),
-					React.DOM.div( {className:"wrapper"}, 
-						Map(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "MarkdownEditor"),
-					React.DOM.div( {className:"wrapper"}, 
-						MarkdownEditor(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "MarkdownText"),
-					React.DOM.div( {className:"wrapper"}, 
-						MarkdownText(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "PriceInput"),
-					React.DOM.div( {className:"wrapper"}, 
-						PriceInput(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Results Text Input"),
-					React.DOM.div( {className:"wrapper"}, 
-						ResultsTextInput(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "S3PhotoUploader"),
-					React.DOM.div( {className:"wrapper"}, 
-						S3PhotoUploader(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Signature"),
-					React.DOM.div( {className:"wrapper"}, 
-						Signature(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "Signup"),
-					React.DOM.div( {className:"wrapper"}, 
-						Signup(null )
-					)
-				),
-				React.DOM.div( {className:"component"}, 
-					React.DOM.h3( {className:"title"}, "TimePicker"),
-					React.DOM.div( {className:"wrapper"}, 
-						TimePicker(null )
+						component
 					)
 				)
 			)
