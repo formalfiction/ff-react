@@ -64,7 +64,7 @@
   width: 100%;
 }
 .calendar table.dates .notCurrent {
-  color: rgba(120,120,120,0.50);
+  color: rgba(120,120,120,0.5);
 }
 .calendar table.dates td {
   text-align: center;
@@ -100,12 +100,11 @@
 .dateTimePicker {
   margin: 0 auto;
   width: 320px;
-  height: 120px;
 }
 .dateTimePicker .picker {
   background: #787878;
   position: relative;
-  height: 100px;
+  height: 120px;
 }
 .dateTimePicker .picker::after {
   content: "";
@@ -114,7 +113,7 @@
 }
 .dateTimePicker .picker .segment {
   color: #fff;
-  height: 100%;
+  height: 120px;
   overflow: hidden;
   position: relative;
   float: left;
@@ -134,17 +133,26 @@
   text-size-adjust: none;
 }
 .dateTimePicker .picker .segment ul {
-  list-style: none;
   padding: 0;
+  margin: 0;
+  list-style: none;
   position: absolute;
 /* Prevent elements to be highlighted on tap */
-  -webkit-tap-highlight-color: rgba(0,0,0,0.00);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 /* Put the scroller into the HW Compositing layer right from the start */
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   -o-transform: translateZ(0);
   transform: translateZ(0);
+}
+.dateTimePicker .picker .segment ul li {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45em;
 }
 .dateTimePicker .picker .day {
   width: 55%;

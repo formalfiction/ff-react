@@ -11,18 +11,35 @@ var WheelPicker = React.createClass({
 	},
 	componentDidMount : function () {
 		var options = {
-			mouseWheel : true
+			mouseWheel : true,
+			snap : 'li'
 		};
 		this.dayScroll = new iScroll(this.refs.day.getDOMNode(), options);
+		this.dayScroll.on('scrollEnd', this.scrollEnder('day'));
+		
+		window.scroller = this.dayScroll;
+
 		this.hourScroll = new iScroll(this.refs.hour.getDOMNode(), options);
+		this.hourScroll.on('scrollEnd', this.scrollEnder('hour'));
 		this.minuteScroll = new iScroll(this.refs.minute.getDOMNode(), options);
+		this.minuteScroll.on('scrollEnd', this.scrollEnder('minute'));
 		this.phaseScroll = new iScroll(this.refs.phase.getDOMNode(), options);
+		this.phaseScroll.on('scrollEnd', this.scrollEnder('phase'));
+	},
+	scrollEnder : function (segment) {
+		return function () {
+			// add one to choose the middle of three displayed elements
+			var i = this.currentPage.pageY + 1
+				, text = this.scroller.children[i].textContent;
+		}
 	},
 	render : function () {
 		return (
 			<div className="picker" onMouseDown={this.props.onMouseDown}>
 				<div ref="day" className="day segment">
 					<ul>
+						<li></li>
+						<li></li>
 						<li>Monday. Sept. 9th</li>
 						<li>Tues. Sept. 20th</li>
 						<li>Wed. Sept. 21st</li>
@@ -32,6 +49,17 @@ var WheelPicker = React.createClass({
 				</div>
 				<div ref="hour" className="hour segment">
 					<ul>
+						<li></li>
+						<li></li>
+						<li>1</li>
+						<li>2</li>
+						<li>3</li>
+						<li>4</li>
+						<li>5</li>
+						<li>6</li>
+						<li>7</li>
+						<li>8</li>
+						<li>9</li>
 						<li>10</li>
 						<li>11</li>
 						<li>12</li>
@@ -39,15 +67,22 @@ var WheelPicker = React.createClass({
 				</div>
 				<div ref="minute" className="minute segment">
 					<ul>
+						<li></li>
+						<li></li>
 						<li>00</li>
 						<li>15</li>
 						<li>30</li>
+						<li>45</li>
 					</ul>
 				</div>
 				<div ref="phase" className="phase segment">
 					<ul>
+						<li></li>
+						<li></li>
 						<li>am</li>
 						<li>pm</li>
+						<li></li>
+						<li></li>
 					</ul>
 				</div>
 			</div>
@@ -85,7 +120,7 @@ var DateTimePicker = React.createClass({
 	},
 	_pickerChange : function (val) {
 		this._change(val);
-		this.setState({ focused  : false });
+		// this.setState({ focused  : false });
 	},
 	// Cancel Blur event triggered by clicking the picker
 	_pickerMouseDown : function (e) {

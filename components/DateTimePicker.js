@@ -11,18 +11,35 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	},
 	componentDidMount : function () {
 		var options = {
-			mouseWheel : true
+			mouseWheel : true,
+			snap : 'li'
 		};
 		this.dayScroll = new iScroll(this.refs.day.getDOMNode(), options);
+		this.dayScroll.on('scrollEnd', this.scrollEnder('day'));
+		
+		window.scroller = this.dayScroll;
+
 		this.hourScroll = new iScroll(this.refs.hour.getDOMNode(), options);
+		this.hourScroll.on('scrollEnd', this.scrollEnder('hour'));
 		this.minuteScroll = new iScroll(this.refs.minute.getDOMNode(), options);
+		this.minuteScroll.on('scrollEnd', this.scrollEnder('minute'));
 		this.phaseScroll = new iScroll(this.refs.phase.getDOMNode(), options);
+		this.phaseScroll.on('scrollEnd', this.scrollEnder('phase'));
+	},
+	scrollEnder : function (segment) {
+		return function () {
+			// add one to choose the middle of three displayed elements
+			var i = this.currentPage.pageY + 1
+				, text = this.scroller.children[i].textContent;
+		}
 	},
 	render : function () {
 		return (
 			React.DOM.div( {className:"picker", onMouseDown:this.props.onMouseDown}, 
 				React.DOM.div( {ref:"day", className:"day segment"}, 
 					React.DOM.ul(null, 
+						React.DOM.li(null),
+						React.DOM.li(null),
 						React.DOM.li(null, "Monday. Sept. 9th"),
 						React.DOM.li(null, "Tues. Sept. 20th"),
 						React.DOM.li(null, "Wed. Sept. 21st"),
@@ -32,6 +49,17 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 				),
 				React.DOM.div( {ref:"hour", className:"hour segment"}, 
 					React.DOM.ul(null, 
+						React.DOM.li(null),
+						React.DOM.li(null),
+						React.DOM.li(null, "1"),
+						React.DOM.li(null, "2"),
+						React.DOM.li(null, "3"),
+						React.DOM.li(null, "4"),
+						React.DOM.li(null, "5"),
+						React.DOM.li(null, "6"),
+						React.DOM.li(null, "7"),
+						React.DOM.li(null, "8"),
+						React.DOM.li(null, "9"),
 						React.DOM.li(null, "10"),
 						React.DOM.li(null, "11"),
 						React.DOM.li(null, "12")
@@ -39,15 +67,22 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 				),
 				React.DOM.div( {ref:"minute", className:"minute segment"}, 
 					React.DOM.ul(null, 
+						React.DOM.li(null),
+						React.DOM.li(null),
 						React.DOM.li(null, "00"),
 						React.DOM.li(null, "15"),
-						React.DOM.li(null, "30")
+						React.DOM.li(null, "30"),
+						React.DOM.li(null, "45")
 					)
 				),
 				React.DOM.div( {ref:"phase", className:"phase segment"}, 
 					React.DOM.ul(null, 
+						React.DOM.li(null),
+						React.DOM.li(null),
 						React.DOM.li(null, "am"),
-						React.DOM.li(null, "pm")
+						React.DOM.li(null, "pm"),
+						React.DOM.li(null),
+						React.DOM.li(null)
 					)
 				)
 			)
@@ -85,7 +120,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	},
 	_pickerChange : function (val) {
 		this._change(val);
-		this.setState({ focused  : false });
+		// this.setState({ focused  : false });
 	},
 	// Cancel Blur event triggered by clicking the picker
 	_pickerMouseDown : function (e) {
