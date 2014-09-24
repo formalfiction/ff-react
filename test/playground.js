@@ -303,49 +303,111 @@ module.exports = DatePicker;
 
 var iScroll = require('../deps/iscroll');
 
+var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
+	, days = { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 };
+
 var WheelPicker = React.createClass({displayName: 'WheelPicker',
-	dragStart : function () {
-
-	},
-	dragStop : function () {
-
-	},
+	segments : ['day','hour','minute','phase'],
 	componentDidMount : function () {
-		var options = {
-			mouseWheel : true,
-			snap : 'li'
-		};
-		this.dayScroll = new iScroll(this.refs.day.getDOMNode(), options);
-		this.dayScroll.on('scrollEnd', this.scrollEnder('day'));
-		
-		window.scroller = this.dayScroll;
+		var self = this
+			, options = {
+					mouseWheel : true,
+					snap : 'li'
+				};
 
-		this.hourScroll = new iScroll(this.refs.hour.getDOMNode(), options);
-		this.hourScroll.on('scrollEnd', this.scrollEnder('hour'));
-		this.minuteScroll = new iScroll(this.refs.minute.getDOMNode(), options);
-		this.minuteScroll.on('scrollEnd', this.scrollEnder('minute'));
-		this.phaseScroll = new iScroll(this.refs.phase.getDOMNode(), options);
-		this.phaseScroll.on('scrollEnd', this.scrollEnder('phase'));
+		this.segments.forEach(function(segment){
+			var name = segment + 'Scroll';
+			self[name] = new iScroll(self.refs[segment].getDOMNode(), options);
+			self[name].on('scrollEnd', self.scrollEnder(segment));
+			if (segment === "day") {
+				self[name].scrollToElement(self[name].scroller.children[self.daysBack],0);
+			}
+		});
 	},
 	scrollEnder : function (segment) {
+		var self = this;
 		return function () {
 			// add one to choose the middle of three displayed elements
 			var i = this.currentPage.pageY + 1
-				, text = this.scroller.children[i].textContent;
+				// , text = this.scroller.children[i].textContent
+				, scrollValue = this.scroller.children[i].getAttribute('data-value')
+				, oldValue = self.props.value
+				, value = new Date(self.props.value);
+
+			switch (segment) {
+				case "day":
+					value.setDate(scrollValue);
+					break;
+				case "hour":
+					value.setHours(scrollValue);
+					break;
+				case "minute":
+					value.setMinutes(scrollValue);
+					break;
+				case "phase":
+					break;
+			}
+
+			if (oldValue != value) {
+				if (typeof self.props.onChange === "function") {
+					self.props.onChange(value);
+				}
+			}
 		}
 	},
+	daysBack : 14,
+	daysForward : 14,
+	day : function (value, key) {
+		return React.DOM.li( {'data-value':value.getDate(), key:key}, this.stringValue(value))
+	},
+	days : function (value) {
+		var days = []
+			, i = 0
+			, v = new Date(value);
+
+		v.setDate(v.getDate() - this.daysBack);
+		for (var j=0; j < this.daysBack; j++) {
+			v.setDate(v.getDate() + 1);
+			days.push(this.day(v,i));
+			i++;
+		}
+
+		for (j=0; j < this.daysForward; j++) {
+			v.setDate(v.getDate() + 1);
+			days.push(this.day(v, i));
+			i++;
+		}
+		return days;
+	},
+	dateValue : function (value) {
+		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
+		// Ensure Value is a valid date.
+		if (!isDate) {
+			if (typeof value === "number" && value != NaN) {
+				value = new Date(this.props.value)
+			} else {
+				var now = new Date()
+				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
+			}
+		}
+
+		return value;
+	},
+	stringValue : function (value) {
+		if (!value) { return ""; }
+		date = this.dateValue(value);
+		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
+	},
 	render : function () {
+		var value = this.props.value
+			, days = this.days(value);
 		return (
 			React.DOM.div( {className:"picker", onMouseDown:this.props.onMouseDown}, 
 				React.DOM.div( {ref:"day", className:"day segment"}, 
 					React.DOM.ul(null, 
 						React.DOM.li(null),
 						React.DOM.li(null),
-						React.DOM.li(null, "Monday. Sept. 9th"),
-						React.DOM.li(null, "Tues. Sept. 20th"),
-						React.DOM.li(null, "Wed. Sept. 21st"),
-						React.DOM.li(null, "Thur. Sept. 22nd"),
-						React.DOM.li(null, "Friday. Sept. 23rd")
+						days
 					)
 				),
 				React.DOM.div( {ref:"hour", className:"hour segment"}, 
@@ -394,13 +456,9 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	getInitialState : function () {
 		return {
-			focused : false
+			focused : false,
+			value : this.dateValue(this.props.value)
 		}
-	},
-	stringValue : function (value) {
-		if (!value) { return ""; }
-		date = this.dateValue(value);
-		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
 	},
 	_focus : function (e) {
 		this.setState({ focused : true });
@@ -421,7 +479,6 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	},
 	_pickerChange : function (val) {
 		this._change(val);
-		// this.setState({ focused  : false });
 	},
 	// Cancel Blur event triggered by clicking the picker
 	_pickerMouseDown : function (e) {
@@ -437,20 +494,26 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			if (typeof value === "number" && value != NaN) {
 				value = new Date(this.props.value)
 			} else {
-				value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
+				var now = new Date()
+				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
 			}
 		}
 
 		return value;
 	},
+	stringValue : function (value) {
+		if (!value) { return ""; }
+		date = this.dateValue(value);
+		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+	},
 	render : function () {
-		var value = this.props.value
+		console.log(this.props.value);
+		var value = this.dateValue(this.props.value)
 			, stringValue = this.stringValue(value)
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker( {onMouseDown:this._pickerMouseDown, value:this.props.value, onChange:this._pickerChange} )
+			picker = WheelPicker( {onMouseDown:this._pickerMouseDown, value:value, onChange:this._pickerChange} )
 		}
 
 		return (
@@ -823,7 +886,11 @@ var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "DateTimePicker"
+			component : "DateTimePicker",
+			values : {
+				Clock : new Date(),
+				DateTimePicker : new Date()
+			}
 		}
 	},
 	pickComponent : function (e) {
@@ -832,9 +899,19 @@ var Playground = React.createClass({displayName: 'Playground',
 			component : component
 		});
 	},
+	valueChanger : function (name) {
+		var self = this;
+		return function (v) {
+			var values = self.state.values
+			values[name] = v.value
+			self.setState({ values : values });
+		}
+	},
  	render : function () {
  		var options = []
  			, component;
+
+ 		console.log(this.state.values);
 
  		components.forEach(function(c,i){
  			options.push(React.DOM.option( {key:i, value:c}, c));
@@ -874,7 +951,7 @@ var Playground = React.createClass({displayName: 'Playground',
 		case "TimePicker":
 			component = TimePicker(null )
 		case "DateTimePicker":
-			component = DateTimePicker(null )
+			component = DateTimePicker( {value:this.state.values.DateTimePicker, onChange:this.valueChanger('DateTimePicker')} )
 			break;
  		}
 		return (

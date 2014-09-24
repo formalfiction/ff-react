@@ -20,7 +20,11 @@ var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "DateTimePicker"
+			component : "DateTimePicker",
+			values : {
+				Clock : new Date(),
+				DateTimePicker : new Date()
+			}
 		}
 	},
 	pickComponent : function (e) {
@@ -29,9 +33,19 @@ var Playground = React.createClass({displayName: 'Playground',
 			component : component
 		});
 	},
+	valueChanger : function (name) {
+		var self = this;
+		return function (v) {
+			var values = self.state.values
+			values[name] = v.value
+			self.setState({ values : values });
+		}
+	},
  	render : function () {
  		var options = []
  			, component;
+
+ 		console.log(this.state.values);
 
  		components.forEach(function(c,i){
  			options.push(React.DOM.option( {key:i, value:c}, c));
@@ -71,7 +85,7 @@ var Playground = React.createClass({displayName: 'Playground',
 		case "TimePicker":
 			component = TimePicker(null )
 		case "DateTimePicker":
-			component = DateTimePicker(null )
+			component = DateTimePicker( {value:this.state.values.DateTimePicker, onChange:this.valueChanger('DateTimePicker')} )
 			break;
  		}
 		return (
