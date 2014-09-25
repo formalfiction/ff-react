@@ -32,8 +32,8 @@ var MarkdownEditor = React.createClass({
 			, value = this.props.value || ""
 
 		var header = <header>
-					<a className="ss-icon right" onClick={this.togglePreview} onTouchEnd={this.togglePreview}>view</a>
-				</header>
+									<a className="ss-icon right" onClick={this.togglePreview} onTouchEnd={this.togglePreview}>view</a>
+								 </header>
 
 		if (this.state.previewing) {
 			var converter = new Showdown.converter()

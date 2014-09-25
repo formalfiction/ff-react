@@ -8,9 +8,9 @@
   },
   "scripts": {
     "test": "",
-    "build" : "jsx -x jsx --no-cache-dir ./jsx/ ./components/ ",
-    "build-playground" : "jsx -x jsx --no-cache-dir ./jsx/ ./components/ & browserify ./components/Playground.js -o ./test/playground.js & stylus & stylus ./style/playground.styl -o ./test/",
-    "playground" : "npm run build-playground & http-server"
+    "build": "jsx -x jsx --no-cache-dir ./jsx/ ./components/ ",
+    "build-playground": "jsx -x jsx --no-cache-dir ./jsx/ ./components/ & browserify ./components/Playground.js -o ./test/playground.js & stylus & stylus ./style/playground.styl -o ./test/",
+    "playground": "npm run build-playground & http-server"
   },
   "repository": {
     "type": "git",
@@ -27,8 +27,16 @@
     "url": "https://github.com/formalfiction/ff-react/issues"
   },
   "homepage": "https://github.com/formalfiction/ff-react",
-  "dependencies": {},
+  "dependencies": {
+    "react": "^0.11.2",
+    "underscore": "^1.7.0"
+  },
   "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.0.1",
+    "grunt-contrib-stylus": "^0.17.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-shell": "^1.1.1",
     "http-server": "~0.7.1",
     "react": "~0.11.2"
   }
