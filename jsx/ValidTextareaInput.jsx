@@ -16,8 +16,6 @@ var ValidTextareaInput = React.createClass({
 		message : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
-		// set this to add a label element above the field
-		label : React.PropTypes.string,
 		// className will set on the containing div
 		className : React.PropTypes.string
 	},
@@ -33,9 +31,6 @@ var ValidTextareaInput = React.createClass({
 		var props = this.props
 			, label;
 
-		if (props.label) {
-			label = <label>{props.label}</label>
-		}
 		return(
 			<div className={props.className + " validTextArea field"}>
 				{label}

@@ -88,7 +88,7 @@ var form = {
 
 		}
 		if (typeof this.onChange === "function") {
-			this.onChange(value, name);
+			this.onChange(val, name);
 		}
 	},
 

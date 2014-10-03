@@ -16,8 +16,6 @@ var ValidTextInput = React.createClass({
 		message : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
-		// set this to add a label element above the field
-		label : React.PropTypes.string,
 		// className will set on the containing div
 		className : React.PropTypes.string
 	},
@@ -33,16 +31,9 @@ var ValidTextInput = React.createClass({
 		var props = this.props
 			, label;
 
-		if (props.label) {
-			label = <label>{props.label}</label>
-		}
-		
-		console.log(props);
-
 		return(
 			<div className={props.className + " validTextInput field"}>
-				{label}
-				<input disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onChange={self.handleChange} />
+				<input disabled={props.disabled} type="text" name={props.name} onFocus={props.onFocus} onBlur={props.onBlur} onChange={self.handleChange} placeholder={props.placeholder} value={props.value} />
 				<span className="indicator ss-icon">{props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") }</span>
 				<span className="message">{props.valid ? props.message : "" }</span>
 			</div>

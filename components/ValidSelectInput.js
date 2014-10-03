@@ -18,8 +18,6 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 		message : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
-		// set this to add a label element above the field
-		label : React.PropTypes.string,
 		// className will set on the containing div
 		className : React.PropTypes.string
 	},
@@ -48,8 +46,7 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 
 		return(
 			React.DOM.div( {className:props.className + " valdSelectInput field"}, 
-				label,
-				React.DOM.select( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:self.handleChange}, 
+				React.DOM.select( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onFocus:props.onFocus, onBlur:props.onBlur, onChange:self.handleChange}, 
 					options
 				),
 				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),

@@ -234,7 +234,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		this.setState({ focused : true });
 	},
 	_blur : function (e) {
-		// this.setState({ focused : false });
+		this.setState({ focused : false });
 	},
 	_change : function (value) {
 		if (typeof this.props.onChange === "function") {
