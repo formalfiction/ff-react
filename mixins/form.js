@@ -18,8 +18,12 @@ var form = {
 	// Remember to set "fields" object
 	// fields : [],
 
-	validate : function () {
-		var self = this, model = this.state[this.modelName], errors = this.state.formErrors || {}, valid = true;
+	_validate : function () {
+		var self = this
+			, model = this.state[this.modelName]
+			, errors = this.state.formErrors || {}
+			, generalErr
+			, valid = true;
 		this.fields.forEach(function(field){
 			if (typeof field.validate === "function") {
 				var msg = field.validate(model[field.name]);
@@ -34,7 +38,12 @@ var form = {
 			}
 		});
 
+		if (typeof this.validate === "function") {
+			generalErr = this.validate()
+		}
+
 		this.setState({
+			error : generalErr,
 			formErrors : errors
 		});
 
@@ -46,36 +55,40 @@ var form = {
 			, name = $(e.target).attr('name')
 			, model = this.state[this.modelName]
 			, errors = this.state.formErrors || {}
-			, val = e.target.value;
+			, val = e.target.value
+			, field;
+		
+		// Grab the field
+		for (var i=0; i<this.fields.length; i++) {
+			if (name == this.fields[i].name) {
+				field = this.fields[i];
+				break;
+			}
+		}
+		if (field) {
+			// check for "filter" method on field to modify value on change
+			if (typeof field.filter === "function") {
+				val = field.filter.call(self, val);
+			}
 
-		// check for "filter" method on field to modify value on change
-		this.fields.forEach(function(field){
-			if (name === field.name) {
-				// if "filter" is a defined function on the field, apply it.
-				if (typeof field.filter === "function") {
-					val = field.filter.call(self, val);
-				}
-
-				// if we're invalid (and have a validate fn on the field),
-				// keep checking for validity & add to state Object
-				if (errors["_" + field.name + "Valid"] != true && typeof field.validate === "function") {
-					var msg = field.validate(val);
-					if (msg) {
-						errors["_" + field.name + "ErrMsg"] = msg;
-						errors["_" + field.name + "Valid"] = false;
-					} else {
-						errors["_" + field.name + "ErrMsg"] = null;
-						errors["_" + field.name + "Valid"] = true;
-					}
+			// if we're invalid (and have a validate fn on the field),
+			// keep checking for validity & add to state Object
+			if (errors["_" + field.name + "Valid"] != true && typeof field.validate === "function") {
+				var msg = field.validate(val);
+				if (msg) {
+					errors["_" + field.name + "ErrMsg"] = msg;
+					errors["_" + field.name + "Valid"] = false;
+				} else {
+					errors["_" + field.name + "ErrMsg"] = null;
+					errors["_" + field.name + "Valid"] = true;
 				}
 			}
-		});
 
-		this.setState({ formErrors : errors });
+			this.setState({ formErrors : errors });
 
+		}
 		if (typeof this.onChange === "function") {
-			model[name] = val;
-			this.onChange(model);
+			this.onChange(value, name);
 		}
 	},
 
@@ -117,7 +130,7 @@ var form = {
 
 		e.preventDefault();
 
-		if (this.validate() !== true) {
+		if (this._validate() !== true) {
 			return false;
 		}
 

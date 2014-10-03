@@ -1,6 +1,6 @@
 {
   "name": "ff-react",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Building-Block components for React.js, put out by formalfiction",
   "main": "ff-react.js",
   "directories": {

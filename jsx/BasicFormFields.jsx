@@ -22,7 +22,10 @@
  *
  */
 
-var _ = require('underscore');
+var _ = require('underscore')
+
+var ValidTextInput = require('./ValidTextInput');
+
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
 function BasicFormFields (fieldObjs) {
@@ -59,10 +62,13 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "text") {
 		fields.push(
 			<div className="field" key={i}>
-				<label>{obj.label}</label>
-				<input disabled={obj.disabled} type="text" name={obj.name} placeholder={obj.placeholder} value={value} onChange={self.handleChange} />
-				<span>{self.state["_" + obj.name + "ErrMsg"]}</span>
-				<span>{(self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" }</span>
+				<ValidTextInput
+					label={obj.label}
+					value={value}
+					onChange={self.handleChange}
+					placeholder={obj.placeholder}
+					message ={self.state["_" + obj.name + "ErrMsg"]}
+					valid={self.state["_" + obj.name + "Valid"]} />
 			</div>);
 	} else if (obj.type === "textarea") {
 		fields.push(

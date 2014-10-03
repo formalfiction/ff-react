@@ -72,7 +72,7 @@ var S3PhotoUploader = React.createClass({
 		return (
 			<div className="photoUpload">
 				<input disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
-				<img className="photoPreview" src={this.state.photoUrl} />
+				<img className="photoPreview" src={this.props.src} />
 				<p>{this.state.uploadProgress}</p>
 				<p>{this.state.uploadStatus}</p>
 				{del}

@@ -70,9 +70,8 @@ var WheelPicker = React.createClass({
 			}
 
 			if (oldValue != value) {
-				console.log(value);
 				if (typeof self.props.onChange === "function") {
-					self.props.onChange(value);
+					self.props.onChange(value, self.props.name);
 				}
 			}
 		}
