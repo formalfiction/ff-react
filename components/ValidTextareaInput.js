@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var ValidTextArea = React.createClass({displayName: 'ValidTextArea',
+var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -40,11 +40,11 @@ var ValidTextArea = React.createClass({displayName: 'ValidTextArea',
 			React.DOM.div( {className:props.className + " validTextArea field"}, 
 				label,
 				React.DOM.textarea( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:self.handleChange}),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : "close" ),
+				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
 				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
 			)
 		);
 	}
 });
 
-module.exports = ValidTextArea;
+module.exports = ValidTextareaInput;

@@ -36,11 +36,14 @@ var ValidTextInput = React.createClass({
 		if (props.label) {
 			label = <label>{props.label}</label>
 		}
+		
+		console.log(props);
+
 		return(
 			<div className={props.className + " validTextInput field"}>
 				{label}
 				<input disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onChange={self.handleChange} />
-				<span className="indicator ss-icon">{props.valid ? "checked" : "close" }</span>
+				<span className="indicator ss-icon">{props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") }</span>
 				<span className="message">{props.valid ? props.message : "" }</span>
 			</div>
 		);

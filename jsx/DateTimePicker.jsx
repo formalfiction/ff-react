@@ -23,28 +23,51 @@ var WheelPicker = React.createClass({
 			self[name].on('scrollEnd', self.scrollEnder(segment));
 		});
 
+		// this.refreshScrollers();
 		this.scrollToDate(now);
 	},
 	scrollToDate : function (date) {
 		var hours = date.getHours()
+			, daysBack = this.daysBack
 			, minutes = Math.round(date.getMinutes() / 15)
 			, pm = (hours > 11);
 
 		if (pm) { hours = hours - 12; }
 
-		this.dayScroll.scrollToElement(this.dayScroll.scroller.children[this.daysBack - 1],0);
-		this.hourScroll.scrollToElement(this.hourScroll.scroller.children[hours - 1],0);
-		this.minuteScroll.scrollToElement(this.minuteScroll.scroller.children[minutes - 1],0);
-		this.phaseScroll.scrollToElement(this.phaseScroll.scroller.children[pm ? 1 : 0],0);
+		daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
+		hours = (hours > 0) ? hours - 1 : hours;
+		minutes = (minutes > 0) ? minutes - 1 : minutes;
+
+		this.dayScroll.scrollToElement(this.dayScroll.scroller.children[daysBack],0);
+		this.setSelected(this.dayScroll, daysBack + 2);
+		this.hourScroll.scrollToElement(this.hourScroll.scroller.children[hours],0);
+		this.setSelected(this.hourScroll, hours + 2);
+		this.minuteScroll.scrollToElement(this.minuteScroll.scroller.children[minutes],0);
+		this.setSelected(this.minuteScroll, minutes + 2);
+		this.phaseScroll.scrollToElement(this.phaseScroll.scroller.children[pm ? 3 : 2],0);
+		this.setSelected(this.phaseScroll, pm ? 3 : 2);
+	},
+	refreshScrollers : function () {
+		this.dayScroll.refresh();
+		this.hourScroll.refresh();
+		this.minuteScroll.refresh();
+		this.phaseScroll.refresh();
+	},
+	setSelected : function (iscroll, sel) {
+		for (var i=0; i < iscroll.scroller.children.length; i++){
+			iscroll.scroller.children[i].className = (sel == i) ? "selected" : "";
+		}
 	},
 	scrollEnder : function (segment) {
 		var self = this;
 		return function () {
 			// add one to choose the second displayed element (hopefully in the middle)
-			var i = this.currentPage.pageY + 1
+			var i = this.currentPage.pageY + 2
 				, scrollValue = +this.scroller.children[i].getAttribute('data-value')
 				, oldValue = self.props.value
 				, value = new Date(self.props.value);
+
+			self.setSelected(this, i);
 
 			switch (segment) {
 				case "day":
@@ -79,7 +102,15 @@ var WheelPicker = React.createClass({
 	daysBack : 14,
 	daysForward : 14,
 	day : function (date, key) {
-		return <li data-year={date.getFullYear()} data-month={date.getMonth()} data-value={date.getDate()} key={key}>{this.stringValue(date)}</li>
+		return (
+			<li 
+			data-year={date.getFullYear()} 
+			data-month={date.getMonth()} 
+			data-value={date.getDate()} 
+			key={key}>
+				{this.stringValue(date)}
+		</li>
+		);
 	},
 	days : function (value) {
 		var days = []
@@ -149,29 +180,37 @@ var WheelPicker = React.createClass({
 				<div ref="day" className="day segment">
 					<ul>
 						<li></li>
+						<li></li>
 						{days}
+						<li></li>
 						<li></li>
 					</ul>
 				</div>
 				<div ref="hour" className="hour segment">
 					<ul>
 						<li></li>
+						<li></li>
 						{hours}
+						<li></li>
 						<li></li>
 					</ul>
 				</div>
 				<div ref="minute" className="minute segment">
 					<ul>
 						<li></li>
+						<li></li>
 						{minutes}
+						<li></li>
 						<li></li>
 					</ul>
 				</div>
 				<div ref="phase" className="phase segment">
 					<ul>
 						<li></li>
+						<li></li>
 						<li data-value={0}>am</li>
 						<li data-value={1}>pm</li>
+						<li></li>
 						<li></li>
 					</ul>
 				</div>
@@ -234,8 +273,12 @@ var DateTimePicker = React.createClass({
 	},
 	stringValue : function (value) {
 		if (!value) { return ""; }
-		date = this.dateValue(value);
-		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + (Math.round(date.getMinutes() / 15) * 15);
+		var date = this.dateValue(value)
+			, mins = (Math.round(date.getMinutes() / 15) * 15);
+		
+		if (mins === 0) { mins = "00"; }
+
+		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + mins;
 	},
 	render : function () {
 		var value = this.dateValue(this.props.value)

@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var AutoGrowTextArea = React.createClass({
+var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 	propTypes : {
 
 	},
@@ -9,7 +9,7 @@ var AutoGrowTextArea = React.createClass({
 	},
 	render : function () {
 		return (
-			this.transferPropsTo(<textarea />)
+			this.transferPropsTo(React.DOM.textarea(null ))
 		);
 	}
 });

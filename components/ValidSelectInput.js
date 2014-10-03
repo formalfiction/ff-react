@@ -32,6 +32,7 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 			message : undefined,
 		}
 	},
+
 	render : function () {
 		var props = this.props
 			, label
@@ -51,7 +52,7 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 				React.DOM.select( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:self.handleChange}, 
 					options
 				),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : "close" ),
+				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
 				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
 			)
 		);

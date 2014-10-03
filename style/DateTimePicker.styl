@@ -1,17 +1,22 @@
 .dateTimePicker 
 	margin 0 auto
 	width 320px
+	position relative
 	.picker
-		background rgb(120,120,120)
-		position relative
-		height 120px
+		position absolute
+		left 0
+		top 100%
+		background white
+		height 200px
+		width 320px
+		box-shadow 0 0 3px #666
 		&::after
 			content ""
 			clear both
 			display block
 		.segment
-			color white
-			height 120px
+			color #999
+			height 200px
 			overflow hidden
 			position relative
 			float left
@@ -49,7 +54,10 @@
 					margin 0
 					font-size 20px
 					line-height 1.45em
+				li.selected
+					color black
 		.day
-			width 55%
+			width 50%
+			margin-left 5%
 		.hour, .minute, .phase
 			width 15%
