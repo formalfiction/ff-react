@@ -52,7 +52,7 @@ var form = {
 
 	handleChange : function (e) {
 		var self = this
-			, name = $(e.target).attr('name')
+			, name = e.target.name
 			, model = this.state[this.modelName]
 			, errors = this.state.formErrors || {}
 			, val = e.target.value
@@ -93,7 +93,7 @@ var form = {
 	},
 
 	handleBlur : function (e) {
-		var self = this, errors = this.state.formErrors;
+		var self = this, errors = this.state.formErrors || {}, name = e.target.name;
 		// check for "validate" method on field to modify validty state on blur
 		this.fields.forEach(function(field){
 			if (name === field.name && typeof field.validate === "function") {

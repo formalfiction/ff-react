@@ -66,6 +66,7 @@ function handleField (obj, i, fields) {
 					label={obj.label}
 					value={value}
 					onChange={self.handleChange}
+					onBlur={self.handleBlur}
 					placeholder={obj.placeholder}
 					message ={self.state["_" + obj.name + "ErrMsg"]}
 					valid={self.state["_" + obj.name + "Valid"]} />
