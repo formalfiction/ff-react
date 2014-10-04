@@ -64,8 +64,11 @@ function handleField (obj, i, fields) {
 			React.DOM.div( {className:"field", key:i}, 
 				ValidTextInput(
 					{label:obj.label,
+					name:obj.name,
 					value:value,
-					onChange:self.handleChange,
+					showValidation:self.state.showValidation,
+					onChange:self._onFieldChange,
+					onBlur:self._onFieldBlur,
 					placeholder:obj.placeholder,
 					message: self.state["_" + obj.name + "ErrMsg"],
 					valid:self.state["_" + obj.name + "Valid"]} )
@@ -73,8 +76,13 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			React.DOM.div( {className:"field", key:i}, 
-				React.DOM.label(null, obj.label),
-				React.DOM.textarea( {disabled:obj.disabled, name:obj.name, placeholder:obj.placeholder, value:value, onChange:self.handleChange}),
+				React.DOM.textarea( 
+					{disabled:obj.disabled,
+					name:obj.name,
+					placeholder:obj.placeholder,
+					value:value, 
+					onChange:self._onFieldChange,
+					onBlur:self._onFieldBlur}),
 				React.DOM.span(null, self.state["_" + obj.name + "ErrMsg"]),
 				React.DOM.span(null, (self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" )
 			));

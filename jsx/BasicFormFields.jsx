@@ -64,9 +64,11 @@ function handleField (obj, i, fields) {
 			<div className="field" key={i}>
 				<ValidTextInput
 					label={obj.label}
+					name={obj.name}
 					value={value}
-					onChange={self.handleChange}
-					onBlur={self.handleBlur}
+					showValidation={self.state.showValidation}
+					onChange={self._onFieldChange}
+					onBlur={self._onFieldBlur}
 					placeholder={obj.placeholder}
 					message ={self.state["_" + obj.name + "ErrMsg"]}
 					valid={self.state["_" + obj.name + "Valid"]} />
@@ -74,8 +76,13 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			<div className="field" key={i}>
-				<label>{obj.label}</label>
-				<textarea disabled={obj.disabled} name={obj.name} placeholder={obj.placeholder} value={value} onChange={self.handleChange}></textarea>
+				<textarea 
+					disabled={obj.disabled}
+					name={obj.name}
+					placeholder={obj.placeholder}
+					value={value} 
+					onChange={self._onFieldChange}
+					onBlur={self._onFieldBlur}></textarea>
 				<span>{self.state["_" + obj.name + "ErrMsg"]}</span>
 				<span>{(self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" }</span>
 			</div>);

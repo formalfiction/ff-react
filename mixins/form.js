@@ -50,7 +50,7 @@ var form = {
 		return valid;
 	},
 
-	handleChange : function (e) {
+	_onFieldChange : function (e) {
 		var self = this
 			, name = e.target.name
 			, model = this.state[this.modelName]
@@ -87,12 +87,12 @@ var form = {
 			this.setState({ formErrors : errors });
 
 		}
-		if (typeof this.onChange === "function") {
-			this.onChange(val, name);
+		if (typeof this.onValueChange === "function") {
+			this.onValueChange(val, name);
 		}
 	},
 
-	handleBlur : function (e) {
+	_onFieldBlur : function (e) {
 		var self = this, errors = this.state.formErrors || {}, name = e.target.name;
 		// check for "validate" method on field to modify validty state on blur
 		this.fields.forEach(function(field){
@@ -111,12 +111,11 @@ var form = {
 		self.setState({ formErrors : errors });
 	},
 
-	handleCancel : function (e) {
+	_onCancel : function (e) {
 		e.preventDefault();
 		// first check for passed in "onCancel" prop
 		if (typeof this.props.onCancel === "function") {
 			this.props.onCancel();
-
 		// if not, check for local "onSave" method
 		} else if (typeof this.onCancel === "function") {
 			this.onCancel();
@@ -125,7 +124,7 @@ var form = {
 		return false;
 	},
 
-	handleSubmit : function (e) {
+	_onSubmit : function (e) {
 		var data = this.state[this.modelName];
 
 		e.preventDefault();
