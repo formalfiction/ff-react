@@ -21,19 +21,19 @@ var form = {
 	_validate : function () {
 		var self = this
 			, model = this.state[this.modelName]
-			, errors = this.state.formErrors || {}
+			, validation = this.state.validation || {}
 			, generalErr
 			, valid = true;
 		this.fields.forEach(function(field){
 			if (typeof field.validate === "function") {
 				var msg = field.validate(model[field.name]);
 				if (msg) {
-					errors["_" + field.name + "ErrMsg"] = msg;
-					errors["_" + field.name + "Valid"] = false;
+					validation[field.name + "ErrMsg"] = msg;
+					validation[field.name + "Valid"] = false;
 					valid = false;
 				} else {
-					errors["_" + field.name + "ErrMsg"] = null;
-					errors["_" + field.name + "Valid"] = true;
+					validation[field.name + "ErrMsg"] = null;
+					validation[field.name + "Valid"] = true;
 				}
 			}
 		});
@@ -44,7 +44,7 @@ var form = {
 
 		this.setState({
 			error : generalErr,
-			formErrors : errors
+			validation : validation
 		});
 
 		return valid;
@@ -54,7 +54,7 @@ var form = {
 		var self = this
 			, name = e.target.name
 			, model = this.state[this.modelName]
-			, errors = this.state.formErrors || {}
+			, validation = this.state.validation || {}
 			, val = e.target.value
 			, field;
 		
@@ -73,18 +73,18 @@ var form = {
 
 			// if we're invalid (and have a validate fn on the field),
 			// keep checking for validity & add to state Object
-			if (errors["_" + field.name + "Valid"] != true && typeof field.validate === "function") {
+			if (validation[field.name + "Valid"] != true && typeof field.validate === "function") {
 				var msg = field.validate(val);
 				if (msg) {
-					errors["_" + field.name + "ErrMsg"] = msg;
-					errors["_" + field.name + "Valid"] = false;
+					validation[field.name + "ErrMsg"] = msg;
+					validation[field.name + "Valid"] = false;
 				} else {
-					errors["_" + field.name + "ErrMsg"] = null;
-					errors["_" + field.name + "Valid"] = true;
+					validation[field.name + "ErrMsg"] = null;
+					validation[field.name + "Valid"] = true;
 				}
 			}
 
-			this.setState({ formErrors : errors });
+			this.setState({ validation : validation });
 
 		}
 		if (typeof this.onValueChange === "function") {
@@ -93,22 +93,37 @@ var form = {
 	},
 
 	_onFieldBlur : function (e) {
-		var self = this, errors = this.state.formErrors || {}, name = e.target.name;
-		// check for "validate" method on field to modify validty state on blur
-		this.fields.forEach(function(field){
+		var self = this
+			, validation = this.state.validation || {}
+			, name = e.target.name
+			, val = e.target.value;
+
+		// Grab the field
+		for (var i=0; i<this.fields.length; i++) {
+			if (name == this.fields[i].name) {
+				field = this.fields[i];
+				break;
+			}
+		}
+		if (field) {
+			// check for "filter" method on field to modify value on change
+			if (typeof field.filter === "function") {
+				val = field.filter.call(self, val);
+			}
+			// check for "validate" method on field to modify validty state on blur
 			if (name === field.name && typeof field.validate === "function") {
-				var msg = field.validate(self.state[field.name]);
+				var msg = field.validate(val);
 				if (msg) {
-					errors["_" + field.name + "ErrMsg"] = msg;
-					errors["_" + field.name + "Valid"] = false;
+					validation[field.name + "ErrMsg"] = msg;
+					validation[field.name + "Valid"] = false;
 				} else {
-					errors["_" + field.name + "ErrMsg"] = null;
-					errors["_" + field.name + "Valid"] = true;
+					validation[field.name + "ErrMsg"] = null;
+					validation[field.name + "Valid"] = true;
 				}
 			}
-		});
+		}
 
-		self.setState({ formErrors : errors });
+		self.setState({ validation : validation });
 	},
 
 	_onCancel : function (e) {
@@ -130,6 +145,9 @@ var form = {
 		e.preventDefault();
 
 		if (this._validate() !== true) {
+			if (typeof this.onInvalid === "function") {
+				this.onInvalid(e);
+			}
 			return false;
 		}
 

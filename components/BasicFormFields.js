@@ -55,7 +55,9 @@ function fieldArray(fields, j, result) {
 function handleField (obj, i, fields) {
 	var self = this
 		, model = self.state[self.modelName] || {}
-		, value = model[obj.name];
+		, validation = self.state.validation || {}
+		, value = model[obj.name]
+		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
 	
 	if (obj.type === "hidden") {
 		fields.push(React.DOM.input( {type:"hidden", name:obj.name, value:value} ))
@@ -66,12 +68,12 @@ function handleField (obj, i, fields) {
 					{label:obj.label,
 					name:obj.name,
 					value:value,
-					showValidation:self.state.showValidation,
+					showValidation:showValidation,
 					onChange:self._onFieldChange,
 					onBlur:self._onFieldBlur,
 					placeholder:obj.placeholder,
-					message: self.state["_" + obj.name + "ErrMsg"],
-					valid:self.state["_" + obj.name + "Valid"]} )
+					message: validation[obj.name + "ErrMsg"],
+					valid:validation[obj.name + "Valid"]} )
 			));
 	} else if (obj.type === "textarea") {
 		fields.push(
@@ -83,8 +85,8 @@ function handleField (obj, i, fields) {
 					value:value, 
 					onChange:self._onFieldChange,
 					onBlur:self._onFieldBlur}),
-				React.DOM.span(null, self.state["_" + obj.name + "ErrMsg"]),
-				React.DOM.span(null, (self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" )
+				React.DOM.span(null, validation[obj.name + "ErrMsg"]),
+				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "" )
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];

@@ -74,7 +74,9 @@ function fieldArray(fields, j, result) {
 function handleField (obj, i, fields) {
 	var self = this
 		, model = self.state[self.modelName] || {}
-		, value = model[obj.name];
+		, validation = self.state.validation || {}
+		, value = model[obj.name]
+		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
 	
 	if (obj.type === "hidden") {
 		fields.push(React.DOM.input( {type:"hidden", name:obj.name, value:value} ))
@@ -85,12 +87,12 @@ function handleField (obj, i, fields) {
 					{label:obj.label,
 					name:obj.name,
 					value:value,
-					showValidation:self.state.showValidation,
+					showValidation:showValidation,
 					onChange:self._onFieldChange,
 					onBlur:self._onFieldBlur,
 					placeholder:obj.placeholder,
-					message: self.state["_" + obj.name + "ErrMsg"],
-					valid:self.state["_" + obj.name + "Valid"]} )
+					message: validation[obj.name + "ErrMsg"],
+					valid:validation[obj.name + "Valid"]} )
 			));
 	} else if (obj.type === "textarea") {
 		fields.push(
@@ -102,8 +104,8 @@ function handleField (obj, i, fields) {
 					value:value, 
 					onChange:self._onFieldChange,
 					onBlur:self._onFieldBlur}),
-				React.DOM.span(null, self.state["_" + obj.name + "ErrMsg"]),
-				React.DOM.span(null, (self.state["_" + obj.name + "Valid"] === false) ? "Invalid" : "" )
+				React.DOM.span(null, validation[obj.name + "ErrMsg"]),
+				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "" )
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
@@ -1618,7 +1620,7 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
 		// master switch for showing / hiding validation
-		showValidation : React.propTypes.bool,
+		showValidation : React.PropTypes.bool,
 		// leave undefined to display no valid
 		valid : React.PropTypes.bool,
 		// leave undefined to display no message
@@ -1638,13 +1640,21 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 	},
 	render : function () {
 		var props = this.props
-			, label;
+			, indicator
+			, message
+			, className = props.className || "";
+
+		if (props.showValidation) {
+			indicator = (props.valid) ? "checked" : "close";
+			message = (props.valid) ? "" : props.message
+			className = (props.valid) ? "valid" : "invalid"
+		}
 
 		return(
-			React.DOM.div( {className:props.className + " validTextInput field"}, 
+			React.DOM.div( {className:className + " validTextInput field"}, 
 				React.DOM.input( {disabled:props.disabled, type:"text", name:props.name, onFocus:props.onFocus, onBlur:props.onBlur, onChange:props.onChange, placeholder:props.placeholder, value:props.value} ),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.showValidation) ? "close" : "") ),
-				React.DOM.span( {className:"message"}, (props.valid && props.showValidation) ? props.message : "" )
+				React.DOM.span( {className:"indicator ss-icon"}, indicator),
+				React.DOM.span( {className:"message"}, message )
 			)
 		);
 	}

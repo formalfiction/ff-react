@@ -11,7 +11,7 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
 		// master switch for showing / hiding validation
-		showValidation : React.propTypes.bool,
+		showValidation : React.PropTypes.bool,
 		// leave undefined to display no valid
 		valid : React.PropTypes.bool,
 		// leave undefined to display no message
@@ -31,13 +31,21 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 	},
 	render : function () {
 		var props = this.props
-			, label;
+			, indicator
+			, message
+			, className = props.className || "";
+
+		if (props.showValidation) {
+			indicator = (props.valid) ? "checked" : "close";
+			message = (props.valid) ? "" : props.message
+			className = (props.valid) ? "valid" : "invalid"
+		}
 
 		return(
-			React.DOM.div( {className:props.className + " validTextInput field"}, 
+			React.DOM.div( {className:className + " validTextInput field"}, 
 				React.DOM.input( {disabled:props.disabled, type:"text", name:props.name, onFocus:props.onFocus, onBlur:props.onBlur, onChange:props.onChange, placeholder:props.placeholder, value:props.value} ),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.showValidation) ? "close" : "") ),
-				React.DOM.span( {className:"message"}, (props.valid && props.showValidation) ? props.message : "" )
+				React.DOM.span( {className:"indicator ss-icon"}, indicator),
+				React.DOM.span( {className:"message"}, message )
 			)
 		);
 	}
