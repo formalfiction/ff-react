@@ -8,6 +8,7 @@
 var SignaturePad = require('../deps/SignaturePad');
 
 var Signature = React.createClass({
+	// Component Lifecycle methods
 	componentDidMount : function () {
 		this.signaturePad = new SignaturePad(this.refs.canvas.getDOMNode());
 		if (this.props.data) {
@@ -15,12 +16,25 @@ var Signature = React.createClass({
 		}
 		if (this.props.signed) {
 			this.signaturePad.enabled(false);
-		} 
+		}
+		window.onresize = this.resizeCanvas;
+		this.resizeCanvas();
+	},
+	componentWillUnmount : function () {
+		window.onresize = undefined;
 	},
 	componentDidUpdate : function () {
 		if (this.props.signed) {
 			this.signaturePad.enabled(false);
 		}
+	},
+	// Methods
+	resizeCanvas : function () {
+    var ratio =  window.devicePixelRatio || 1
+    	, canvas = this.refs.canvas.getDOMNode();
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext("2d").scale(ratio, ratio);
 	},
 	reset : function (e) {
 		e.preventDefault();
@@ -30,6 +44,12 @@ var Signature = React.createClass({
 	},
 	done : function (e) {
 		e.preventDefault();
+
+		if (this.signaturePad.isEmpty()) {
+			alert('please sign first!');
+			return;
+		}
+
 		if (typeof this.props.done === "function") {
 			this.props.done(this.signaturePad.toDataURL());
 		}

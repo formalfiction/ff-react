@@ -10,11 +10,14 @@ var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'S
 
 var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	segments : ['day','hour','minute','phase'],
+
+	// Component Lifecycle
 	componentDidMount : function () {
 		var self = this
 			, options = {
 					mouseWheel : true,
-					snap : 'li'
+					snap : 'li',
+					snapThreshold : 3
 				};
 
 		this.segments.forEach(function(segment){
@@ -23,9 +26,11 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			self[name].on('scrollEnd', self.scrollEnder(segment));
 		});
 
-		// this.refreshScrollers();
+		this.refreshScrollers();
 		this.scrollToDate(now);
 	},
+
+	// Methods
 	scrollToDate : function (date) {
 		var hours = date.getHours()
 			, daysBack = this.daysBack
@@ -101,6 +106,8 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	},
 	daysBack : 14,
 	daysForward : 14,
+
+	// Render Methods
 	day : function (date, key) {
 		return (
 			React.DOM.li( 
@@ -220,6 +227,19 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 });
 
 var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
+	propTypes : {
+		// Value for the datepicker
+		value : React.PropTypes.object,
+		// name of the field
+		name : React.PropTypes.string.isRequired,
+
+		// onChange handler
+		onChange : React.PropTypes.func,
+		// onChange handler in the form (value, name)
+		onValueChange : React.PropTypes.func
+	},
+
+	// Component Lifecycle
 	getInitialState : function () {
 		var d = this.dateValue(this.props.value)
 		d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
@@ -230,13 +250,15 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			value : d
 		}
 	},
-	_focus : function (e) {
+
+	// Event Handlers
+	onFocus : function (e) {
 		this.setState({ focused : true });
 	},
-	_blur : function (e) {
+	onBlur : function (e) {
 		this.setState({ focused : false });
 	},
-	_change : function (value) {
+	onChange : function (value) {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange({
 				name : this.props.name,
@@ -244,18 +266,20 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			});
 		}
 	},
-	_inputChange : function (e) {
+	onInputChange : function (e) {
 		this._change();
 	},
-	_pickerChange : function (val) {
+	onPickerChange : function (val) {
 		this._change(val);
 	},
-	// Cancel Blur event triggered by clicking the picker
-	_pickerMouseDown : function (e) {
+	onPickerMouseDown : function (e) {
 		e.preventDefault();
+		// Cancel Blur event triggered by focusing the picker
 		$(this.refs["field"].getDOMNode()).focus();
 		return false;
 	},
+
+	// Render Methods
 	// Conform Various date inputs to a valid date object
 	dateValue : function (value) {
 		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
@@ -286,12 +310,12 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker( {onMouseDown:this._pickerMouseDown, value:value, onChange:this._pickerChange} )
+			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, value:value, onChange:this.onPickerChange} )
 		}
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this._focus, onTouchEnd:this._focus, onFocus:this._focus, onBlur:this._blur, value:stringValue, onChange:this._inputChange} ),
+				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange} ),
 				picker
 			)
 		);

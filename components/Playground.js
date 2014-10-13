@@ -84,7 +84,7 @@ var Playground = React.createClass({displayName: 'Playground',
 		case "TimePicker":
 			component = TimePicker(null )
 		case "DateTimePicker":
-			component = DateTimePicker( {value:this.state.values.DateTimePicker, onChange:this.valueChanger('DateTimePicker')} )
+			component = DateTimePicker( {name:"name", value:this.state.values.DateTimePicker, onChange:this.valueChanger('DateTimePicker')} )
 			break;
 		case "ValidTextInput":
 			component = ValidTextInput( {label:"valid text field", placeholder:"stuff", valid:false} )
