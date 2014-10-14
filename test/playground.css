@@ -109,7 +109,7 @@
   background: #fff;
   height: 200px;
   width: 320px;
-  box-shadow: 0 0 3px #666;
+  box-shadow: 0 0 4px #888;
 }
 .dateTimePicker .picker::after {
   content: "";

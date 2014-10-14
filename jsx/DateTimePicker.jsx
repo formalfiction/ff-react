@@ -5,11 +5,126 @@ var iScroll = require('../deps/iscroll');
 var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
 	, days = { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 }
 	, hours = [1,2,3,4,5,6,7,8,9,10,11,12]
-	, minutes = [0,15,30,45]
-	, now = new Date();
+	, minutes = [0,15,30,45];
 
+var DateTimePicker = React.createClass({
+	propTypes : {
+		// Center date to choose around. Defaults to the current time.
+		centerDate : React.PropTypes.object,
+		// name of the field
+		name : React.PropTypes.string.isRequired,
+		// onChange handler
+		onChange : React.PropTypes.func,
+		// onChange handler in the form (value, name)
+		onValueChange : React.PropTypes.func,
+		// Value for the datepicker
+		value : React.PropTypes.object,
+	},
+
+	// Component Lifecycle
+	getDefaultProps : function () {
+		return {
+			centerDate : new Date()
+		}
+	},
+	getInitialState : function () {
+		var d = this.dateValue(this.props.value)
+		d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
+		d.setSeconds(0);
+		d.setMilliseconds(0);
+		return {
+			focused : false,
+			value : d
+		}
+	},
+
+	// Event Handlers
+	onFocus : function (e) {
+		this.setState({ focused : true });
+	},
+	onBlur : function (e) {
+		// this.setState({ focused : false });
+	},
+	onChange : function (value) {
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange({
+				name : this.props.name,
+				value : value
+			});
+		}
+	},
+	onInputChange : function (e) {
+		this.onChange();
+	},
+	onPickerChange : function (val) {
+		this.onChange(val);
+	},
+	onPickerMouseDown : function (e) {
+		e.preventDefault();
+		// Cancel Blur event triggered by focusing the picker
+		$(this.refs["field"].getDOMNode()).focus();
+		return false;
+	},
+
+	// Render Methods
+	// Conform Various date inputs to a valid date object
+	dateValue : function (value) {
+		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
+		// Ensure Value is a valid date.
+		if (!isDate) {
+			if (typeof value === "number" && value != NaN) {
+				value = new Date(this.props.value)
+			} else {
+				var now = new Date()
+				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
+			}
+		}
+
+		return value;
+	},
+	stringValue : function (value) {
+		if (!value) { return ""; }
+		var date = this.dateValue(value)
+			, mins = (Math.round(date.getMinutes() / 15) * 15);
+		
+		if (mins === 0) { mins = "00"; }
+
+		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + mins;
+	},
+	render : function () {
+		var value = this.dateValue(this.props.value)
+			, stringValue = this.stringValue(value)
+			, picker;
+
+		if (this.state.focused) { 
+			picker = <WheelPicker onMouseDown={this.onPickerMouseDown} value={value} centerDate={this.props.centerDate} onChange={this.onPickerChange} />
+		}
+
+		return (
+			<div className="dateTimePicker">
+				<input ref="field" type="text" onClick={this.onFocus} onTouchEnd={this.onFocus} onFocus={this.onFocus} onBlur={this.onBlur} value={stringValue} onChange={this.onInputChange} />
+				{picker}
+			</div>
+		);
+	}
+});
+
+
+/* @private
+ * WheelPicker
+ */
 var WheelPicker = React.createClass({
+	propTypes : {
+		// @todo - finish this list.
+
+		// The date to center the picker to
+		centerDate : React.PropTypes.object.isRequired,
+	},
 	segments : ['day','hour','minute','phase'],
+	daysBack : 14,
+	daysForward : 14,
+	itemsShowing : 5,
+
 
 	// Component Lifecycle
 	componentDidMount : function () {
@@ -26,31 +141,32 @@ var WheelPicker = React.createClass({
 			self[name].on('scrollEnd', self.scrollEnder(segment));
 		});
 
-		this.refreshScrollers();
-		this.scrollToDate(now);
+		this.scrollToDate(this.props.value);
 	},
 
 	// Methods
 	scrollToDate : function (date) {
-		var hours = date.getHours()
-			, daysBack = this.daysBack
+
+		var startDate = new Date(this.props.centerDate)
+		startDate.setDate(-this.daysBack)
+
+		var days = Math.floor((date.valueOf() - startDate.valueOf() ) / 1000 / 60 / 60 / 60)
+			, hours = date.getHours()
 			, minutes = Math.round(date.getMinutes() / 15)
 			, pm = (hours > 11);
 
 		if (pm) { hours = hours - 12; }
 
-		daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
-		hours = (hours > 0) ? hours - 1 : hours;
-		minutes = (minutes > 0) ? minutes - 1 : minutes;
+		console.log(days);
 
-		this.dayScroll.scrollToElement(this.dayScroll.scroller.children[daysBack],0);
-		this.setSelected(this.dayScroll, daysBack + 2);
-		this.hourScroll.scrollToElement(this.hourScroll.scroller.children[hours],0);
-		this.setSelected(this.hourScroll, hours + 2);
-		this.minuteScroll.scrollToElement(this.minuteScroll.scroller.children[minutes],0);
-		this.setSelected(this.minuteScroll, minutes + 2);
-		this.phaseScroll.scrollToElement(this.phaseScroll.scroller.children[pm ? 3 : 2],0);
-		this.setSelected(this.phaseScroll, pm ? 3 : 2);
+		// daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
+		hours = (hours > 0) ? hours - 1 : hours;
+		// minutes = (minutes > 0) ? minutes - 1 : minutes;
+
+		this.dayScroll.goToPage(0,(days - 4),200);
+		this.hourScroll.goToPage(0,hours,200);
+		this.minuteScroll.goToPage(0,minutes,200);
+		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
 	},
 	refreshScrollers : function () {
 		this.dayScroll.refresh();
@@ -104,8 +220,6 @@ var WheelPicker = React.createClass({
 			}
 		}
 	},
-	daysBack : 14,
-	daysForward : 14,
 
 	// Render Methods
 	day : function (date, key) {
@@ -119,10 +233,10 @@ var WheelPicker = React.createClass({
 		</li>
 		);
 	},
-	days : function (value) {
+	days : function () {
 		var days = []
 			, i = 0
-			, v = new Date(now);
+			, v = new Date(this.props.centerDate);
 
 		v.setDate(v.getDate() - this.daysBack);
 		for (var j=0; j < this.daysBack; j++) {
@@ -179,9 +293,10 @@ var WheelPicker = React.createClass({
 	},
 	render : function () {
 		var value = this.props.value
-			, days = this.days(value)
-			, hours = this.hours(this.props.value.getHours > 11)
+			, days = this.days()
+			, hours = this.hours(this.props.centerDate.getHours() > 11)
 			, minutes = this.minutes();
+
 		return (
 			<div className="picker" onMouseDown={this.props.onMouseDown}>
 				<div ref="day" className="day segment">
@@ -221,102 +336,6 @@ var WheelPicker = React.createClass({
 						<li></li>
 					</ul>
 				</div>
-			</div>
-		);
-	}
-});
-
-var DateTimePicker = React.createClass({
-	propTypes : {
-		// Value for the datepicker
-		value : React.PropTypes.object,
-		// name of the field
-		name : React.PropTypes.string.isRequired,
-
-		// onChange handler
-		onChange : React.PropTypes.func,
-		// onChange handler in the form (value, name)
-		onValueChange : React.PropTypes.func
-	},
-
-	// Component Lifecycle
-	getInitialState : function () {
-		var d = this.dateValue(this.props.value)
-		d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
-		d.setSeconds(0);
-		d.setMilliseconds(0);
-		return {
-			focused : false,
-			value : d
-		}
-	},
-
-	// Event Handlers
-	onFocus : function (e) {
-		this.setState({ focused : true });
-	},
-	onBlur : function (e) {
-		this.setState({ focused : false });
-	},
-	onChange : function (value) {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange({
-				name : this.props.name,
-				value : value
-			});
-		}
-	},
-	onInputChange : function (e) {
-		this._change();
-	},
-	onPickerChange : function (val) {
-		this._change(val);
-	},
-	onPickerMouseDown : function (e) {
-		e.preventDefault();
-		// Cancel Blur event triggered by focusing the picker
-		$(this.refs["field"].getDOMNode()).focus();
-		return false;
-	},
-
-	// Render Methods
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
-			} else {
-				var now = new Date()
-				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	stringValue : function (value) {
-		if (!value) { return ""; }
-		var date = this.dateValue(value)
-			, mins = (Math.round(date.getMinutes() / 15) * 15);
-		
-		if (mins === 0) { mins = "00"; }
-
-		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + mins;
-	},
-	render : function () {
-		var value = this.dateValue(this.props.value)
-			, stringValue = this.stringValue(value)
-			, picker;
-
-		if (this.state.focused) { 
-			picker = <WheelPicker onMouseDown={this.onPickerMouseDown} value={value} onChange={this.onPickerChange} />
-		}
-
-		return (
-			<div className="dateTimePicker">
-				<input ref="field" type="text" onClick={this.onFocus} onTouchEnd={this.onFocus} onFocus={this.onFocus} onBlur={this.onBlur} value={stringValue} onChange={this.onInputChange} />
-				{picker}
 			</div>
 		);
 	}

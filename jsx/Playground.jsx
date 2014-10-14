@@ -18,13 +18,17 @@ var Clock = require('./Clock')
 
 var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
+var thirtyDaysAgo = new Date()
+thirtyDaysAgo.setDate(-30);
+
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
 			component : "DateTimePicker",
 			values : {
 				Clock : new Date(),
-				DateTimePicker : new Date()
+				DateTimePicker : thirtyDaysAgo,
+				DateTimePickerCenter : new Date(thirtyDaysAgo)
 			}
 		}
 	},
@@ -84,7 +88,7 @@ var Playground = React.createClass({
 		case "TimePicker":
 			component = <TimePicker />
 		case "DateTimePicker":
-			component = <DateTimePicker name="name" value={this.state.values.DateTimePicker} onChange={this.valueChanger('DateTimePicker')} />
+			component = <DateTimePicker name="name" value={this.state.values.DateTimePicker} centerDate={this.state.values.DateTimePickerCenter} onChange={this.valueChanger('DateTimePicker')} />
 			break;
 		case "ValidTextInput":
 			component = <ValidTextInput label="valid text field" placeholder="stuff" valid={false} />
