@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+
 /* Map component handles display & interaction with a map.
  * 
  */

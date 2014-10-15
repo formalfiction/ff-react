@@ -36,7 +36,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 
 	// Event handlers
 	onKeyUp : function (e) {
-		var val = Math.floor($(e.target).maskMoney('unmasked')[0]) * 100;
+		var val = Math.floor($(e.target).maskMoney('unmasked')[0] * 100);
 		// e.target.value = val;
 
 		if (val != this.props.value) {

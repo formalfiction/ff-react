@@ -9,9 +9,12 @@
 
 
 var Clock = React.createClass({
+	
 	hours : ["01","02","03","04","05","06","07","08","09","10","11","12"],
 	minutes : ["00","15","30","45"],
 	phase : ["am","pm"],
+
+	// Methods
 	// Break a date value up into the needed hours / minutes / phase
 	// pieces
 	_values : function (val) {
@@ -66,6 +69,8 @@ var Clock = React.createClass({
 
 		return d.valueOf();
 	},
+
+	// Factory Funcs
 	// return a up-incrementer
 	up : function (unit) {
 		var self = this;
@@ -92,11 +97,15 @@ var Clock = React.createClass({
 			return false;
 		}
 	},
-	_change : function (values) {
+
+	// Event Handlers
+	onChange : function (values) {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this._timeValue(values));
 		}
 	},
+
+	// Render
 	render : function () {
 		var values = this._values(this.props.value);
 		return (

@@ -43,9 +43,9 @@ function fieldArray(fields, j, result) {
 
 	fields.forEach(function(obj,i){
 		if (_.isArray(obj)){
-			fieldArray.call(self, obj, i + j, result);
+			fieldArray.call(self, obj, j + "." + i, result);
 		} else {
-			result.push(handleField.call(self, obj, i, result));
+			result.push(handleField.call(self, obj, j + "." + i, result));
 		}
 	});
 

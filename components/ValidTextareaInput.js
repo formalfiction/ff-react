@@ -6,8 +6,11 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 		name : React.PropTypes.string.isRequired,
 		// field value
 		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
+		// use either onChange or onValueChange. Not both.
 		// std onChange event
 		onChange : React.PropTypes.func,
+		// onChange in the form (value, name)
+		onValueChange : React.PropTypes.func,
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
 		// leave undefined to display no valid
@@ -19,6 +22,8 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 		// className will set on the containing div
 		className : React.PropTypes.string
 	},
+
+	// Component lifecycle methods
 	getDefaultProps : function () {
 		return {
 			name : "",
@@ -27,6 +32,18 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 			message : undefined,
 		}
 	},
+
+	// Event Handlers
+	onChange : function (e) {
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(e);
+		}
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(e.target.value, this.props.name);
+		}
+	},
+
+	// Render
 	render : function () {
 		var props = this.props
 			, label;
@@ -34,7 +51,7 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 		return(
 			React.DOM.div( {className:props.className + " validTextArea field"}, 
 				label,
-				React.DOM.textarea( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:self.handleChange}),
+				React.DOM.textarea( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:this.onChange}),
 				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
 				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
 			)

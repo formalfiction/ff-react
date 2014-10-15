@@ -8,8 +8,11 @@ var ValidSelectInput = React.createClass({
 		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
 		// array of potential options
 		options : React.PropTypes.array,
+		// use either onChange or onValueChange. Not both
 		// std onChange event
 		onChange : React.PropTypes.func,
+		// onChange in the form of (value, name)
+		onValueChange : React.PropTypes.func,
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
 		// leave undefined to display no valid
@@ -21,6 +24,8 @@ var ValidSelectInput = React.createClass({
 		// className will set on the containing div
 		className : React.PropTypes.string
 	},
+
+	// Component lifecycle methods
 	getDefaultProps : function () {
 		return {
 			name : "",
@@ -31,6 +36,17 @@ var ValidSelectInput = React.createClass({
 		}
 	},
 
+	// Event Handlers
+	onChange : function (e) {
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(e);
+		}
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(e.target.value, this.props.name);
+		}
+	},
+
+	// Render
 	render : function () {
 		var props = this.props
 			, label
@@ -46,7 +62,7 @@ var ValidSelectInput = React.createClass({
 
 		return(
 			<div className={props.className + " valdSelectInput field"}>
-				<select disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onFocus={props.onFocus} onBlur={props.onBlur} onChange={self.handleChange}>
+				<select disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onFocus={props.onFocus} onBlur={props.onBlur} onChange={this.onChange}>
 					{options}
 				</select>
 				<span className="indicator ss-icon">{props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") }</span>

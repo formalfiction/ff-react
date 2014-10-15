@@ -2,7 +2,6 @@
 
 var Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
-	, Login = require('./Login')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
@@ -10,7 +9,6 @@ var Clock = require('./Clock')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
-	, Signup = require('./Signup')
 	, TimePicker = require('./TimePicker')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');

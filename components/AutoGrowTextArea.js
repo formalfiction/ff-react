@@ -1,13 +1,18 @@
 /** @jsx React.DOM */
 
+/* Autogrow is a text area that grows & shrinks 
+ * to fit the height of it's text value
+ */
+
 var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 	propTypes : {
-		// 
-		value : React.PropTypes.string.isRequired,
-		// Name of the field
 		name : React.PropTypes.string.isRequired,
-		// 
+		// Use either onChange, or onValueChange. Not both.
+		// Raw change event
+		onChange : React.PropTypes.func,
+		// change handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
+		value : React.PropTypes.string.isRequired,
 	},
 
 	// Methods	

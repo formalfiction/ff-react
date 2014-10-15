@@ -1,5 +1,8 @@
 /** @jsx React.DOM */
+
 /*
+ * @stateful
+ *
  * This component encapsulates the UI for client-side uploads
  * to Amazon S3. It requires a signing-server 
  * (usually the backing server for the app)
@@ -10,6 +13,11 @@
 var S3Upload = require('../deps/S3Upload');
 
 var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
+	propTypes : {
+		// @todo
+	},
+
+	// Component lifecycle methods
 	getInitialState : function () {
 		return {
 			uploadError : undefined,
@@ -19,6 +27,8 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 			showCancel : true
 		}
 	},
+
+	// Methods
 	s3Upload : function (e) {
 		var el = this.refs['file'].getDOMNode();
 
@@ -34,6 +44,8 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 			disableUpload : true
 		});
 	},
+
+	// Event Handlers
 	uploadProgress : function (percent, message) {
 		this.setState({ uploadProgress : percent + "% Complete" });
 	},
@@ -64,6 +76,8 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 			this.props.onChange(this.state.photoUrl);
 		}
 	},
+
+	// Render
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {

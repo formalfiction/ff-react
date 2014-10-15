@@ -8,9 +8,14 @@
 var Clock = require('./Clock');
 
 var TimePicker = React.createClass({
+	propTypes : {
+		// @todo
+	},
 	hours 	: ["01","02","03","04","05","06","07","08","09","10","11","12"],
 	minutes : ["00","15","30","45"],
 	phase 	: ["am","pm"],
+
+	// Component lifecycle methods
 	getInitialState : function () {
 		return {
 			focused : false
@@ -61,6 +66,8 @@ var TimePicker = React.createClass({
 			});
 		}
 	},
+
+	// Render
 	render : function () {
 		var time
 			, display = this._stringValue();

@@ -1,5 +1,10 @@
 /** @jsx React.DOM */
 
+/* @stateful
+ *
+ * Wheelie Time Picker
+ */
+
 var iScroll = require('../deps/iscroll');
 
 var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
@@ -43,7 +48,7 @@ var DateTimePicker = React.createClass({
 		this.setState({ focused : true });
 	},
 	onBlur : function (e) {
-		// this.setState({ focused : false });
+		this.setState({ focused : false });
 	},
 	onChange : function (value) {
 		if (typeof this.props.onChange === "function") {
@@ -52,11 +57,14 @@ var DateTimePicker = React.createClass({
 				value : value
 			});
 		}
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(value, this.props.name);
+		}
 	},
 	onInputChange : function (e) {
 		this.onChange();
 	},
-	onPickerChange : function (val) {
+	onPickerChange : function (val, name) {
 		this.onChange(val);
 	},
 	onPickerMouseDown : function (e) {
@@ -97,7 +105,7 @@ var DateTimePicker = React.createClass({
 			, picker;
 
 		if (this.state.focused) { 
-			picker = <WheelPicker onMouseDown={this.onPickerMouseDown} value={value} centerDate={this.props.centerDate} onChange={this.onPickerChange} />
+			picker = <WheelPicker onMouseDown={this.onPickerMouseDown} value={value} centerDate={this.props.centerDate} onValueChange={this.onPickerChange} />
 		}
 
 		return (
@@ -116,9 +124,9 @@ var DateTimePicker = React.createClass({
 var WheelPicker = React.createClass({
 	propTypes : {
 		// @todo - finish this list.
-
 		// The date to center the picker to
 		centerDate : React.PropTypes.object.isRequired,
+		onValueChange : React.PropTypes.func.isRequired,
 	},
 	segments : ['day','hour','minute','phase'],
 	daysBack : 14,
@@ -157,13 +165,11 @@ var WheelPicker = React.createClass({
 
 		if (pm) { hours = hours - 12; }
 
-		console.log(days);
-
 		// daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
 		hours = (hours > 0) ? hours - 1 : hours;
 		// minutes = (minutes > 0) ? minutes - 1 : minutes;
 
-		this.dayScroll.goToPage(0,(days - 4),200);
+		this.dayScroll.goToPage(0,(days + 2),200);
 		this.hourScroll.goToPage(0,hours,200);
 		this.minuteScroll.goToPage(0,minutes,200);
 		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
@@ -181,7 +187,7 @@ var WheelPicker = React.createClass({
 	},
 	scrollEnder : function (segment) {
 		var self = this;
-		return function () {
+		return function (e) {
 			// add one to choose the second displayed element (hopefully in the middle)
 			var i = this.currentPage.pageY + 2
 				, scrollValue = +this.scroller.children[i].getAttribute('data-value')
@@ -215,7 +221,10 @@ var WheelPicker = React.createClass({
 
 			if (oldValue != value) {
 				if (typeof self.props.onChange === "function") {
-					self.props.onChange(value, self.props.name);
+					self.props.onChange(e);
+				}
+				if (typeof self.props.onValueChange === "function") {
+					self.props.onValueChange(value, self.props.name);
 				}
 			}
 		}
