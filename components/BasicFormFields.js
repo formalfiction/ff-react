@@ -91,7 +91,7 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(React.DOM.div( {className:"fieldSet"}, 
+		fields.push(React.DOM.div( {className:"fieldSet", key:i}, 
 			React.DOM.hr(null ),
 			React.DOM.h3(null, obj['name']),
 			subFields

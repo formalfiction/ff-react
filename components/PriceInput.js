@@ -1,9 +1,12 @@
 /** @jsx React.DOM */
-/*
+
+/* 
+ * @jQuery
+ *
  * Text input field with currency input mask.
  * relies on the MaskMoney Plugin for currency-formatting logic
  *
- * @todo - Bring this MaskMoney Thing within the component
+ * @todo - Bring this MaskMoney Lib within the component
  * 
  */
 

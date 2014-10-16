@@ -26,10 +26,10 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 	onChange : function (e) {
 		e.preventDefault();
 		if (typeof this.props.onChange === "function") {
-			this.props.onChange(this.props.key, this.refs["editor"].getDOMNode().value);
+			this.props.onChange(this.props.name, this.refs["editor"].getDOMNode().value);
 		}
 		if (typeof this.props.onValueChange === "function") {
-			this.props.onChange(this.props.key, this.refs["editor"].getDOMNode().value);
+			this.props.onValueChange(this.refs["editor"].getDOMNode().value, this.props.name);
 		}
 		return false;
 	},

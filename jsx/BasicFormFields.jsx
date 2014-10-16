@@ -91,7 +91,7 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(<div className="fieldSet">
+		fields.push(<div className="fieldSet" key={i}>
 			<hr />
 			<h3>{obj['name']}</h3>
 			{subFields}

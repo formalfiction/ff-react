@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
 /* @stateful
+ * @jQuery
  *
  * Wheelie Time Picker
  */
@@ -15,6 +16,7 @@ var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'S
 var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	propTypes : {
 		// Center date to choose around. Defaults to the current time.
+		// Should be a js Date object
 		centerDate : React.PropTypes.object,
 		// name of the field
 		name : React.PropTypes.string.isRequired,
@@ -22,7 +24,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		onChange : React.PropTypes.func,
 		// onChange handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
-		// Value for the datepicker
+		// Value for the datepicker. Should be a js Date object
 		value : React.PropTypes.object,
 	},
 
@@ -48,24 +50,34 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		this.setState({ focused : true });
 	},
 	onBlur : function (e) {
-		this.setState({ focused : false });
+		// this.setState({ focused : false });
 	},
 	onChange : function (value) {
+		// for now we're providing a sort of fake event. 
+		// probably a bad idea.
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange({
-				name : this.props.name,
-				value : value
+				target : {
+					name : this.props.name,
+					value : value
+				}
 			});
 		}
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(value, this.props.name);
 		}
 	},
-	onInputChange : function (e) {
-		this.onChange();
+	onKeyUp : function (e) {
+		// kill keyboard input
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
 	},
 	onPickerChange : function (val, name) {
 		this.onChange(val);
+	},
+	onInputChange : function (e) {
+		// no-op
 	},
 	onPickerMouseDown : function (e) {
 		e.preventDefault();
@@ -93,24 +105,29 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	stringValue : function (value) {
 		if (!value) { return ""; }
 		var date = this.dateValue(value)
-			, mins = (Math.round(date.getMinutes() / 15) * 15);
+			, mins = (Math.round(date.getMinutes() / 15) * 15)
+			, phase = (date.getHours() < 12) ? "am" : "pm";
 		
 		if (mins === 0) { mins = "00"; }
 
-		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear() + " " + date.getHours() + ":" + mins;
+		if (date.getDate() === this.props.centerDate.getDate()) {
+			return date.getHours() + ":" + mins + " " + phase;
+		} else {
+			return months[date.getMonth()]  + " " + date.getDate() + " " + date.getHours() + ":" + mins + " " + phase;
+		}
 	},
 	render : function () {
-		var value = this.dateValue(this.props.value)
+		var value = new Date(this.dateValue(this.props.value))
 			, stringValue = this.stringValue(value)
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange} )
+			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange, name:this.props.name} )
 		}
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange} ),
+				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -123,15 +140,23 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
  */
 var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	propTypes : {
-		// @todo - finish this list.
-		// The date to center the picker to
+		// The date to center the picker to. Defaults to now.
 		centerDate : React.PropTypes.object.isRequired,
+		// @private for now, don't modify this
+		daysBack : React.PropTypes.number.isRequired,
+		// @private for now, don't modify this
+		daysForward : React.PropTypes.number.isRequired,
+		// @private for now, don't modify this
+		itemsShowing : React.PropTypes.number.isRequired,
+		name : React.PropTypes.string.isRequired,
+		onMouseDown : React.PropTypes.func,
+		// Change in the form of (value, name)
 		onValueChange : React.PropTypes.func.isRequired,
+		// @private for now, don't modify.
+		segments : React.PropTypes.array.isRequired,
+		// should be a js date object
+		value : React.PropTypes.object.isRequired,
 	},
-	segments : ['day','hour','minute','phase'],
-	daysBack : 14,
-	daysForward : 14,
-	itemsShowing : 5,
 
 
 	// Component Lifecycle
@@ -143,7 +168,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 					snapThreshold : 3
 				};
 
-		this.segments.forEach(function(segment){
+		this.props.segments.forEach(function(segment){
 			var name = segment + 'Scroll';
 			self[name] = new iScroll(self.refs[segment].getDOMNode(), options);
 			self[name].on('scrollEnd', self.scrollEnder(segment));
@@ -151,45 +176,56 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 
 		this.scrollToDate(this.props.value);
 	},
+	getDefaultProps : function () {
+		return {
+			segments : ['day','hour','minute','phase'],
+			daysBack : 14,
+			daysForward : 14,
+			itemsShowing : 5,
+			centerDate : new Date(),
+		}
+	},
 
 	// Methods
 	scrollToDate : function (date) {
-
 		var startDate = new Date(this.props.centerDate)
-		startDate.setDate(-this.daysBack)
+		startDate.setDate(this.props.centerDate.getDate() - (this.props.daysBack));
 
-		var days = Math.floor((date.valueOf() - startDate.valueOf() ) / 1000 / 60 / 60 / 60)
+		var days = Math.floor((date - startDate) / (1000*60*60*24))
+			, lastDay = (this.props.daysBack + this.props.daysForward + 1)
 			, hours = date.getHours()
 			, minutes = Math.round(date.getMinutes() / 15)
 			, pm = (hours > 11);
 
+
 		if (pm) { hours = hours - 12; }
+		
+
+		if (days < 0) { days == 2; }
+		if (days > lastDay) { days = lastDay - 2; }
 
 		// daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
 		hours = (hours > 0) ? hours - 1 : hours;
-		// minutes = (minutes > 0) ? minutes - 1 : minutes;
+		minutes = (minutes > 0) ? minutes - 1 : minutes;
 
-		this.dayScroll.goToPage(0,(days + 2),200);
+		this.dayScroll.goToPage(0,days - 1,200);
 		this.hourScroll.goToPage(0,hours,200);
 		this.minuteScroll.goToPage(0,minutes,200);
 		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
 	},
-	refreshScrollers : function () {
-		this.dayScroll.refresh();
-		this.hourScroll.refresh();
-		this.minuteScroll.refresh();
-		this.phaseScroll.refresh();
-	},
 	setSelected : function (iscroll, sel) {
 		for (var i=0; i < iscroll.scroller.children.length; i++){
-			iscroll.scroller.children[i].className = (sel == i) ? "selected" : "";
+			iscroll.scroller.children[i].className = (sel === i) ? "selected" : "";
 		}
 	},
+
+	// Factory Funcs
 	scrollEnder : function (segment) {
 		var self = this;
 		return function (e) {
 			// add one to choose the second displayed element (hopefully in the middle)
 			var i = this.currentPage.pageY + 2
+				// convert to number with +
 				, scrollValue = +this.scroller.children[i].getAttribute('data-value')
 				, oldValue = self.props.value
 				, value = new Date(self.props.value);
@@ -247,14 +283,14 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			, i = 0
 			, v = new Date(this.props.centerDate);
 
-		v.setDate(v.getDate() - this.daysBack);
-		for (var j=0; j < this.daysBack; j++) {
+		v.setDate(v.getDate() - this.props.daysBack);
+		for (var j=0; j < this.props.daysBack; j++) {
 			v.setDate(v.getDate() + 1);
 			days.push(this.day(v, i));
 			i++;
 		}
 
-		for (j=0; j < this.daysForward; j++) {
+		for (j=0; j < this.props.daysForward; j++) {
 			v.setDate(v.getDate() + 1);
 			days.push(this.day(v, i));
 			i++;
@@ -298,7 +334,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	stringValue : function (value) {
 		if (!value) { return ""; }
 		date = this.dateValue(value);
-		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
+		return months[date.getMonth()]  + " " + date.getDate();
 	},
 	render : function () {
 		var value = this.props.value
