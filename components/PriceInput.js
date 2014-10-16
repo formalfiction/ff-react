@@ -63,7 +63,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 			React.DOM.div( {className:"field priceInput " + this.props.className}, 
 				React.DOM.input( {ref:"input",
 					name:this.props.name,
-					type:"text", 
+					type:"number", 
 					value:this.props.value,
 					onChange:this.onChange,
 					onKeyUp:this.onKeyUp} )

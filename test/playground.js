@@ -519,7 +519,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+				React.DOM.input( {readonly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -1245,7 +1245,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 			React.DOM.div( {className:"field priceInput " + this.props.className}, 
 				React.DOM.input( {ref:"input",
 					name:this.props.name,
-					type:"text", 
+					type:"number", 
 					value:this.props.value,
 					onChange:this.onChange,
 					onKeyUp:this.onKeyUp} )

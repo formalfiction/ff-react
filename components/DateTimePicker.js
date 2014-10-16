@@ -127,7 +127,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+				React.DOM.input( {readonly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
