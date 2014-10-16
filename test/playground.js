@@ -442,7 +442,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		this.setState({ focused : true });
 	},
 	onBlur : function (e) {
-		// this.setState({ focused : false });
+		this.setState({ focused : false });
 	},
 	onChange : function (value) {
 		// for now we're providing a sort of fake event. 
