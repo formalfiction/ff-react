@@ -586,21 +586,21 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		var days = Math.floor((date - startDate) / (1000*60*60*24))
 			, lastDay = (this.props.daysBack + this.props.daysForward + 1)
 			, hours = date.getHours()
-			, minutes = Math.round(date.getMinutes() / 15)
+			, minutes = Math.floor(date.getMinutes() / 15) + 1
 			, pm = (hours > 11);
 
 
 		if (pm) { hours = hours - 12; }
 		
-
 		if (days < 0) { days == 2; }
 		if (days > lastDay) { days = lastDay - 2; }
 
-		// daysBack = (daysBack > 0) ? daysBack - 1 : daysBack;
+
+		days = (days >= this.props.daysBack) ? days - 1 : days;
 		hours = (hours > 0) ? hours - 1 : hours;
 		minutes = (minutes > 0) ? minutes - 1 : minutes;
 
-		this.dayScroll.goToPage(0,days - 1,200);
+		this.dayScroll.goToPage(0,days,200);
 		this.hourScroll.goToPage(0,hours,200);
 		this.minuteScroll.goToPage(0,minutes,200);
 		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
