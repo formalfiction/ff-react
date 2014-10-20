@@ -13,7 +13,6 @@ var Clock = require('./Clock')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-
 var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
 var thirtyDaysAgo = new Date()

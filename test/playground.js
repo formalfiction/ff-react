@@ -114,6 +114,7 @@ function handleField (obj, i, fields) {
 				ValidTextInput(
 					{label:obj.label,
 					name:obj.name,
+					disabled:obj.disabled,
 					value:value,
 					showValidation:showValidation,
 					onChange:self._onFieldChange,
@@ -307,13 +308,21 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 		onChange : React.PropTypes.func,
 		// change handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
-		value : React.PropTypes.object.isRequired,
+		// Should be a Date object. Defaults to today.
+		value : React.PropTypes.object,
 	},
 
 	// Component lifecycle methods
 	getInitialState : function () {
 		return {
 			focused : false
+		}
+	},
+	getDefaultProps : function () {
+		var value = new Date()
+				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
+		return {
+			value : value
 		}
 	},
 
@@ -423,7 +432,8 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	// Component Lifecycle
 	getDefaultProps : function () {
 		return {
-			centerDate : new Date()
+			centerDate : new Date(),
+			value : new Date()
 		}
 	},
 	getInitialState : function () {
@@ -498,14 +508,15 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		if (!value) { return ""; }
 		var date = this.dateValue(value)
 			, mins = (Math.round(date.getMinutes() / 15) * 15)
-			, phase = (date.getHours() < 12) ? "am" : "pm";
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
 		
 		if (mins === 0) { mins = "00"; }
 
 		if (date.getDate() === this.props.centerDate.getDate()) {
-			return date.getHours() + ":" + mins + " " + phase;
+			return hours + ":" + mins + " " + phase;
 		} else {
-			return months[date.getMonth()]  + " " + date.getDate() + " " + date.getHours() + ":" + mins + " " + phase;
+			return months[date.getMonth()]  + " " + date.getDate() + " " + hours + ":" + mins + " " + phase;
 		}
 	},
 	render : function () {
@@ -519,7 +530,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {readonly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -575,6 +586,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			daysForward : 14,
 			itemsShowing : 5,
 			centerDate : new Date(),
+			value : new Date()
 		}
 	},
 
@@ -1083,7 +1095,6 @@ var Clock = require('./Clock')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-
 var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
 var thirtyDaysAgo = new Date()
@@ -1245,7 +1256,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 			React.DOM.div( {className:"field priceInput " + this.props.className}, 
 				React.DOM.input( {ref:"input",
 					name:this.props.name,
-					type:"number", 
+					type:"text", 
 					value:this.props.value,
 					onChange:this.onChange,
 					onKeyUp:this.onKeyUp} )

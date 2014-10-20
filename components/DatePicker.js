@@ -22,13 +22,21 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 		onChange : React.PropTypes.func,
 		// change handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
-		value : React.PropTypes.object.isRequired,
+		// Should be a Date object. Defaults to today.
+		value : React.PropTypes.object,
 	},
 
 	// Component lifecycle methods
 	getInitialState : function () {
 		return {
 			focused : false
+		}
+	},
+	getDefaultProps : function () {
+		var value = new Date()
+				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
+		return {
+			value : value
 		}
 	},
 

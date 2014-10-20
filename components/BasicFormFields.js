@@ -67,6 +67,7 @@ function handleField (obj, i, fields) {
 				ValidTextInput(
 					{label:obj.label,
 					name:obj.name,
+					disabled:obj.disabled,
 					value:value,
 					showValidation:showValidation,
 					onChange:self._onFieldChange,

@@ -31,7 +31,8 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	// Component Lifecycle
 	getDefaultProps : function () {
 		return {
-			centerDate : new Date()
+			centerDate : new Date(),
+			value : new Date()
 		}
 	},
 	getInitialState : function () {
@@ -106,14 +107,15 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		if (!value) { return ""; }
 		var date = this.dateValue(value)
 			, mins = (Math.round(date.getMinutes() / 15) * 15)
-			, phase = (date.getHours() < 12) ? "am" : "pm";
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
 		
 		if (mins === 0) { mins = "00"; }
 
 		if (date.getDate() === this.props.centerDate.getDate()) {
-			return date.getHours() + ":" + mins + " " + phase;
+			return hours + ":" + mins + " " + phase;
 		} else {
-			return months[date.getMonth()]  + " " + date.getDate() + " " + date.getHours() + ":" + mins + " " + phase;
+			return months[date.getMonth()]  + " " + date.getDate() + " " + hours + ":" + mins + " " + phase;
 		}
 	},
 	render : function () {
@@ -127,7 +129,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {readonly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -183,6 +185,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			daysForward : 14,
 			itemsShowing : 5,
 			centerDate : new Date(),
+			value : new Date()
 		}
 	},
 
