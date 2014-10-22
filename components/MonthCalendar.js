@@ -11,9 +11,10 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 
 var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 	propTypes : {
-		onMouseDown : React.PropTypes.func.isRequired,
+		onMouseDown : React.PropTypes.func,
+		onTouchEnd : React.PropTypes.func,
 		// @todo - make this a date object
-		value : React.PropTypes.number.isRequired,
+		value : React.PropTypes.object.isRequired,
 	},
 
 	// Component lifecycle methods
@@ -131,7 +132,7 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 		}
 
 		return (
-			React.DOM.div( {className:"calendar cal", onMouseDown:this.props.onMouseDown}, 
+			React.DOM.div( {className:"calendar cal", onMouseDown:this.props.onMouseDown, onTouchEnd:this.props.onTouchEnd}, 
 				React.DOM.div( {className:"header"}, 
 					React.DOM.a( {className:"backButton ss-icon", onClick:this.onPrevMonth, onTouchEnd:this.onPrevMonth}, "previous"),
 					React.DOM.a( {className:"nextButton ss-icon", onClick:this.onNextMonth, onTouchEnd:this.onNextMonth}, "next"),

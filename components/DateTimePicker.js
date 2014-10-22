@@ -4,6 +4,9 @@
  * @jQuery
  *
  * Wheelie Time Picker
+ * 
+ * **Picker Show / Hiding & Touch Events**
+ * 
  */
 
 var iScroll = require('../deps/iscroll');
@@ -44,6 +47,14 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			focused : false,
 			value : d
 		}
+	},
+
+	// Method
+	focus : function () {
+		this.setState({ focused : true });
+	},
+	blur : function () {
+		this.setState({ focused : false });
 	},
 
 	// Event Handlers
@@ -124,12 +135,12 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange, name:this.props.name} )
+			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, killTouch:true, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange, name:this.props.name} )
 		}
 
 		return (
 			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+				React.DOM.input( {readOnly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -150,8 +161,10 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		daysForward : React.PropTypes.number.isRequired,
 		// @private for now, don't modify this
 		itemsShowing : React.PropTypes.number.isRequired,
+		killTouch : React.PropTypes.bool.isRequired,
 		name : React.PropTypes.string.isRequired,
 		onMouseDown : React.PropTypes.func,
+		onTouchEnd : React.PropTypes.func,
 		// Change in the form of (value, name)
 		onValueChange : React.PropTypes.func.isRequired,
 		// @private for now, don't modify.
@@ -174,6 +187,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			var name = segment + 'Scroll';
 			self[name] = new iScroll(self.refs[segment].getDOMNode(), options);
 			self[name].on('scrollEnd', self.scrollEnder(segment));
+			self[name].on('touchEnd', self.props.onTouchEnd);
 		});
 
 		this.scrollToDate(this.props.value);
@@ -181,10 +195,11 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	getDefaultProps : function () {
 		return {
 			segments : ['day','hour','minute','phase'],
+			centerDate : new Date(),
 			daysBack : 14,
 			daysForward : 14,
 			itemsShowing : 5,
-			centerDate : new Date(),
+			killTouch : false,
 			value : new Date()
 		}
 	},
@@ -269,6 +284,14 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		}
 	},
 
+	// Event Handlers
+	onTouchEnd : function (e) {
+		if (this.props.killTouch) {
+			e.stopPropagation();
+			this[e.currentTarget.getAttribute('data-name') + "Scroll"].handleEvent(e);
+		}
+	},
+
 	// Render Methods
 	day : function (date, key) {
 		return (
@@ -347,7 +370,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 
 		return (
 			React.DOM.div( {className:"picker", onMouseDown:this.props.onMouseDown}, 
-				React.DOM.div( {ref:"day", className:"day segment"}, 
+				React.DOM.div( {ref:"day", 'data-name':"day", className:"day segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
 						React.DOM.li(null),
 						React.DOM.li(null),
@@ -356,7 +379,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.DOM.li(null)
 					)
 				),
-				React.DOM.div( {ref:"hour", className:"hour segment"}, 
+				React.DOM.div( {ref:"hour", 'data-name':"hour", className:"hour segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
 						React.DOM.li(null),
 						React.DOM.li(null),
@@ -365,7 +388,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.DOM.li(null)
 					)
 				),
-				React.DOM.div( {ref:"minute", className:"minute segment"}, 
+				React.DOM.div( {ref:"minute", 'data-name':"minute", className:"minute segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
 						React.DOM.li(null),
 						React.DOM.li(null),
@@ -374,7 +397,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.DOM.li(null)
 					)
 				),
-				React.DOM.div( {ref:"phase", className:"phase segment"}, 
+				React.DOM.div( {ref:"phase", 'data-name':"phase", className:"phase segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
 						React.DOM.li(null),
 						React.DOM.li(null),

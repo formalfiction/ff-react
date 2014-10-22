@@ -41,6 +41,12 @@ var DatePicker = React.createClass({
 	},
 
 	// Methods
+	blur : function () {
+		this.setState({ focused : false });
+	},
+	focus : function () {
+		this.setState({ focused : true });
+	},
 	// Conform Various date inputs to a valid date object
 	dateValue : function (value) {
 		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
@@ -92,6 +98,9 @@ var DatePicker = React.createClass({
 		$(this.refs["field"].getDOMNode()).focus();
 		return false;
 	},
+	onCalendarTouchEnd : function (e) {
+		e.stopPropagation();
+	},
 
 	// Render
 	render : function () {
@@ -100,7 +109,7 @@ var DatePicker = React.createClass({
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = <MonthCalendar value={this.props.value} onMouseDown={this.onCalendarMouseDown} onChange={this.onCalendarChange} />
+			calendar = <MonthCalendar value={this.props.value} onMouseDown={this.onCalendarMouseDown} onTouchEnd={this.onCalendarTouchEnd} onChange={this.onCalendarChange} />
 		}
 		return (
 			<div className="datePicker">

@@ -612,7 +612,7 @@ IScroll.prototype = {
 			return;
 		}
 
-		this._execEvent('scrollEnd');
+		this._execEvent('scrollEnd', e);
 	},
 
 	_resize: function () {
