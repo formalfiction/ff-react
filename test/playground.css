@@ -171,3 +171,27 @@
 .dateTimePicker .picker .phase {
   width: 15%;
 }
+.tags {
+  padding: 6px;
+}
+.tags .tag {
+  background: #888;
+  color: #fff;
+  margin: 2px 5px;
+  border-radius: 2px;
+  padding: 6px 0 6px 6px;
+}
+.tags .tag a {
+  margin: 0 0 0 5px;
+  background: #777;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0 2px 2px 0;
+  padding: 6px;
+}
+.tags .tag.selected {
+  background: #444;
+}
+.tags .input {
+  margin: 2px 5px;
+}

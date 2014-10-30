@@ -1153,10 +1153,11 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
 	, TimePicker = require('./TimePicker')
+	, TagInput = require('./TagInput')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -1165,7 +1166,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "DateTimePicker",
+			component : "TagInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -1228,6 +1229,10 @@ var Playground = React.createClass({displayName: 'Playground',
 			break;
 		case "TimePicker":
 			component = TimePicker(null )
+			break;
+		case "TagInput":
+			component = TagInput( {value:["a tag","taggie","tag","snag"], onValueChange:this.onValueChange} )
+			break;
 		case "DateTimePicker":
 			component = DateTimePicker( {name:"DateTimePicker", value:this.state.values.DateTimePicker, centerDate:this.state.values.DateTimePickerCenter, onValueChange:this.onValueChange} )
 			break;
@@ -1255,7 +1260,7 @@ var Playground = React.createClass({displayName: 'Playground',
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AutoGrowTextarea":1,"./Clock":3,"./DatePicker":4,"./DateTimePicker":5,"./Map":6,"./MarkdownEditor":7,"./MarkdownText":8,"./PriceInput":11,"./ResultsTextInput":12,"./S3PhotoUploader":13,"./Signature":14,"./TimePicker":16,"./ValidTextInput":18}],11:[function(require,module,exports){
+},{"./AutoGrowTextarea":1,"./Clock":3,"./DatePicker":4,"./DateTimePicker":5,"./Map":6,"./MarkdownEditor":7,"./MarkdownText":8,"./PriceInput":11,"./ResultsTextInput":12,"./S3PhotoUploader":13,"./Signature":14,"./TagInput":15,"./TimePicker":16,"./ValidTextInput":18}],11:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -1613,25 +1618,100 @@ var Signature = React.createClass({displayName: 'Signature',
 
 module.exports= Signature;
 },{"../deps/SignaturePad":24}],15:[function(require,module,exports){
+/** @jsx React.DOM */
 /*
- *	TagInput is an autogrow text area
+ *  @stateful
+ *	TagInput collects tags
  */
 
-var TagInput = React.createClass({
-	propTypes : {
+var KeyCodes = require("../constants/KeyCodes");
 
+var TagInput = React.createClass({displayName: 'TagInput',
+	propTypes : {
+		// Use either onChange or onValueChange
+		onChange : React.PropTypes.func,
+		onValueChange : React.PropTypes.func,
+		placeholder : React.PropTypes.string.isRequired,
+		// numerical keyCode, defaults to comma
+		separator : React.PropTypes.number.isRequired,
+		value : React.PropTypes.array.isRequired,
 	},
 
 	// Lifecycle
+	getDefaultProps : function () {
+		return {
+			separator : KeyCodes.comma,
+			placeholder : "tags",
+			value : [],
+		}
+	},
+	getInitialState : function () {
+		return {
+			focused : false,
+			selected : 0,
+			input : "x"
+		}
+	},
+
+	// Event Handlers
+	onFocus : function (e) {
+		e.preventDefault();
+		// this.refs["input"].focus();
+		return false;
+	},
+	onKeyPress : function (e) {
+		var v = this.props.value
+			, k = e.which
+
+		if (k === KeyCodes.comma) {
+
+		} else if (k === KeyCodes.backspace) {
+
+		} else if (k === KeyCodes.left) {
+
+		} else if (k === KeyCodes.right) {
+
+		} else {
+			this.setState({ input : this.state.input + String.fromCharCode(k) })
+		}
+		
+		if (typeof this.props.onChange === "function") {
+
+		}
+		if (typeof this.props.onValueChange === "function") {
+
+		}
+	},
+
+	onRemoveTag : function (e) {
+		e.preventDefault();
+		return false;
+	},
 
 	// Render
 	render : function () {
+		var tags = [];
 
+		this.props.value.forEach(function(t,i){
+			tags.push(React.DOM.span( {key:i, className:"tag"}, 
+									t,
+									React.DOM.a( {href:"", onClick:this.onRemoveTag, onTouchEnd:this.onRemoveTag}, "x")
+								));
+		});
+
+		return (
+			React.DOM.div( {className:"tags", contentEditable:true, onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
+				tags,
+				React.DOM.span( {ref:"input", className:"input"}, 
+					this.state.input
+				)
+			)
+		);
 	}
 });
 
 module.exports = TagInput;
-},{}],16:[function(require,module,exports){
+},{"../constants/KeyCodes":20}],16:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * TimePicker Pairs the Clock Component with an
@@ -1942,7 +2022,8 @@ var KeyCodes = {
 	right : 39,
 	down : 40,
 	comma : 188,
-	backspace : 8
+	backspace : 8,
+	comma : 188
 }
 
 module.exports = KeyCodes;

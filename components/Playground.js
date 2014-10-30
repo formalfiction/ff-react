@@ -11,10 +11,11 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
 	, TimePicker = require('./TimePicker')
+	, TagInput = require('./TagInput')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -23,7 +24,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "DateTimePicker",
+			component : "TagInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -86,6 +87,10 @@ var Playground = React.createClass({displayName: 'Playground',
 			break;
 		case "TimePicker":
 			component = TimePicker(null )
+			break;
+		case "TagInput":
+			component = TagInput( {value:["a tag","taggie","tag","snag"], onValueChange:this.onValueChange} )
+			break;
 		case "DateTimePicker":
 			component = DateTimePicker( {name:"DateTimePicker", value:this.state.values.DateTimePicker, centerDate:this.state.values.DateTimePickerCenter, onValueChange:this.onValueChange} )
 			break;
