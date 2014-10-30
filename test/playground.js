@@ -558,6 +558,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
 		
 		if (mins === 0) { mins = "00"; }
+		if (hours == 0) { hours = "12"; }
 
 		if (date.getDate() === this.props.centerDate.getDate()) {
 			return hours + ":" + mins + " " + phase;
@@ -616,7 +617,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			, options = {
 					mouseWheel : true,
 					snap : 'li',
-					snapThreshold : 3
+					snapThreshold : 3,
 				};
 
 		this.props.segments.forEach(function(segment){
@@ -676,8 +677,8 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	// Factory Funcs
 	scrollEnder : function (segment) {
 		var self = this;
-		return function (e) {
-			// add one to choose the second displayed element (hopefully in the middle)
+		return function () {
+			// add two to choose the center element (hopefully in the middle)
 			var i = this.currentPage.pageY + 2
 				// convert to number with +
 				, scrollValue = +this.scroller.children[i].getAttribute('data-value')
@@ -1159,11 +1160,12 @@ var components = ["AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEdito
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
+thirtyDaysAgo.setHours(18);
 
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "AutoGrowTextarea",
+			component : "DateTimePicker",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -1939,6 +1941,8 @@ var KeyCodes = {
 	up : 38,
 	right : 39,
 	down : 40,
+	comma : 188,
+	backspace : 8
 }
 
 module.exports = KeyCodes;
@@ -4810,11 +4814,12 @@ IScroll.prototype = {
 		this.endTime = utils.getTime();
 
 		// reset if we are outside of the boundaries
-		if ( this.resetPosition(this.options.bounceTime) ) {
+		if ( this.resetPosition(this.options.bounceTime) && !this.options.snap) {
 			return;
 		}
 
 		this.scrollTo(newX, newY);	// ensures that the last position is rounded
+
 
 		// we scrolled less than 10 pixels
 		if ( !this.moved ) {
@@ -4829,6 +4834,7 @@ IScroll.prototype = {
 			this._execEvent('scrollCancel');
 			return;
 		}
+
 
 		if ( this._events.flick && duration < 200 && distanceX < 100 && distanceY < 100 ) {
 			this._execEvent('flick');

@@ -122,6 +122,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
 		
 		if (mins === 0) { mins = "00"; }
+		if (hours == 0) { hours = "12"; }
 
 		if (date.getDate() === this.props.centerDate.getDate()) {
 			return hours + ":" + mins + " " + phase;
@@ -180,7 +181,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			, options = {
 					mouseWheel : true,
 					snap : 'li',
-					snapThreshold : 3
+					snapThreshold : 3,
 				};
 
 		this.props.segments.forEach(function(segment){
@@ -240,8 +241,8 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	// Factory Funcs
 	scrollEnder : function (segment) {
 		var self = this;
-		return function (e) {
-			// add one to choose the second displayed element (hopefully in the middle)
+		return function () {
+			// add two to choose the center element (hopefully in the middle)
 			var i = this.currentPage.pageY + 2
 				// convert to number with +
 				, scrollValue = +this.scroller.children[i].getAttribute('data-value')

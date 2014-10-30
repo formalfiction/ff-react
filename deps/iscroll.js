@@ -548,11 +548,12 @@ IScroll.prototype = {
 		this.endTime = utils.getTime();
 
 		// reset if we are outside of the boundaries
-		if ( this.resetPosition(this.options.bounceTime) ) {
+		if ( this.resetPosition(this.options.bounceTime) && !this.options.snap) {
 			return;
 		}
 
 		this.scrollTo(newX, newY);	// ensures that the last position is rounded
+
 
 		// we scrolled less than 10 pixels
 		if ( !this.moved ) {
@@ -567,6 +568,7 @@ IScroll.prototype = {
 			this._execEvent('scrollCancel');
 			return;
 		}
+
 
 		if ( this._events.flick && duration < 200 && distanceX < 100 && distanceY < 100 ) {
 			this._execEvent('flick');

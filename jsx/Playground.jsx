@@ -18,11 +18,12 @@ var components = ["AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEdito
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
+thirtyDaysAgo.setHours(18);
 
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "AutoGrowTextarea",
+			component : "DateTimePicker",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
