@@ -81,14 +81,14 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.DOM.a( {className:"ss-icon", onClick:this.removePhoto, onTouchEnd:this.removePhoto}, "delete")
+			del = React.DOM.a({className: "ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
 		}
 		return (
-			React.DOM.div( {className:"photoUpload"}, 
-				React.DOM.input( {disabled:this.state.disableUpload, ref:"file", onChange:this.s3Upload, type:"file"} ),
-				React.DOM.img( {className:"photoPreview", src:this.props.src} ),
-				React.DOM.p(null, this.state.uploadProgress),
-				React.DOM.p(null, this.state.uploadStatus),
+			React.DOM.div({className: "photoUpload"}, 
+				React.DOM.input({disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
+				React.DOM.img({className: "photoPreview", src: this.props.src}), 
+				React.DOM.p(null, this.state.uploadProgress), 
+				React.DOM.p(null, this.state.uploadStatus), 
 				del
 			)
 		);

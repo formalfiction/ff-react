@@ -109,22 +109,22 @@ var Clock = React.createClass({displayName: 'Clock',
 	render : function () {
 		var values = this._values(this.props.value);
 		return (
-			React.DOM.div( {className:"clock", onMouseDown:this.props.onMouseDown}, 
-				React.DOM.div( {className:"hours segment"}, 
-					React.DOM.a( {onClick:this.up("hours"), onTouchEnd:this.up("hours"), className:"ss-icon"}, "up"),
-					React.DOM.h5(null, this.hours[values.hours]),
-					React.DOM.a( {onClick:this.down("hours"), onTouchEnd:this.down("hours"), className:"ss-icon"}, "down")
-				),
-				React.DOM.h5( {className:"separator segment"}, ":"),
-				React.DOM.div( {className:"minutes segment"}, 
-					React.DOM.a( {onClick:this.up("minutes"), onTouchEnd:this.up("minutes"), className:"ss-icon"}, "up"),
-					React.DOM.h5(null, this.minutes[values.minutes]),
-					React.DOM.a( {onClick:this.down("minutes"), onTouchEnd:this.down("minutes"), className:"ss-icon"}, "down")
-				),
-				React.DOM.div( {className:"phase segment"}, 
-					React.DOM.a( {onClick:this.up("phase"), onTouchEnd:this.up("phase"), className:"ss-icon"}, "up"),
-					React.DOM.h5(null, this.phase[values.phase]),
-					React.DOM.a( {onClick:this.down("phase"), onTouchEnd:this.down("phase"), className:"ss-icon"}, "down")
+			React.DOM.div({className: "clock", onMouseDown: this.props.onMouseDown}, 
+				React.DOM.div({className: "hours segment"}, 
+					React.DOM.a({onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
+					React.DOM.h5(null, this.hours[values.hours]), 
+					React.DOM.a({onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
+				), 
+				React.DOM.h5({className: "separator segment"}, ":"), 
+				React.DOM.div({className: "minutes segment"}, 
+					React.DOM.a({onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
+					React.DOM.h5(null, this.minutes[values.minutes]), 
+					React.DOM.a({onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
+				), 
+				React.DOM.div({className: "phase segment"}, 
+					React.DOM.a({onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
+					React.DOM.h5(null, this.phase[values.phase]), 
+					React.DOM.a({onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
 				)
 			)
 		);

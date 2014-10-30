@@ -6,7 +6,7 @@ var KeyCodes = {
 	down : 40,
 	comma : 188,
 	backspace : 8,
-	comma : 188
+	comma : 44
 }
 
 module.exports = KeyCodes;

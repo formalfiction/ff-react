@@ -60,41 +60,41 @@ function handleField (obj, i, fields) {
 		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
 	
 	if (obj.type === "hidden") {
-		fields.push(React.DOM.input( {type:"hidden", name:obj.name, value:value} ))
+		fields.push(React.DOM.input({type: "hidden", name: obj.name, value: value}))
 	} else if (obj.type === "text") {
 		fields.push(
-			React.DOM.div( {className:"field", key:i}, 
-				ValidTextInput(
-					{label:obj.label,
-					name:obj.name,
-					disabled:obj.disabled,
-					value:value,
-					showValidation:showValidation,
-					onChange:self._onFieldChange,
-					onBlur:self._onFieldBlur,
-					placeholder:obj.placeholder,
-					message: validation[obj.name + "ErrMsg"],
-					valid:validation[obj.name + "Valid"]} )
+			React.DOM.div({className: "field", key: i}, 
+				ValidTextInput({
+					label: obj.label, 
+					name: obj.name, 
+					disabled: obj.disabled, 
+					value: value, 
+					showValidation: showValidation, 
+					onChange: self._onFieldChange, 
+					onBlur: self._onFieldBlur, 
+					placeholder: obj.placeholder, 
+					message: validation[obj.name + "ErrMsg"], 
+					valid: validation[obj.name + "Valid"]})
 			));
 	} else if (obj.type === "textarea") {
 		fields.push(
-			React.DOM.div( {className:"field", key:i}, 
-				React.DOM.textarea( 
-					{disabled:obj.disabled,
-					name:obj.name,
-					placeholder:obj.placeholder,
-					value:value, 
-					onChange:self._onFieldChange,
-					onBlur:self._onFieldBlur}),
-				React.DOM.span(null, validation[obj.name + "ErrMsg"]),
-				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "" )
+			React.DOM.div({className: "field", key: i}, 
+				React.DOM.textarea({
+					disabled: obj.disabled, 
+					name: obj.name, 
+					placeholder: obj.placeholder, 
+					value: value, 
+					onChange: self._onFieldChange, 
+					onBlur: self._onFieldBlur}), 
+				React.DOM.span(null, validation[obj.name + "ErrMsg"]), 
+				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "")
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(React.DOM.div( {className:"fieldSet", key:i}, 
-			React.DOM.hr(null ),
-			React.DOM.h3(null, obj['name']),
+		fields.push(React.DOM.div({className: "fieldSet", key: i}, 
+			React.DOM.hr(null), 
+			React.DOM.h3(null, obj['name']), 
 			subFields
 		));
 	}

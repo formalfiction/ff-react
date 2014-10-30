@@ -8,8 +8,6 @@ var KeyCodes = require("../constants/KeyCodes");
 
 var TagInput = React.createClass({displayName: 'TagInput',
 	propTypes : {
-		// Use either onChange or onValueChange
-		onChange : React.PropTypes.func,
 		onValueChange : React.PropTypes.func,
 		placeholder : React.PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
@@ -29,7 +27,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		return {
 			focused : false,
 			selected : 0,
-			input : "x"
+			input : ""
 		}
 	},
 
@@ -40,11 +38,17 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		return false;
 	},
 	onKeyPress : function (e) {
+		e.preventDefault();
+
 		var v = this.props.value
 			, k = e.which
 
 		if (k === KeyCodes.comma) {
+			this.setState({ input : "" });
 
+			if (typeof this.props.onValueChange === "function") {
+				this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+			}
 		} else if (k === KeyCodes.backspace) {
 
 		} else if (k === KeyCodes.left) {
@@ -55,34 +59,37 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			this.setState({ input : this.state.input + String.fromCharCode(k) })
 		}
 		
-		if (typeof this.props.onChange === "function") {
-
-		}
-		if (typeof this.props.onValueChange === "function") {
-
-		}
 	},
 
 	onRemoveTag : function (e) {
 		e.preventDefault();
+		var i = +e.target.getAttribute('data-key')
+			, v = this.props.value;
+
+		v.splice(i,1)
+
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(v,this.props.name);
+		}
 		return false;
 	},
 
 	// Render
 	render : function () {
-		var tags = [];
+		var self = this
+			, tags = [];
 
 		this.props.value.forEach(function(t,i){
-			tags.push(React.DOM.span( {key:i, className:"tag"}, 
-									t,
-									React.DOM.a( {href:"", onClick:this.onRemoveTag, onTouchEnd:this.onRemoveTag}, "x")
+			tags.push(React.DOM.span({key: i, className: "tag"}, 
+									t, 
+									React.DOM.span({'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
 								));
 		});
 
 		return (
-			React.DOM.div( {className:"tags", contentEditable:true, onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
-				tags,
-				React.DOM.span( {ref:"input", className:"input"}, 
+			React.DOM.div({className: "tags"}, 
+				tags, 
+				React.DOM.span({contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
 					this.state.input
 				)
 			)

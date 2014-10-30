@@ -181,7 +181,7 @@
   border-radius: 2px;
   padding: 6px 0 6px 6px;
 }
-.tags .tag a {
+.tags .tag .removeTag {
   margin: 0 0 0 5px;
   background: #777;
   color: #fff;

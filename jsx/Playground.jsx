@@ -28,7 +28,8 @@ var Playground = React.createClass({
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
-				DateTimePickerCenter : thirtyDaysAgo
+				DateTimePickerCenter : thirtyDaysAgo,
+				TagInput : ["a tag","taggie","tag","snag"]
 			}
 		}
 	},
@@ -41,6 +42,7 @@ var Playground = React.createClass({
 	onValueChange : function (value, name) {
 		var values = this.state.values
 		values[name] = value;
+		console.log(value);
 		this.setState({ values : values });
 	},
  	render : function () {
@@ -89,7 +91,7 @@ var Playground = React.createClass({
 			component = <TimePicker />
 			break;
 		case "TagInput":
-			component = <TagInput value={["a tag","taggie","tag","snag"]} onValueChange={this.onValueChange} />
+			component = <TagInput name="TagInput" value={this.state.values.TagInput} onValueChange={this.onValueChange} />
 			break;
 		case "DateTimePicker":
 			component = <DateTimePicker name="DateTimePicker" value={this.state.values.DateTimePicker} centerDate={this.state.values.DateTimePickerCenter} onValueChange={this.onValueChange} />

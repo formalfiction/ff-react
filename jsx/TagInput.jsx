@@ -8,8 +8,6 @@ var KeyCodes = require("../constants/KeyCodes");
 
 var TagInput = React.createClass({
 	propTypes : {
-		// Use either onChange or onValueChange
-		onChange : React.PropTypes.func,
 		onValueChange : React.PropTypes.func,
 		placeholder : React.PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
@@ -29,7 +27,7 @@ var TagInput = React.createClass({
 		return {
 			focused : false,
 			selected : 0,
-			input : "x"
+			input : ""
 		}
 	},
 
@@ -40,11 +38,17 @@ var TagInput = React.createClass({
 		return false;
 	},
 	onKeyPress : function (e) {
+		e.preventDefault();
+
 		var v = this.props.value
 			, k = e.which
 
 		if (k === KeyCodes.comma) {
+			this.setState({ input : "" });
 
+			if (typeof this.props.onValueChange === "function") {
+				this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+			}
 		} else if (k === KeyCodes.backspace) {
 
 		} else if (k === KeyCodes.left) {
@@ -55,34 +59,37 @@ var TagInput = React.createClass({
 			this.setState({ input : this.state.input + String.fromCharCode(k) })
 		}
 		
-		if (typeof this.props.onChange === "function") {
-
-		}
-		if (typeof this.props.onValueChange === "function") {
-
-		}
 	},
 
 	onRemoveTag : function (e) {
 		e.preventDefault();
+		var i = +e.target.getAttribute('data-key')
+			, v = this.props.value;
+
+		v.splice(i,1)
+
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(v,this.props.name);
+		}
 		return false;
 	},
 
 	// Render
 	render : function () {
-		var tags = [];
+		var self = this
+			, tags = [];
 
 		this.props.value.forEach(function(t,i){
 			tags.push(<span key={i} className="tag">
 									{t}
-									<a href="" onClick={this.onRemoveTag} onTouchEnd={this.onRemoveTag}>x</a>
+									<span data-key={i} className="removeTag" onClick={self.onRemoveTag} onTouchEnd={self.onRemoveTag}>x</span>
 								</span>);
 		});
 
 		return (
-			<div className="tags" contentEditable onFocus={this.onFocus} onKeyPress={this.onKeyPress}>
+			<div className="tags">
 				{tags}
-				<span ref="input" className="input">
+				<span contentEditable ref="input" className="input" onFocus={this.onFocus} onKeyPress={this.onKeyPress}>
 					{this.state.input}
 				</span>
 			</div>
