@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
-var Clock = require('./Clock')
+var AutoGrowTextarea = require('./AutoGrowTextarea')
+	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
@@ -13,7 +14,7 @@ var Clock = require('./Clock')
 	, DateTimePicker = require('./DateTimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
+var components = ["AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -21,7 +22,7 @@ thirtyDaysAgo.setDate(-30);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "DateTimePicker",
+			component : "AutoGrowTextarea",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -49,6 +50,9 @@ var Playground = React.createClass({displayName: 'Playground',
  		});
 
  		switch (this.state.component) {
+ 		case "AutoGrowTextarea":
+ 			component = AutoGrowTextarea( {placeholder:"text"} )
+ 			break;
 		case "Clock":
 			component = Clock(null )
 			break;
