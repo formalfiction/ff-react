@@ -60,14 +60,14 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 		var disabled = (this.props.editable !== undefined || this.props.editable !== false);
 
 		return (
-			React.DOM.div({className: "field priceInput " + this.props.className}, 
-				React.DOM.input({ref: "input", 
-					name: this.props.name, 
-					type: "text", 
-					pattern: "[0-9]*", 
-					value: this.props.value, 
-					onChange: this.onChange, 
-					onKeyUp: this.onKeyUp})
+			React.DOM.div( {className:"field priceInput " + this.props.className}, 
+				React.DOM.input( {ref:"input",
+					name:this.props.name,
+					type:"text",
+					pattern:"[0-9]*", 
+					value:this.props.value,
+					onChange:this.onChange,
+					onKeyUp:this.onKeyUp} )
 			)
 		)
 	}

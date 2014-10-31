@@ -46,6 +46,7 @@ var S3PhotoUploader = React.createClass({
 	},
 
 	// Event Handlers
+
 	uploadProgress : function (percent, message) {
 		this.setState({ uploadProgress : percent + "% Complete" });
 	},
@@ -63,33 +64,45 @@ var S3PhotoUploader = React.createClass({
 			disableUpload : false
 		});
 	},
-	removePhoto : function () {
+	removePhoto : function (e) {
+		e.preventDefault();
 		this.setState({
 			uploadProgress : "",
 			uploadError : "",
 			photoUrl : undefined
 		});
 		this.change();
+		return false;
 	},
 	change : function () {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this.state.photoUrl);
 		}
 	},
+	onClickPhoto : function (e) {
+		this.refs["file"].getDOMNode().click();
+	},
 
 	// Render
+	progress : function () {
+		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
+	},
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = <a className="ss-icon" onClick={this.removePhoto} onTouchEnd={this.removePhoto}>delete</a>
+			del = <a className="delete ss-icon" onClick={this.removePhoto} onTouchEnd={this.removePhoto}>delete</a>
 		}
 		return (
-			<div className="photoUpload">
-				<input disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
-				<img className="photoPreview" src={this.props.src} />
-				<p>{this.state.uploadProgress}</p>
-				<p>{this.state.uploadStatus}</p>
-				{del}
+			<div className="s3PhotoUpload">
+				<input ref="file" style={{ display : "none"}} disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
+				<div className="photo" onClick={this.onClickPhoto} onTouchEnd={this.onClickPhoto}>
+					{del}
+					<img className="preview" src={this.props.src} />
+					<div className="progress">
+						<div className="bar" style={ { width : this.progress() } }></div>
+					</div>
+				</div>
+				<p className="status">{this.state.uploadStatus}</p>
 			</div>
 		);
 	}

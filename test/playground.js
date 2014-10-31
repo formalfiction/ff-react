@@ -64,7 +64,7 @@ var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 	},
 	render : function () {
 		return (
-			this.transferPropsTo(React.DOM.textarea({className: "autogrow", style: this.style(), onChange: this.onChange}))
+			this.transferPropsTo(React.DOM.textarea( {className:"autogrow", style:this.style(), onChange:this.onChange} ))
 		);
 	}
 });
@@ -135,41 +135,41 @@ function handleField (obj, i, fields) {
 		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
 	
 	if (obj.type === "hidden") {
-		fields.push(React.DOM.input({type: "hidden", name: obj.name, value: value}))
+		fields.push(React.DOM.input( {type:"hidden", name:obj.name, value:value} ))
 	} else if (obj.type === "text") {
 		fields.push(
-			React.DOM.div({className: "field", key: i}, 
-				ValidTextInput({
-					label: obj.label, 
-					name: obj.name, 
-					disabled: obj.disabled, 
-					value: value, 
-					showValidation: showValidation, 
-					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur, 
-					placeholder: obj.placeholder, 
-					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]})
+			React.DOM.div( {className:"field", key:i}, 
+				ValidTextInput(
+					{label:obj.label,
+					name:obj.name,
+					disabled:obj.disabled,
+					value:value,
+					showValidation:showValidation,
+					onChange:self._onFieldChange,
+					onBlur:self._onFieldBlur,
+					placeholder:obj.placeholder,
+					message: validation[obj.name + "ErrMsg"],
+					valid:validation[obj.name + "Valid"]} )
 			));
 	} else if (obj.type === "textarea") {
 		fields.push(
-			React.DOM.div({className: "field", key: i}, 
-				React.DOM.textarea({
-					disabled: obj.disabled, 
-					name: obj.name, 
-					placeholder: obj.placeholder, 
-					value: value, 
-					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur}), 
-				React.DOM.span(null, validation[obj.name + "ErrMsg"]), 
-				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "")
+			React.DOM.div( {className:"field", key:i}, 
+				React.DOM.textarea( 
+					{disabled:obj.disabled,
+					name:obj.name,
+					placeholder:obj.placeholder,
+					value:value, 
+					onChange:self._onFieldChange,
+					onBlur:self._onFieldBlur}),
+				React.DOM.span(null, validation[obj.name + "ErrMsg"]),
+				React.DOM.span(null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "" )
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(React.DOM.div({className: "fieldSet", key: i}, 
-			React.DOM.hr(null), 
-			React.DOM.h3(null, obj['name']), 
+		fields.push(React.DOM.div( {className:"fieldSet", key:i}, 
+			React.DOM.hr(null ),
+			React.DOM.h3(null, obj['name']),
 			subFields
 		));
 	}
@@ -288,22 +288,22 @@ var Clock = React.createClass({displayName: 'Clock',
 	render : function () {
 		var values = this._values(this.props.value);
 		return (
-			React.DOM.div({className: "clock", onMouseDown: this.props.onMouseDown}, 
-				React.DOM.div({className: "hours segment"}, 
-					React.DOM.a({onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
-					React.DOM.h5(null, this.hours[values.hours]), 
-					React.DOM.a({onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
-				), 
-				React.DOM.h5({className: "separator segment"}, ":"), 
-				React.DOM.div({className: "minutes segment"}, 
-					React.DOM.a({onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
-					React.DOM.h5(null, this.minutes[values.minutes]), 
-					React.DOM.a({onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
-				), 
-				React.DOM.div({className: "phase segment"}, 
-					React.DOM.a({onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
-					React.DOM.h5(null, this.phase[values.phase]), 
-					React.DOM.a({onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
+			React.DOM.div( {className:"clock", onMouseDown:this.props.onMouseDown}, 
+				React.DOM.div( {className:"hours segment"}, 
+					React.DOM.a( {onClick:this.up("hours"), onTouchEnd:this.up("hours"), className:"ss-icon"}, "up"),
+					React.DOM.h5(null, this.hours[values.hours]),
+					React.DOM.a( {onClick:this.down("hours"), onTouchEnd:this.down("hours"), className:"ss-icon"}, "down")
+				),
+				React.DOM.h5( {className:"separator segment"}, ":"),
+				React.DOM.div( {className:"minutes segment"}, 
+					React.DOM.a( {onClick:this.up("minutes"), onTouchEnd:this.up("minutes"), className:"ss-icon"}, "up"),
+					React.DOM.h5(null, this.minutes[values.minutes]),
+					React.DOM.a( {onClick:this.down("minutes"), onTouchEnd:this.down("minutes"), className:"ss-icon"}, "down")
+				),
+				React.DOM.div( {className:"phase segment"}, 
+					React.DOM.a( {onClick:this.up("phase"), onTouchEnd:this.up("phase"), className:"ss-icon"}, "up"),
+					React.DOM.h5(null, this.phase[values.phase]),
+					React.DOM.a( {onClick:this.down("phase"), onTouchEnd:this.down("phase"), className:"ss-icon"}, "down")
 				)
 			)
 		);
@@ -423,11 +423,11 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = MonthCalendar({value: this.props.value, onMouseDown: this.onCalendarMouseDown, onTouchEnd: this.onCalendarTouchEnd, onChange: this.onCalendarChange})
+			calendar = MonthCalendar( {value:this.props.value, onMouseDown:this.onCalendarMouseDown, onTouchEnd:this.onCalendarTouchEnd, onChange:this.onCalendarChange} )
 		}
 		return (
-			React.DOM.div({className: "datePicker"}, 
-				React.DOM.input({ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
+			React.DOM.div( {className:"datePicker"}, 
+				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange} ),
 				calendar
 			)
 		)
@@ -574,12 +574,12 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker({onMouseDown: this.onPickerMouseDown, killTouch: true, value: value, centerDate: this.props.centerDate, onValueChange: this.onPickerChange, name: this.props.name})
+			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, killTouch:true, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange, name:this.props.name} )
 		}
 
 		return (
-			React.DOM.div({className: "dateTimePicker"}, 
-				React.DOM.input({readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
+			React.DOM.div( {className:"dateTimePicker"}, 
+				React.DOM.input( {readOnly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
 				picker
 			)
 		);
@@ -734,11 +734,11 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	// Render Methods
 	day : function (date, key) {
 		return (
-			React.DOM.li({
-			'data-year': date.getFullYear(), 
-			'data-month': date.getMonth(), 
-			'data-value': date.getDate(), 
-			key: key}, 
+			React.DOM.li( 
+			{'data-year':date.getFullYear(), 
+			'data-month':date.getMonth(), 
+			'data-value':date.getDate(), 
+			key:key}, 
 				this.stringValue(date)
 		)
 		);
@@ -763,7 +763,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return days;
 	},
 	hour : function (value, hour) {
-		return React.DOM.li({'data-value': value, key: hour}, hour)
+		return React.DOM.li( {'data-value':value, key:hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -773,7 +773,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.DOM.li({'data-value': value, key: key}, value)
+		return React.DOM.li( {'data-value':value, key:key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -808,41 +808,41 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			, minutes = this.minutes();
 
 		return (
-			React.DOM.div({className: "picker", onMouseDown: this.props.onMouseDown}, 
-				React.DOM.div({ref: "day", 'data-name': "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
+			React.DOM.div( {className:"picker", onMouseDown:this.props.onMouseDown}, 
+				React.DOM.div( {ref:"day", 'data-name':"day", className:"day segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
-						React.DOM.li(null), 
-						React.DOM.li(null), 
-						days, 
-						React.DOM.li(null), 
+						React.DOM.li(null),
+						React.DOM.li(null),
+						days,
+						React.DOM.li(null),
 						React.DOM.li(null)
 					)
-				), 
-				React.DOM.div({ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+				),
+				React.DOM.div( {ref:"hour", 'data-name':"hour", className:"hour segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
-						React.DOM.li(null), 
-						React.DOM.li(null), 
-						hours, 
-						React.DOM.li(null), 
+						React.DOM.li(null),
+						React.DOM.li(null),
+						hours,
+						React.DOM.li(null),
 						React.DOM.li(null)
 					)
-				), 
-				React.DOM.div({ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+				),
+				React.DOM.div( {ref:"minute", 'data-name':"minute", className:"minute segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
-						React.DOM.li(null), 
-						React.DOM.li(null), 
-						minutes, 
-						React.DOM.li(null), 
+						React.DOM.li(null),
+						React.DOM.li(null),
+						minutes,
+						React.DOM.li(null),
 						React.DOM.li(null)
 					)
-				), 
-				React.DOM.div({ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+				),
+				React.DOM.div( {ref:"phase", 'data-name':"phase", className:"phase segment", onTouchEnd:this.onTouchEnd}, 
 					React.DOM.ul(null, 
-						React.DOM.li(null), 
-						React.DOM.li(null), 
-						React.DOM.li({'data-value': 0}, "am"), 
-						React.DOM.li({'data-value': 1}, "pm"), 
-						React.DOM.li(null), 
+						React.DOM.li(null),
+						React.DOM.li(null),
+						React.DOM.li( {'data-value':0}, "am"),
+						React.DOM.li( {'data-value':1}, "pm"),
+						React.DOM.li(null),
 						React.DOM.li(null)
 					)
 				)
@@ -872,8 +872,8 @@ var Map = React.createClass({displayName: 'Map',
 	},
 	render : function () {
 		return (
-			React.DOM.div({className: "mapContainer"}, 
-				React.DOM.div({className: "map", ref: "map"})
+			React.DOM.div( {className:"mapContainer"}, 
+				React.DOM.div( {className:"map", ref:"map"})
 			)
 		);
 	}
@@ -930,22 +930,22 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 			, value = this.props.value || ""
 
 		var header = React.DOM.header(null, 
-									React.DOM.a({className: "ss-icon right", onClick: this.onTogglePreview, onTouchEnd: this.onTogglePreview}, "view")
+									React.DOM.a( {className:"ss-icon right", onClick:this.onTogglePreview, onTouchEnd:this.onTogglePreview}, "view")
 								 )
 
 		if (this.state.previewing) {
 			var converter = new Showdown.converter()
 				, rawMarkup = converter.makeHtml(value.toString());
 
-			editor = React.DOM.div({className: "markdownEditor"}, 
-				header, 
-				React.DOM.span({dangerouslySetInnerHTML: { __html : rawMarkup}})
+			editor = React.DOM.div( {className:"markdownEditor"}, 
+				header,
+				React.DOM.span( {dangerouslySetInnerHTML:{ __html : rawMarkup}})
 			)
 
 		} else {
-			editor = React.DOM.div({className: "markdownEditor", onSubmit: this.onSubmit}, 
-				header, 
-				React.DOM.textarea({ref: "editor", value: value, onChange: this.onChange})
+			editor = React.DOM.div( {className:"markdownEditor", onSubmit:this.onSubmit}, 
+				header,
+				React.DOM.textarea( {ref:"editor", value:value, onChange:this.onChange})
 			)
 		}
 
@@ -977,7 +977,7 @@ var MarkdownText = React.createClass({displayName: 'MarkdownText',
 			, rawMarkup = converter.makeHtml(value);
 		
 		return (
-			React.DOM.div({className: "markdownText", dangerouslySetInnerHTML: { __html : rawMarkup}}
+			React.DOM.div( {className:"markdownText", dangerouslySetInnerHTML:{ __html : rawMarkup }}
 			)
 		);
 	}
@@ -1108,31 +1108,31 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 
 				// Add buttons in as <a> tags to ensure click / touch events
 				// are picked up
-				week.push(React.DOM.td({
-										onClick: this.onSelectDay, 
-										onTouchEnd: this.onSelectDay, 
-										className: c, key:  d + (w * 7), 
-										'data-month': wd.getMonth(), 
-										'data-day': date}, date));
+				week.push(React.DOM.td(
+										{onClick:this.onSelectDay,
+										onTouchEnd:this.onSelectDay,
+										className:c, key: d + (w * 7), 
+										'data-month':wd.getMonth(), 
+										'data-day':date}, date));
 			}
-			weeks.push(React.DOM.tr({key: w}, week));
+			weeks.push(React.DOM.tr( {key:w}, week));
 		}
 
 		return (
-			React.DOM.div({className: "calendar cal", onMouseDown: this.props.onMouseDown, onTouchEnd: this.props.onTouchEnd}, 
-				React.DOM.div({className: "header"}, 
-					React.DOM.a({className: "backButton ss-icon", onClick: this.onPrevMonth, onTouchEnd: this.onPrevMonth}, "previous"), 
-					React.DOM.a({className: "nextButton ss-icon", onClick: this.onNextMonth, onTouchEnd: this.onNextMonth}, "next"), 
-					React.DOM.h5({className: "month"}, this._monthString(value)), 
-					React.DOM.p({className: "year"}, this._yearString(value)), 
-					React.DOM.hr(null)
-				), 
-				React.DOM.table({className: "dates"}, 
+			React.DOM.div( {className:"calendar cal", onMouseDown:this.props.onMouseDown, onTouchEnd:this.props.onTouchEnd}, 
+				React.DOM.div( {className:"header"}, 
+					React.DOM.a( {className:"backButton ss-icon", onClick:this.onPrevMonth, onTouchEnd:this.onPrevMonth}, "previous"),
+					React.DOM.a( {className:"nextButton ss-icon", onClick:this.onNextMonth, onTouchEnd:this.onNextMonth}, "next"),
+					React.DOM.h5( {className:"month"}, this._monthString(value)),
+					React.DOM.p( {className:"year"}, this._yearString(value)),
+					React.DOM.hr(null )
+				),
+				React.DOM.table( {className:"dates"}, 
 					React.DOM.thead(null, 
 						React.DOM.tr(null, 
-							React.DOM.th(null, "M"), React.DOM.th(null, "T"), React.DOM.th(null, "W"), React.DOM.th(null, "T"), React.DOM.th(null, "F"), React.DOM.th(null, "S"), React.DOM.th(null, "S")
+							React.DOM.th(null, "M"),React.DOM.th(null, "T"),React.DOM.th(null, "W"),React.DOM.th(null, "T"),React.DOM.th(null, "F"),React.DOM.th(null, "S"),React.DOM.th(null, "S")
 						)
-					), 
+					),
 					weeks
 				)
 			)
@@ -1168,7 +1168,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "TagInput",
+			component : "S3PhotoUploader",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -1194,66 +1194,66 @@ var Playground = React.createClass({displayName: 'Playground',
  			, component;
 
  		components.forEach(function(c,i){
- 			options.push(React.DOM.option({key: i, value: c}, c));
+ 			options.push(React.DOM.option( {key:i, value:c}, c));
  		});
 
  		switch (this.state.component) {
  		case "AutoGrowTextarea":
- 			component = AutoGrowTextarea({placeholder: "text"})
+ 			component = AutoGrowTextarea( {placeholder:"text"} )
  			break;
 		case "Clock":
-			component = Clock(null)
+			component = Clock(null )
 			break;
 		case "DatePicker":
-			component = DatePicker(null)
+			component = DatePicker(null )
 			break;
 		case "Login":
-			component = Login(null)
+			component = Login(null )
 			break;
 		case "MarkdownEditor":
-			component = MarkdownEditor(null)
+			component = MarkdownEditor(null )
 			break;
 		case "MarkdownText":
-			component = MarkdownText(null)
+			component = MarkdownText(null )
 			break;
 		case "PriceInput":
-			component = PriceInput(null)
+			component = PriceInput(null )
 			break;
 		case "ResultsTextInput":
-			component = ResultsTextInput(null)
+			component = ResultsTextInput(null )
 			break;
 		case "S3PhotoUploader":
-			component = S3PhotoUploader(null)
+			component = S3PhotoUploader(null )
 			break;
 		case "Signature":
-			component = Signature(null)
+			component = Signature(null )
 			break;
 		case "Signup":
-			component = Signup(null)
+			component = Signup(null )
 			break;
 		case "TimePicker":
-			component = TimePicker(null)
+			component = TimePicker(null )
 			break;
 		case "TagInput":
-			component = TagInput({name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			component = TagInput( {name:"TagInput", value:this.state.values.TagInput, onValueChange:this.onValueChange} )
 			break;
 		case "DateTimePicker":
-			component = DateTimePicker({name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})
+			component = DateTimePicker( {name:"DateTimePicker", value:this.state.values.DateTimePicker, centerDate:this.state.values.DateTimePickerCenter, onValueChange:this.onValueChange} )
 			break;
 		case "ValidTextInput":
-			component = ValidTextInput({label: "valid text field", placeholder: "stuff", valid: false})
+			component = ValidTextInput( {label:"valid text field", placeholder:"stuff", valid:false} )
 			break;
  		}
 		return (
-			React.DOM.div({className: "components playground"}, 
-				React.DOM.h1(null, "Component Playground"), 
-				React.DOM.select({value: this.state.component, onChange: this.pickComponent}, 
+			React.DOM.div( {className:"components playground"}, 
+				React.DOM.h1(null, "Component Playground"),
+				React.DOM.select( {value:this.state.component, onChange:this.pickComponent}, 
 					options
-				), 
-				React.DOM.hr(null), 
-				React.DOM.div({className: "component"}, 
-					React.DOM.h3({className: "title"}, this.state.component), 
-					React.DOM.div({className: "wrapper"}, 
+				),
+				React.DOM.hr(null ),
+				React.DOM.div( {className:"component"}, 
+					React.DOM.h3( {className:"title"}, this.state.component),
+					React.DOM.div( {className:"wrapper"}, 
 						component
 					)
 				)
@@ -1327,14 +1327,14 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 		var disabled = (this.props.editable !== undefined || this.props.editable !== false);
 
 		return (
-			React.DOM.div({className: "field priceInput " + this.props.className}, 
-				React.DOM.input({ref: "input", 
-					name: this.props.name, 
-					type: "text", 
-					pattern: "[0-9]*", 
-					value: this.props.value, 
-					onChange: this.onChange, 
-					onKeyUp: this.onKeyUp})
+			React.DOM.div( {className:"field priceInput " + this.props.className}, 
+				React.DOM.input( {ref:"input",
+					name:this.props.name,
+					type:"text",
+					pattern:"[0-9]*", 
+					value:this.props.value,
+					onChange:this.onChange,
+					onKeyUp:this.onKeyUp} )
 			)
 		)
 	}
@@ -1426,21 +1426,21 @@ var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
 		this.state.results.forEach(function (result, i){
 			var selected = (i == self.state.selectedIndex) ? "selected" : "";
 			results.push(
-				React.DOM.li({key: i, className: selected}, result.name)
+				React.DOM.li( {key:i, className:selected}, result.name)
 			);
 		});
 
 		return (
-			React.DOM.div({className: "resultsTextInput"}, 
-	      React.DOM.input({
-	        className: this.props.className, 
-	        id: this.props.id, 
-	        placeholder: this.props.placeholder, 
-	        onChange: this._onChange, 
-	        onKeyDown: this._onKeyDown, 
-	        value: this.state.value, 
-	        autoFocus: true}), 
-	      React.DOM.ul({className: "results"}, 
+			React.DOM.div( {className:"resultsTextInput"}, 
+	      React.DOM.input(
+	        {className:this.props.className,
+	        id:this.props.id,
+	        placeholder:this.props.placeholder,
+	        onChange:this._onChange,
+	        onKeyDown:this._onKeyDown,
+	        value:this.state.value,
+	        autoFocus:true} ),
+	      React.DOM.ul( {className:"results"}, 
 	      	results
 	      )
       )
@@ -1498,6 +1498,7 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	},
 
 	// Event Handlers
+
 	uploadProgress : function (percent, message) {
 		this.setState({ uploadProgress : percent + "% Complete" });
 	},
@@ -1515,33 +1516,45 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 			disableUpload : false
 		});
 	},
-	removePhoto : function () {
+	removePhoto : function (e) {
+		e.preventDefault();
 		this.setState({
 			uploadProgress : "",
 			uploadError : "",
 			photoUrl : undefined
 		});
 		this.change();
+		return false;
 	},
 	change : function () {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this.state.photoUrl);
 		}
 	},
+	onClickPhoto : function (e) {
+		this.refs["file"].getDOMNode().click();
+	},
 
 	// Render
+	progress : function () {
+		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
+	},
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.DOM.a({className: "ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
+			del = React.DOM.a( {className:"delete ss-icon", onClick:this.removePhoto, onTouchEnd:this.removePhoto}, "delete")
 		}
 		return (
-			React.DOM.div({className: "photoUpload"}, 
-				React.DOM.input({disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
-				React.DOM.img({className: "photoPreview", src: this.props.src}), 
-				React.DOM.p(null, this.state.uploadProgress), 
-				React.DOM.p(null, this.state.uploadStatus), 
-				del
+			React.DOM.div( {className:"s3PhotoUpload"}, 
+				React.DOM.input( {ref:"file", style:{ display : "none"}, disabled:this.state.disableUpload, ref:"file", onChange:this.s3Upload, type:"file"} ),
+				React.DOM.div( {className:"photo", onClick:this.onClickPhoto, onTouchEnd:this.onClickPhoto}, 
+					del,
+					React.DOM.img( {className:"preview", src:this.props.src} ),
+					React.DOM.div( {className:"progress"}, 
+						React.DOM.div( {className:"bar", style: { width : this.progress() } })
+					)
+				),
+				React.DOM.p( {className:"status"}, this.state.uploadStatus)
 			)
 		);
 	}
@@ -1609,11 +1622,11 @@ var Signature = React.createClass({displayName: 'Signature',
 	},
 	render : function () {
 		return (
-			React.DOM.div({className: "signature"}, 
-				React.DOM.canvas({className: "canvas", ref: "canvas"}), 
-				React.DOM.div({className: "buttons"}, 
-			 		React.DOM.button({className: "reset", disabled: this.props.signed, onClick: this.reset, onTouchEnd: this.reset}, "reset"), 
-					React.DOM.button({className: "done", disabled: this.props.signed, onClick: this.done, onTouchEnd: this.done}, "done")
+			React.DOM.div( {className:"signature"}, 
+				React.DOM.canvas( {className:"canvas", ref:"canvas"}),
+				React.DOM.div( {className:"buttons"}, 
+			 		React.DOM.button( {className:"reset", disabled:this.props.signed, onClick:this.reset, onTouchEnd:this.reset}, "reset"), 
+					React.DOM.button( {className:"done", disabled:this.props.signed, onClick:this.done, onTouchEnd:this.done}, "done")
 				)
 			)
 		);
@@ -1704,16 +1717,16 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			, tags = [];
 
 		this.props.value.forEach(function(t,i){
-			tags.push(React.DOM.span({key: i, className: "tag"}, 
-									t, 
-									React.DOM.span({'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
+			tags.push(React.DOM.span( {key:i, className:"tag"}, 
+									t,
+									React.DOM.span( {'data-key':i, className:"removeTag", onClick:self.onRemoveTag, onTouchEnd:self.onRemoveTag}, "x")
 								));
 		});
 
 		return (
-			React.DOM.div({className: "tags"}, 
-				tags, 
-				React.DOM.span({contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
+			React.DOM.div( {className:"tags"}, 
+				tags,
+				React.DOM.span( {contentEditable:true, ref:"input", className:"input", onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
 					this.state.input
 				)
 			)
@@ -1800,13 +1813,13 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 		// if (this.refs["field"]) {
 		// 	if ($(this.refs["field"]).is(":focus")) {
 		if (this.state.focused) {
-			time = Clock({onMouseDown: this._clockMouseDown, value: this.props.value, onChange: this._clockChange})	
+			time = Clock( {onMouseDown:this._clockMouseDown, value:this.props.value, onChange:this._clockChange} )	
 		}
 
 		return (
-			React.DOM.div({className: "timePicker field"}, 
-				React.DOM.label(null, this.props.label), 
-				React.DOM.input({ref: "field", value: display, onChange: this._fakeFn, onFocus: this._focus, onBlur: this._blur}), 
+			React.DOM.div( {className:"timePicker field"}, 
+				React.DOM.label(null, this.props.label),
+				React.DOM.input( {ref:"field", value:display, onChange:this._fakeFn, onFocus:this._focus, onBlur:this._blur}),
 				time
 			)
 		)
@@ -1874,16 +1887,16 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 		}
 
 		props.options.forEach(function(opt, i){
-			options.push(React.DOM.option({value: opt.value, key: i}, opt.name))
+			options.push(React.DOM.option( {value:opt.value, key:i}, opt.name))
 		});
 
 		return(
-			React.DOM.div({className: props.className + " valdSelectInput field"}, 
-				React.DOM.select({disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange}, 
+			React.DOM.div( {className:props.className + " valdSelectInput field"}, 
+				React.DOM.select( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onFocus:props.onFocus, onBlur:props.onBlur, onChange:this.onChange}, 
 					options
-				), 
-				React.DOM.span({className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
-				React.DOM.span({className: "message"}, props.valid ? props.message : "")
+				),
+				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
+				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
 			)
 		);
 	}
@@ -1952,10 +1965,10 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 		}
 
 		return(
-			React.DOM.div({className: className + " validTextInput field"}, 
-				React.DOM.input({disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
-				React.DOM.span({className: "indicator ss-icon"}, indicator), 
-				React.DOM.span({className: "message"}, message )
+			React.DOM.div( {className:className + " validTextInput field"}, 
+				React.DOM.input( {disabled:props.disabled, type:"text", name:props.name, onFocus:props.onFocus, onBlur:props.onBlur, onChange:this.onChange, placeholder:props.placeholder, value:props.value} ),
+				React.DOM.span( {className:"indicator ss-icon"}, indicator),
+				React.DOM.span( {className:"message"}, message )
 			)
 		);
 	}
@@ -2014,11 +2027,11 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 			, label;
 
 		return(
-			React.DOM.div({className: props.className + " validTextArea field"}, 
-				label, 
-				React.DOM.textarea({disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onChange: this.onChange}), 
-				React.DOM.span({className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
-				React.DOM.span({className: "message"}, props.valid ? props.message : "")
+			React.DOM.div( {className:props.className + " validTextArea field"}, 
+				label,
+				React.DOM.textarea( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:this.onChange}),
+				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
+				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
 			)
 		);
 	}

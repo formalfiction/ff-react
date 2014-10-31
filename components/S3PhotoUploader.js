@@ -46,6 +46,7 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	},
 
 	// Event Handlers
+
 	uploadProgress : function (percent, message) {
 		this.setState({ uploadProgress : percent + "% Complete" });
 	},
@@ -63,33 +64,45 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 			disableUpload : false
 		});
 	},
-	removePhoto : function () {
+	removePhoto : function (e) {
+		e.preventDefault();
 		this.setState({
 			uploadProgress : "",
 			uploadError : "",
 			photoUrl : undefined
 		});
 		this.change();
+		return false;
 	},
 	change : function () {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this.state.photoUrl);
 		}
 	},
+	onClickPhoto : function (e) {
+		this.refs["file"].getDOMNode().click();
+	},
 
 	// Render
+	progress : function () {
+		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
+	},
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.DOM.a({className: "ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
+			del = React.DOM.a( {className:"delete ss-icon", onClick:this.removePhoto, onTouchEnd:this.removePhoto}, "delete")
 		}
 		return (
-			React.DOM.div({className: "photoUpload"}, 
-				React.DOM.input({disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
-				React.DOM.img({className: "photoPreview", src: this.props.src}), 
-				React.DOM.p(null, this.state.uploadProgress), 
-				React.DOM.p(null, this.state.uploadStatus), 
-				del
+			React.DOM.div( {className:"s3PhotoUpload"}, 
+				React.DOM.input( {ref:"file", style:{ display : "none"}, disabled:this.state.disableUpload, ref:"file", onChange:this.s3Upload, type:"file"} ),
+				React.DOM.div( {className:"photo", onClick:this.onClickPhoto, onTouchEnd:this.onClickPhoto}, 
+					del,
+					React.DOM.img( {className:"preview", src:this.props.src} ),
+					React.DOM.div( {className:"progress"}, 
+						React.DOM.div( {className:"bar", style: { width : this.progress() } })
+					)
+				),
+				React.DOM.p( {className:"status"}, this.state.uploadStatus)
 			)
 		);
 	}

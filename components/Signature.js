@@ -58,11 +58,11 @@ var Signature = React.createClass({displayName: 'Signature',
 	},
 	render : function () {
 		return (
-			React.DOM.div({className: "signature"}, 
-				React.DOM.canvas({className: "canvas", ref: "canvas"}), 
-				React.DOM.div({className: "buttons"}, 
-			 		React.DOM.button({className: "reset", disabled: this.props.signed, onClick: this.reset, onTouchEnd: this.reset}, "reset"), 
-					React.DOM.button({className: "done", disabled: this.props.signed, onClick: this.done, onTouchEnd: this.done}, "done")
+			React.DOM.div( {className:"signature"}, 
+				React.DOM.canvas( {className:"canvas", ref:"canvas"}),
+				React.DOM.div( {className:"buttons"}, 
+			 		React.DOM.button( {className:"reset", disabled:this.props.signed, onClick:this.reset, onTouchEnd:this.reset}, "reset"), 
+					React.DOM.button( {className:"done", disabled:this.props.signed, onClick:this.done, onTouchEnd:this.done}, "done")
 				)
 			)
 		);

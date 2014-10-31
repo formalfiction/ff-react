@@ -20,7 +20,7 @@ var MarkdownText = React.createClass({displayName: 'MarkdownText',
 			, rawMarkup = converter.makeHtml(value);
 		
 		return (
-			React.DOM.div({className: "markdownText", dangerouslySetInnerHTML: { __html : rawMarkup}}
+			React.DOM.div( {className:"markdownText", dangerouslySetInnerHTML:{ __html : rawMarkup }}
 			)
 		);
 	}

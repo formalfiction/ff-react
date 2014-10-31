@@ -24,7 +24,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "TagInput",
+			component : "S3PhotoUploader",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,

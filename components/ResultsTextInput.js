@@ -82,21 +82,21 @@ var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
 		this.state.results.forEach(function (result, i){
 			var selected = (i == self.state.selectedIndex) ? "selected" : "";
 			results.push(
-				React.DOM.li({key: i, className: selected}, result.name)
+				React.DOM.li( {key:i, className:selected}, result.name)
 			);
 		});
 
 		return (
-			React.DOM.div({className: "resultsTextInput"}, 
-	      React.DOM.input({
-	        className: this.props.className, 
-	        id: this.props.id, 
-	        placeholder: this.props.placeholder, 
-	        onChange: this._onChange, 
-	        onKeyDown: this._onKeyDown, 
-	        value: this.state.value, 
-	        autoFocus: true}), 
-	      React.DOM.ul({className: "results"}, 
+			React.DOM.div( {className:"resultsTextInput"}, 
+	      React.DOM.input(
+	        {className:this.props.className,
+	        id:this.props.id,
+	        placeholder:this.props.placeholder,
+	        onChange:this._onChange,
+	        onKeyDown:this._onKeyDown,
+	        value:this.state.value,
+	        autoFocus:true} ),
+	      React.DOM.ul( {className:"results"}, 
 	      	results
 	      )
       )

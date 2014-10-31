@@ -80,16 +80,16 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			, tags = [];
 
 		this.props.value.forEach(function(t,i){
-			tags.push(React.DOM.span({key: i, className: "tag"}, 
-									t, 
-									React.DOM.span({'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
+			tags.push(React.DOM.span( {key:i, className:"tag"}, 
+									t,
+									React.DOM.span( {'data-key':i, className:"removeTag", onClick:self.onRemoveTag, onTouchEnd:self.onRemoveTag}, "x")
 								));
 		});
 
 		return (
-			React.DOM.div({className: "tags"}, 
-				tags, 
-				React.DOM.span({contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
+			React.DOM.div( {className:"tags"}, 
+				tags,
+				React.DOM.span( {contentEditable:true, ref:"input", className:"input", onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
 					this.state.input
 				)
 			)

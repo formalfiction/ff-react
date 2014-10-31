@@ -75,13 +75,13 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 		// if (this.refs["field"]) {
 		// 	if ($(this.refs["field"]).is(":focus")) {
 		if (this.state.focused) {
-			time = Clock({onMouseDown: this._clockMouseDown, value: this.props.value, onChange: this._clockChange})	
+			time = Clock( {onMouseDown:this._clockMouseDown, value:this.props.value, onChange:this._clockChange} )	
 		}
 
 		return (
-			React.DOM.div({className: "timePicker field"}, 
-				React.DOM.label(null, this.props.label), 
-				React.DOM.input({ref: "field", value: display, onChange: this._fakeFn, onFocus: this._focus, onBlur: this._blur}), 
+			React.DOM.div( {className:"timePicker field"}, 
+				React.DOM.label(null, this.props.label),
+				React.DOM.input( {ref:"field", value:display, onChange:this._fakeFn, onFocus:this._focus, onBlur:this._blur}),
 				time
 			)
 		)

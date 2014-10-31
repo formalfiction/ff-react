@@ -24,7 +24,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "TagInput",
+			component : "S3PhotoUploader",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -50,66 +50,66 @@ var Playground = React.createClass({displayName: 'Playground',
  			, component;
 
  		components.forEach(function(c,i){
- 			options.push(React.DOM.option({key: i, value: c}, c));
+ 			options.push(React.DOM.option( {key:i, value:c}, c));
  		});
 
  		switch (this.state.component) {
  		case "AutoGrowTextarea":
- 			component = AutoGrowTextarea({placeholder: "text"})
+ 			component = AutoGrowTextarea( {placeholder:"text"} )
  			break;
 		case "Clock":
-			component = Clock(null)
+			component = Clock(null )
 			break;
 		case "DatePicker":
-			component = DatePicker(null)
+			component = DatePicker(null )
 			break;
 		case "Login":
-			component = Login(null)
+			component = Login(null )
 			break;
 		case "MarkdownEditor":
-			component = MarkdownEditor(null)
+			component = MarkdownEditor(null )
 			break;
 		case "MarkdownText":
-			component = MarkdownText(null)
+			component = MarkdownText(null )
 			break;
 		case "PriceInput":
-			component = PriceInput(null)
+			component = PriceInput(null )
 			break;
 		case "ResultsTextInput":
-			component = ResultsTextInput(null)
+			component = ResultsTextInput(null )
 			break;
 		case "S3PhotoUploader":
-			component = S3PhotoUploader(null)
+			component = S3PhotoUploader(null )
 			break;
 		case "Signature":
-			component = Signature(null)
+			component = Signature(null )
 			break;
 		case "Signup":
-			component = Signup(null)
+			component = Signup(null )
 			break;
 		case "TimePicker":
-			component = TimePicker(null)
+			component = TimePicker(null )
 			break;
 		case "TagInput":
-			component = TagInput({name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			component = TagInput( {name:"TagInput", value:this.state.values.TagInput, onValueChange:this.onValueChange} )
 			break;
 		case "DateTimePicker":
-			component = DateTimePicker({name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})
+			component = DateTimePicker( {name:"DateTimePicker", value:this.state.values.DateTimePicker, centerDate:this.state.values.DateTimePickerCenter, onValueChange:this.onValueChange} )
 			break;
 		case "ValidTextInput":
-			component = ValidTextInput({label: "valid text field", placeholder: "stuff", valid: false})
+			component = ValidTextInput( {label:"valid text field", placeholder:"stuff", valid:false} )
 			break;
  		}
 		return (
-			React.DOM.div({className: "components playground"}, 
-				React.DOM.h1(null, "Component Playground"), 
-				React.DOM.select({value: this.state.component, onChange: this.pickComponent}, 
+			React.DOM.div( {className:"components playground"}, 
+				React.DOM.h1(null, "Component Playground"),
+				React.DOM.select( {value:this.state.component, onChange:this.pickComponent}, 
 					options
-				), 
-				React.DOM.hr(null), 
-				React.DOM.div({className: "component"}, 
-					React.DOM.h3({className: "title"}, this.state.component), 
-					React.DOM.div({className: "wrapper"}, 
+				),
+				React.DOM.hr(null ),
+				React.DOM.div( {className:"component"}, 
+					React.DOM.h3( {className:"title"}, this.state.component),
+					React.DOM.div( {className:"wrapper"}, 
 						component
 					)
 				)

@@ -84,9 +84,37 @@
 .resultsTextInput .selected {
   font-weight: bold;
 }
-.photoUpload img {
-  width: 300px;
-  margin: 10px auto;
+.s3PhotoUpload {
+  width: 200px;
+}
+.s3PhotoUpload .photo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: #808080;
+  border-radius: 4px;
+  margin: 10px;
+  overflow: hidden;
+}
+.s3PhotoUpload .photo img.preview {
+  width: 100%;
+}
+.s3PhotoUpload .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  border-radius: 0 0 4px 4px;
+}
+.s3PhotoUpload .progress .bar {
+  height: 15px;
+  background: #f00;
+}
+.s3PhotoUpload .delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 .timePicker {
   position: relative;
@@ -193,5 +221,6 @@
   background: #444;
 }
 .tags .input {
+  min-width: 30px;
   margin: 2px 5px;
 }
