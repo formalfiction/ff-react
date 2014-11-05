@@ -1514,6 +1514,9 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	},
 
 	// Methods
+	pickFile : function () {
+		this.refs['file'].getDOMNode().click()
+	},
 	s3Upload : function (e) {
 		var el = this.refs['file'].getDOMNode();
 
@@ -1686,7 +1689,9 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		// numerical keyCode, defaults to comma
 		separator : React.PropTypes.number.isRequired,
 		value : React.PropTypes.array.isRequired,
+		// set useObjects to true to pass objects instead of strings
 		useObjects : React.PropTypes.bool.isRequired,
+		// the name of the property that contains a string the tag should display
 		objectNameProp : React.PropTypes.string,
 	},
 
@@ -1698,7 +1703,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			className : "tags",
 			value : [],
 			useObjects : false,
-			objectNameProp : "name",
+			objectNameProp : "name"
 		}
 	},
 	getInitialState : function () {
@@ -1728,7 +1733,13 @@ var TagInput = React.createClass({displayName: 'TagInput',
 				val[this.props.objectNameProp] = this.state.input;
 			}
 			if (typeof this.props.onValueChange === "function") {
-				this.props.onValueChange(this.props.value.concat([val]),this.props.name);
+				if (this.props.useObjects) {
+					var o = {};
+					o[this.props.objectNameProp] = this.state.input
+					this.props.onValueChange(this.props.value.concat([o]),this.props.name);
+				} else {
+					this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+				}
 			}
 			this.setState({ input : "" });
 		} else if (k === KeyCodes.backspace) {

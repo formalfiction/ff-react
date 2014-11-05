@@ -29,6 +29,9 @@ var S3PhotoUploader = React.createClass({
 	},
 
 	// Methods
+	pickFile : function () {
+		this.refs['file'].getDOMNode().click()
+	},
 	s3Upload : function (e) {
 		var el = this.refs['file'].getDOMNode();
 
