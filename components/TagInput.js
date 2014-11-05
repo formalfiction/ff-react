@@ -8,11 +8,16 @@ var KeyCodes = require("../constants/KeyCodes");
 
 var TagInput = React.createClass({displayName: 'TagInput',
 	propTypes : {
+		// be sure to include "tags" in your prop if you want
+		// consistent styling
+		className : React.PropTypes.string.isRequired,
 		onValueChange : React.PropTypes.func,
 		placeholder : React.PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
 		separator : React.PropTypes.number.isRequired,
 		value : React.PropTypes.array.isRequired,
+		useObjects : React.PropTypes.bool.isRequired,
+		objectNameProp : React.PropTypes.string,
 	},
 
 	// Lifecycle
@@ -20,7 +25,10 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		return {
 			separator : KeyCodes.comma,
 			placeholder : "tags",
+			className : "tags",
 			value : [],
+			useObjects : false,
+			objectNameProp : "name",
 		}
 	},
 	getInitialState : function () {
@@ -43,12 +51,16 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		var v = this.props.value
 			, k = e.which
 
-		if (k === KeyCodes.comma) {
-			this.setState({ input : "" });
-
-			if (typeof this.props.onValueChange === "function") {
-				this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+		if (k === this.props.separator) {
+			var val = this.state.input
+			if (this.props.useObjects) {
+				val = {}
+				val[this.props.objectNameProp] = this.state.input;
 			}
+			if (typeof this.props.onValueChange === "function") {
+				this.props.onValueChange(this.props.value.concat([val]),this.props.name);
+			}
+			this.setState({ input : "" });
 		} else if (k === KeyCodes.backspace) {
 
 		} else if (k === KeyCodes.left) {
@@ -80,6 +92,9 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			, tags = [];
 
 		this.props.value.forEach(function(t,i){
+			if (self.props.useObjects && typeof t === "object") {
+				t = t[self.props.objectNameProp];
+			}
 			tags.push(React.DOM.span( {key:i, className:"tag"}, 
 									t,
 									React.DOM.span( {'data-key':i, className:"removeTag", onClick:self.onRemoveTag, onTouchEnd:self.onRemoveTag}, "x")
@@ -87,7 +102,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		});
 
 		return (
-			React.DOM.div( {className:"tags"}, 
+			React.DOM.div( {className:this.props.className}, 
 				tags,
 				React.DOM.span( {contentEditable:true, ref:"input", className:"input", onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
 					this.state.input
