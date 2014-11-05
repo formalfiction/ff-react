@@ -13,6 +13,10 @@ var TagInput = React.createClass({displayName: 'TagInput',
 		// numerical keyCode, defaults to comma
 		separator : React.PropTypes.number.isRequired,
 		value : React.PropTypes.array.isRequired,
+		// set useObjects to true to pass objects instead of strings
+		useObjects : React.PropTypes.bool.isRequired,
+		// the name of the property that contains a string the tag should display
+		objectNameProp : React.PropTypes.string,
 	},
 
 	// Lifecycle
@@ -21,6 +25,8 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			separator : KeyCodes.comma,
 			placeholder : "tags",
 			value : [],
+			useObjects : false,
+			objectNameProp : "name"
 		}
 	},
 	getInitialState : function () {
@@ -47,7 +53,13 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			this.setState({ input : "" });
 
 			if (typeof this.props.onValueChange === "function") {
-				this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+				if (this.props.useObjects) {
+					var o = {};
+					o[this.props.objectNameProp] = this.state.input
+					this.props.onValueChange(this.props.value.concat([o]),this.props.name);
+				} else {
+					this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+				}
 			}
 		} else if (k === KeyCodes.backspace) {
 
@@ -80,16 +92,19 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			, tags = [];
 
 		this.props.value.forEach(function(t,i){
-			tags.push(React.DOM.span( {key:i, className:"tag"}, 
-									t,
-									React.DOM.span( {'data-key':i, className:"removeTag", onClick:self.onRemoveTag, onTouchEnd:self.onRemoveTag}, "x")
+			if (self.props.useObjects) {
+				t = t[self.props.objectNameProp];
+			}
+			tags.push(React.DOM.span({key: i, className: "tag"}, 
+									t, 
+									React.DOM.span({'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
 								));
 		});
 
 		return (
-			React.DOM.div( {className:"tags"}, 
-				tags,
-				React.DOM.span( {contentEditable:true, ref:"input", className:"input", onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
+			React.DOM.div({className: "tags"}, 
+				tags, 
+				React.DOM.span({contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
 					this.state.input
 				)
 			)

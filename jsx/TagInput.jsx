@@ -13,6 +13,10 @@ var TagInput = React.createClass({
 		// numerical keyCode, defaults to comma
 		separator : React.PropTypes.number.isRequired,
 		value : React.PropTypes.array.isRequired,
+		// set useObjects to true to pass objects instead of strings
+		useObjects : React.PropTypes.bool.isRequired,
+		// the name of the property that contains a string the tag should display
+		objectNameProp : React.PropTypes.string,
 	},
 
 	// Lifecycle
@@ -21,6 +25,8 @@ var TagInput = React.createClass({
 			separator : KeyCodes.comma,
 			placeholder : "tags",
 			value : [],
+			useObjects : false,
+			objectNameProp : "name"
 		}
 	},
 	getInitialState : function () {
@@ -47,7 +53,13 @@ var TagInput = React.createClass({
 			this.setState({ input : "" });
 
 			if (typeof this.props.onValueChange === "function") {
-				this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+				if (this.props.useObjects) {
+					var o = {};
+					o[this.props.objectNameProp] = this.state.input
+					this.props.onValueChange(this.props.value.concat([o]),this.props.name);
+				} else {
+					this.props.onValueChange(this.props.value.concat([this.state.input]),this.props.name);
+				}
 			}
 		} else if (k === KeyCodes.backspace) {
 
@@ -80,6 +92,9 @@ var TagInput = React.createClass({
 			, tags = [];
 
 		this.props.value.forEach(function(t,i){
+			if (self.props.useObjects) {
+				t = t[self.props.objectNameProp];
+			}
 			tags.push(<span key={i} className="tag">
 									{t}
 									<span data-key={i} className="removeTag" onClick={self.onRemoveTag} onTouchEnd={self.onRemoveTag}>x</span>

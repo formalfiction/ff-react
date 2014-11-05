@@ -49,11 +49,11 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 			, label;
 
 		return(
-			React.DOM.div( {className:props.className + " validTextArea field"}, 
-				label,
-				React.DOM.textarea( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onChange:this.onChange}),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
-				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
+			React.DOM.div({className: props.className + " validTextArea field"}, 
+				label, 
+				React.DOM.textarea({disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onChange: this.onChange}), 
+				React.DOM.span({className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
+				React.DOM.span({className: "message"}, props.valid ? props.message : "")
 			)
 		);
 	}

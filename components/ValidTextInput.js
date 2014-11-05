@@ -59,10 +59,10 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 		}
 
 		return(
-			React.DOM.div( {className:className + " validTextInput field"}, 
-				React.DOM.input( {disabled:props.disabled, type:"text", name:props.name, onFocus:props.onFocus, onBlur:props.onBlur, onChange:this.onChange, placeholder:props.placeholder, value:props.value} ),
-				React.DOM.span( {className:"indicator ss-icon"}, indicator),
-				React.DOM.span( {className:"message"}, message )
+			React.DOM.div({className: className + " validTextInput field"}, 
+				React.DOM.input({disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
+				React.DOM.span({className: "indicator ss-icon"}, indicator), 
+				React.DOM.span({className: "message"}, message )
 			)
 		);
 	}
