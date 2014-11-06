@@ -1096,39 +1096,31 @@ module.exports = MarkdownText;
 },{"../deps/Showdown":29}],13:[function(require,module,exports){
 /** @jsx React.DOM */
 
-/* Message Box Compnent With an optional Close button */
+/* Message Box Compnent */
 
 var Message = React.createClass({displayName: 'Message',
 	propTypes : {
 		message : React.PropTypes.string.isRequired,
-		title : React.PropTypes.string
 	},
 
 	// Component lifecycle methods
 	getDefaultProps : function () {
 		return {
-			title : "Not Found",
 			message : "We Couldn&#39;t find what you were looking for."
-		}
-	},
-
-	// Methods
-	goBack : function () {
-		if (window.history) {
-			window.history.back()
 		}
 	},
 
 	// Render
 	render : function () {
-		return React.transferPropsTo(React.DOM.div( {className:"message"}, 
-																		React.DOM.p(null, this.props.message)
-																	)
-																);
+		return (
+			React.DOM.div( {className:"message"}, 
+				React.DOM.p(null, this.props.message)
+			)
+		);
 	}
 });
 
-module.exports = FourOhFour;
+module.exports = Message;
 },{}],14:[function(require,module,exports){
 /** @jsx React.DOM */
 
