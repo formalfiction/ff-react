@@ -3,6 +3,7 @@
 var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
+	, DateTimePicker = require('./DateTimePicker')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
@@ -10,12 +11,12 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Signature = require('./Signature')
-	, TimePicker = require('./TimePicker')
 	, TagInput = require('./TagInput')
-	, DateTimePicker = require('./DateTimePicker')
-	, ValidTextInput = require('./ValidTextInput');
+	, TimePicker = require('./TimePicker')
+	, ValidTextInput = require('./ValidTextInput')
+	, Slider = require('./Slider');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput", "Slider"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -24,12 +25,19 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "S3PhotoUploader",
+			component : "Slider",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
-				TagInput : ["a tag","taggie","tag","snag"]
+				TagInput : ["a tag","taggie","tag","snag"],
+				slides : [
+					"http://i.imgur.com/vdiCQB2.jpg",
+					"http://i.imgur.com/6YS1sqT.jpg",
+					"http://i.imgur.com/YSD5Now.jpg",
+					"http://i.imgur.com/QSImV2B.jpg",
+					"http://i.imgur.com/iQXytyM.jpg"
+				]
 			}
 		}
 	},
@@ -98,6 +106,9 @@ var Playground = React.createClass({
 			break;
 		case "ValidTextInput":
 			component = <ValidTextInput label="valid text field" placeholder="stuff" valid={false} />
+			break;
+		case "Slider":
+			component = <Slider slides={this.state.values.slides} />
 			break;
  		}
 		return (

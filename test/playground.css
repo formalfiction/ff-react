@@ -22,6 +22,80 @@
   left: 0;
   z-index: 2;
 }
+.dateTimePicker {
+  margin: 0 auto;
+  width: 320px;
+  position: relative;
+}
+.dateTimePicker .picker {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #fff;
+  height: 200px;
+  width: 320px;
+  box-shadow: 0 0 4px #888;
+}
+.dateTimePicker .picker::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+.dateTimePicker .picker .segment {
+  color: #999;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+/* Prevent native touch events on Windows */
+  -ms-touch-action: none;
+/* Prevent the callout on tap-hold and text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+/* Prevent text resize on orientation change, useful for web-apps */
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none;
+}
+.dateTimePicker .picker .segment ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  position: absolute;
+/* Prevent elements to be highlighted on tap */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+/* Put the scroller into the HW Compositing layer right from the start */
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.dateTimePicker .picker .segment ul li {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45em;
+}
+.dateTimePicker .picker .segment ul li.selected {
+  color: #000;
+}
+.dateTimePicker .picker .day {
+  width: 50%;
+  margin-left: 5%;
+}
+.dateTimePicker .picker .hour,
+.dateTimePicker .picker .minute,
+.dateTimePicker .picker .phase {
+  width: 15%;
+}
 .modal {
   z-index: 3;
   margin: auto;
@@ -116,88 +190,55 @@
   top: 5px;
   right: 5px;
 }
-.timePicker {
-  position: relative;
-}
-.timePicker .clock {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  z-index: 2;
-}
-.dateTimePicker {
+.slider {
+  width: 400px;
+  height: 300px;
   margin: 0 auto;
-  width: 320px;
   position: relative;
+  overflow: hidden;
 }
-.dateTimePicker .picker {
+.slider .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.slider .stage .slide img {
+  width: 100%;
+}
+.slider .button {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 100%;
+  background: #666;
+}
+.slider .previous.button {
+  left: 1%;
+}
+.slider .next.button {
+  right: 1%;
+}
+.slider .indicators {
   position: absolute;
   left: 0;
-  top: 100%;
-  background: #fff;
-  height: 200px;
-  width: 320px;
-  box-shadow: 0 0 4px #888;
-}
-.dateTimePicker .picker::after {
-  content: "";
-  clear: both;
-  display: block;
-}
-.dateTimePicker .picker .segment {
-  color: #999;
-  height: 200px;
-  overflow: hidden;
-  position: relative;
-  float: left;
-/* Prevent native touch events on Windows */
-  -ms-touch-action: none;
-/* Prevent the callout on tap-hold and text selection */
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-/* Prevent text resize on orientation change, useful for web-apps */
-  -webkit-text-size-adjust: none;
-  -moz-text-size-adjust: none;
-  -ms-text-size-adjust: none;
-  -o-text-size-adjust: none;
-  text-size-adjust: none;
-}
-.dateTimePicker .picker .segment ul {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  position: absolute;
-/* Prevent elements to be highlighted on tap */
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-/* Put the scroller into the HW Compositing layer right from the start */
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  -o-transform: translateZ(0);
-  transform: translateZ(0);
-}
-.dateTimePicker .picker .segment ul li {
-  display: block;
+  bottom: 2%;
   width: 100%;
-  height: 40px;
-  margin: 0;
-  font-size: 20px;
-  line-height: 1.45em;
+  height: 14px;
+  text-align: center;
 }
-.dateTimePicker .picker .segment ul li.selected {
-  color: #000;
+.slider .indicators .indicator {
+  border-radius: 100%;
+  border: 1px solid #fff;
+  width: 10px;
+  height: 10px;
+  background: rgba(0,0,0,0.3);
+  margin: 2px 5px;
+  display: inline-block;
 }
-.dateTimePicker .picker .day {
-  width: 50%;
-  margin-left: 5%;
-}
-.dateTimePicker .picker .hour,
-.dateTimePicker .picker .minute,
-.dateTimePicker .picker .phase {
-  width: 15%;
+.slider .indicators .current.indicator {
+  background: #fff;
 }
 .tags {
   padding: 6px;
@@ -223,4 +264,13 @@
 .tags .input {
   min-width: 30px;
   margin: 2px 5px;
+}
+.timePicker {
+  position: relative;
+}
+.timePicker .clock {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 2;
 }
