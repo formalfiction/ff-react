@@ -39,7 +39,7 @@ var storeProto = {
     this.on(MESSAGE_EVENT, callback);
   },
   offMessage : function (callback) {
-    this.off(MESSAGE_EVENT, callback);
+    this.removeListener(MESSAGE_EVENT, callback);
   },
 }
 
