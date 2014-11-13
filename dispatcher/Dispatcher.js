@@ -28,14 +28,11 @@ var _callbacks = [];
 var _promises = [];
 
 
-var Dispatcher = function(options) {
-  this.init(options);
+var Dispatcher = function(attrs) {
+  return _.extend({}, attrs, DispatcherProto)
 };
 
-Dispatcher.prototype = _.extend(Dispatcher.prototype, {
-  init : function (options) {
-    this.options = options || {};
-  },
+var DispatcherProto = {
   /**
    * Register a Store's callback so that it may be invoked by an action.
    * @param {function} callback The callback to be registered.
@@ -157,8 +154,6 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
     });
 
   }
-
-
-});
+};
 
 module.exports = Dispatcher;
