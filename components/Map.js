@@ -17,8 +17,8 @@ var Map = React.createClass({displayName: 'Map',
 	},
 	render : function () {
 		return (
-			React.DOM.div( {className:"mapContainer"}, 
-				React.DOM.div( {className:"map", ref:"map"})
+			React.createElement("div", {className: "mapContainer"}, 
+				React.createElement("div", {className: "map", ref: "map"})
 			)
 		);
 	}

@@ -121,31 +121,31 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 
 				// Add buttons in as <a> tags to ensure click / touch events
 				// are picked up
-				week.push(React.DOM.td(
-										{onClick:this.onSelectDay,
-										onTouchEnd:this.onSelectDay,
-										className:c, key: d + (w * 7), 
-										'data-month':wd.getMonth(), 
-										'data-day':date}, date));
+				week.push(React.createElement("td", {
+										onClick: this.onSelectDay, 
+										onTouchEnd: this.onSelectDay, 
+										className: c, key:  d + (w * 7), 
+										'data-month': wd.getMonth(), 
+										'data-day': date}, date));
 			}
-			weeks.push(React.DOM.tr( {key:w}, week));
+			weeks.push(React.createElement("tr", {key: w}, week));
 		}
 
 		return (
-			React.DOM.div( {className:"calendar cal", onMouseDown:this.props.onMouseDown, onTouchEnd:this.props.onTouchEnd}, 
-				React.DOM.div( {className:"header"}, 
-					React.DOM.a( {className:"backButton ss-icon", onClick:this.onPrevMonth, onTouchEnd:this.onPrevMonth}, "previous"),
-					React.DOM.a( {className:"nextButton ss-icon", onClick:this.onNextMonth, onTouchEnd:this.onNextMonth}, "next"),
-					React.DOM.h5( {className:"month"}, this._monthString(value)),
-					React.DOM.p( {className:"year"}, this._yearString(value)),
-					React.DOM.hr(null )
-				),
-				React.DOM.table( {className:"dates"}, 
-					React.DOM.thead(null, 
-						React.DOM.tr(null, 
-							React.DOM.th(null, "M"),React.DOM.th(null, "T"),React.DOM.th(null, "W"),React.DOM.th(null, "T"),React.DOM.th(null, "F"),React.DOM.th(null, "S"),React.DOM.th(null, "S")
+			React.createElement("div", {className: "calendar cal", onMouseDown: this.props.onMouseDown, onTouchEnd: this.props.onTouchEnd}, 
+				React.createElement("div", {className: "header"}, 
+					React.createElement("a", {className: "backButton ss-icon", onClick: this.onPrevMonth, onTouchEnd: this.onPrevMonth}, "previous"), 
+					React.createElement("a", {className: "nextButton ss-icon", onClick: this.onNextMonth, onTouchEnd: this.onNextMonth}, "next"), 
+					React.createElement("h5", {className: "month"}, this._monthString(value)), 
+					React.createElement("p", {className: "year"}, this._yearString(value)), 
+					React.createElement("hr", null)
+				), 
+				React.createElement("table", {className: "dates"}, 
+					React.createElement("thead", null, 
+						React.createElement("tr", null, 
+							React.createElement("th", null, "M"), React.createElement("th", null, "T"), React.createElement("th", null, "W"), React.createElement("th", null, "T"), React.createElement("th", null, "F"), React.createElement("th", null, "S"), React.createElement("th", null, "S")
 						)
-					),
+					), 
 					weeks
 				)
 			)

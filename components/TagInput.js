@@ -103,16 +103,16 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			if (self.props.useObjects && typeof t === "object") {
 				t = t[self.props.objectNameProp];
 			}
-			tags.push(React.DOM.span( {key:i, className:"tag"}, 
-									t,
-									React.DOM.span( {'data-key':i, className:"removeTag", onClick:self.onRemoveTag, onTouchEnd:self.onRemoveTag}, "x")
+			tags.push(React.createElement("span", {key: i, className: "tag"}, 
+									t, 
+									React.createElement("span", {'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
 								));
 		});
 
 		return (
-			React.DOM.div( {className:this.props.className}, 
-				tags,
-				React.DOM.span( {contentEditable:true, ref:"input", className:"input", onFocus:this.onFocus, onKeyPress:this.onKeyPress}, 
+			React.createElement("div", {className: this.props.className}, 
+				tags, 
+				React.createElement("span", {contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
 					this.state.input
 				)
 			)

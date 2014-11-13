@@ -136,12 +136,12 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			, picker;
 
 		if (this.state.focused) { 
-			picker = WheelPicker( {onMouseDown:this.onPickerMouseDown, killTouch:true, value:value, centerDate:this.props.centerDate, onValueChange:this.onPickerChange, name:this.props.name} )
+			picker = React.createElement(WheelPicker, {onMouseDown: this.onPickerMouseDown, killTouch: true, value: value, centerDate: this.props.centerDate, onValueChange: this.onPickerChange, name: this.props.name})
 		}
 
 		return (
-			React.DOM.div( {className:"dateTimePicker"}, 
-				React.DOM.input( {readOnly:true, ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange, onKeyUp:this.onKeyUp, onChange:this.onInputChange} ),
+			React.createElement("div", {className: "dateTimePicker"}, 
+				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
 				picker
 			)
 		);
@@ -296,11 +296,11 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	// Render Methods
 	day : function (date, key) {
 		return (
-			React.DOM.li( 
-			{'data-year':date.getFullYear(), 
-			'data-month':date.getMonth(), 
-			'data-value':date.getDate(), 
-			key:key}, 
+			React.createElement("li", {
+			'data-year': date.getFullYear(), 
+			'data-month': date.getMonth(), 
+			'data-value': date.getDate(), 
+			key: key}, 
 				this.stringValue(date)
 		)
 		);
@@ -325,7 +325,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return days;
 	},
 	hour : function (value, hour) {
-		return React.DOM.li( {'data-value':value, key:hour}, hour)
+		return React.createElement("li", {'data-value': value, key: hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -335,7 +335,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.DOM.li( {'data-value':value, key:key}, value)
+		return React.createElement("li", {'data-value': value, key: key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -370,42 +370,42 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 			, minutes = this.minutes();
 
 		return (
-			React.DOM.div( {className:"picker", onMouseDown:this.props.onMouseDown}, 
-				React.DOM.div( {ref:"day", 'data-name':"day", className:"day segment", onTouchEnd:this.onTouchEnd}, 
-					React.DOM.ul(null, 
-						React.DOM.li(null),
-						React.DOM.li(null),
-						days,
-						React.DOM.li(null),
-						React.DOM.li(null)
+			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
+				React.createElement("div", {ref: "day", 'data-name': "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
+					React.createElement("ul", null, 
+						React.createElement("li", null), 
+						React.createElement("li", null), 
+						days, 
+						React.createElement("li", null), 
+						React.createElement("li", null)
 					)
-				),
-				React.DOM.div( {ref:"hour", 'data-name':"hour", className:"hour segment", onTouchEnd:this.onTouchEnd}, 
-					React.DOM.ul(null, 
-						React.DOM.li(null),
-						React.DOM.li(null),
-						hours,
-						React.DOM.li(null),
-						React.DOM.li(null)
+				), 
+				React.createElement("div", {ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+					React.createElement("ul", null, 
+						React.createElement("li", null), 
+						React.createElement("li", null), 
+						hours, 
+						React.createElement("li", null), 
+						React.createElement("li", null)
 					)
-				),
-				React.DOM.div( {ref:"minute", 'data-name':"minute", className:"minute segment", onTouchEnd:this.onTouchEnd}, 
-					React.DOM.ul(null, 
-						React.DOM.li(null),
-						React.DOM.li(null),
-						minutes,
-						React.DOM.li(null),
-						React.DOM.li(null)
+				), 
+				React.createElement("div", {ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+					React.createElement("ul", null, 
+						React.createElement("li", null), 
+						React.createElement("li", null), 
+						minutes, 
+						React.createElement("li", null), 
+						React.createElement("li", null)
 					)
-				),
-				React.DOM.div( {ref:"phase", 'data-name':"phase", className:"phase segment", onTouchEnd:this.onTouchEnd}, 
-					React.DOM.ul(null, 
-						React.DOM.li(null),
-						React.DOM.li(null),
-						React.DOM.li( {'data-value':0}, "am"),
-						React.DOM.li( {'data-value':1}, "pm"),
-						React.DOM.li(null),
-						React.DOM.li(null)
+				), 
+				React.createElement("div", {ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+					React.createElement("ul", null, 
+						React.createElement("li", null), 
+						React.createElement("li", null), 
+						React.createElement("li", {'data-value': 0}, "am"), 
+						React.createElement("li", {'data-value': 1}, "pm"), 
+						React.createElement("li", null), 
+						React.createElement("li", null)
 					)
 				)
 			)

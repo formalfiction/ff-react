@@ -63,7 +63,7 @@ var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 	},
 	render : function () {
 		return (
-			this.transferPropsTo(React.DOM.textarea( {className:"autogrow", style:this.style(), onChange:this.onChange} ))
+			this.transferPropsTo(React.createElement("textarea", {className: "autogrow", style: this.style(), onChange: this.onChange}))
 		);
 	}
 });

@@ -24,10 +24,10 @@ var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
 	// Render
 	render : function () {
 		return (
-			React.DOM.div( {className:"fiveOhFive error"}, 
-				React.DOM.h3(null, this.props.title),
-				React.DOM.p(null, this.props.message),
-				React.DOM.button( {onClick:this.reloadPage, onTouchEnd:this.reloadPage}, "Reload")
+			React.createElement("div", {className: "fiveOhFive error"}, 
+				React.createElement("h3", null, this.props.title), 
+				React.createElement("p", null, this.props.message), 
+				React.createElement("button", {onClick: this.reloadPage, onTouchEnd: this.reloadPage}, "Reload")
 			)
 		);
 	}

@@ -111,11 +111,11 @@ var Slider = React.createClass({displayName: 'Slider',
 		
 		this.props.slides.forEach(function(slide, i){
 			var c = (i === self.state.slide) ? "current indicator" : "indicator";
-			indicators.push(React.DOM.span( {key:i, 'data-slide':i, className:c, onClick:self.onPickIndicator, onTouchEnd:this.onPickIndicator}));
+			indicators.push(React.createElement("span", {key: i, 'data-slide': i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
 		});
 
 		return (
-			React.DOM.div( {className:"indicators"}, 
+			React.createElement("div", {className: "indicators"}, 
 				indicators
 			)
 		);
@@ -126,24 +126,24 @@ var Slider = React.createClass({displayName: 'Slider',
 			, pageIndicators, prevButton, nextButton;
 
 		this.props.slides.forEach(function(slide,i){
-			slides.push(React.DOM.div( {className:"slide", key:i, style:self.slideStyle()}, React.DOM.img( {src:slide} )))
+			slides.push(React.createElement("div", {className: "slide", key: i, style: self.slideStyle()}, React.createElement("img", {src: slide})))
 		});
 
 		if (this.props.showPageIndicators) {
 			pageIndicators = this.indicators();
 		}
 		if (this.props.showButtons) {
-			prevButton = React.DOM.div( {className:"previous button icon", onClick:this.onPrevious, onTouchEnd:this.onPrevious}, "prev")
-			nextButton = React.DOM.div( {className:"next button icon", onClick:this.onNext, onTouchEnd:this.onNext}, "next")
+			prevButton = React.createElement("div", {className: "previous button icon", onClick: this.onPrevious, onTouchEnd: this.onPrevious}, "prev")
+			nextButton = React.createElement("div", {className: "next button icon", onClick: this.onNext, onTouchEnd: this.onNext}, "next")
 		}
 
 		return (
-			React.DOM.div( {className:"slider", style:this.sliderStyle()}, 
-				React.DOM.div( {className:"stage", style:this.stageStyle()}, 
+			React.createElement("div", {className: "slider", style: this.sliderStyle()}, 
+				React.createElement("div", {className: "stage", style: this.stageStyle()}, 
 					slides
-				),
-				prevButton,
-				nextButton,
+				), 
+				prevButton, 
+				nextButton, 
 				pageIndicators
 			)
 		);

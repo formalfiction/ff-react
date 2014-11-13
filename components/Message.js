@@ -17,8 +17,8 @@ var Message = React.createClass({displayName: 'Message',
 	// Render
 	render : function () {
 		return (
-			React.DOM.div( {className:"message"}, 
-				React.DOM.p(null, this.props.message)
+			React.createElement("div", {className: "message"}, 
+				React.createElement("p", null, this.props.message)
 			)
 		);
 	}

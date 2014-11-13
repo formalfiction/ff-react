@@ -109,11 +109,11 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = MonthCalendar( {value:this.props.value, onMouseDown:this.onCalendarMouseDown, onTouchEnd:this.onCalendarTouchEnd, onChange:this.onCalendarChange} )
+			calendar = React.createElement(MonthCalendar, {value: this.props.value, onMouseDown: this.onCalendarMouseDown, onTouchEnd: this.onCalendarTouchEnd, onChange: this.onCalendarChange})
 		}
 		return (
-			React.DOM.div( {className:"datePicker"}, 
-				React.DOM.input( {ref:"field", type:"text", onClick:this.onFocus, onTouchEnd:this.onFocus, onFocus:this.onFocus, onBlur:this.onBlur, value:stringValue, onChange:this.onInputChange} ),
+			React.createElement("div", {className: "datePicker"}, 
+				React.createElement("input", {ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
 				calendar
 			)
 		)

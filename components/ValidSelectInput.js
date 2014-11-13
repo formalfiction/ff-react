@@ -53,20 +53,20 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 			, options = []
 
 		if (props.label) {
-			label = React.DOM.label(null, props.label)
+			label = React.createElement("label", null, props.label)
 		}
 
 		props.options.forEach(function(opt, i){
-			options.push(React.DOM.option( {value:opt.value, key:i}, opt.name))
+			options.push(React.createElement("option", {value: opt.value, key: i}, opt.name))
 		});
 
 		return(
-			React.DOM.div( {className:props.className + " valdSelectInput field"}, 
-				React.DOM.select( {disabled:props.disabled, type:"text", name:props.name, placeholder:props.placeholder, value:props.value, onFocus:props.onFocus, onBlur:props.onBlur, onChange:this.onChange}, 
+			React.createElement("div", {className: props.className + " valdSelectInput field"}, 
+				React.createElement("select", {disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange}, 
 					options
-				),
-				React.DOM.span( {className:"indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ),
-				React.DOM.span( {className:"message"}, props.valid ? props.message : "" )
+				), 
+				React.createElement("span", {className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
+				React.createElement("span", {className: "message"}, props.valid ? props.message : "")
 			)
 		);
 	}

@@ -32,11 +32,11 @@ var Tags = React.createClass({displayName: 'Tags',
 			if (self.props.useObjects) {
 				t = t[self.props.objectNameProp];
 			}
-			tags.push(React.DOM.span( {key:i, className:"tag"}, t));
+			tags.push(React.createElement("span", {key: i, className: "tag"}, t));
 		});
 
 		return (
-			React.DOM.div( {className:"tags"}, 
+			React.createElement("div", {className: "tags"}, 
 				tags
 			)
 		);

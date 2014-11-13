@@ -22,7 +22,7 @@ var DurationPicker = React.createClass({displayName: 'DurationPicker',
 
 	render : function () {
 		return (
-			React.DOM.div( {className:"durationPicker"}
+			React.createElement("div", {className: "durationPicker"}
 			
 			)
 		);

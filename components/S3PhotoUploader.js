@@ -93,19 +93,19 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 	render : function () {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.DOM.a( {className:"delete ss-icon", onClick:this.removePhoto, onTouchEnd:this.removePhoto}, "delete")
+			del = React.createElement("a", {className: "delete ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
 		}
 		return (
-			React.DOM.div( {className:"s3PhotoUpload"}, 
-				React.DOM.input( {ref:"file", style:{ display : "none"}, disabled:this.state.disableUpload, ref:"file", onChange:this.s3Upload, type:"file"} ),
-				React.DOM.div( {className:"photo", onClick:this.onClickPhoto, onTouchEnd:this.onClickPhoto}, 
-					del,
-					React.DOM.img( {className:"preview", src:this.props.src} ),
-					React.DOM.div( {className:"progress"}, 
-						React.DOM.div( {className:"bar", style: { width : this.progress() } })
+			React.createElement("div", {className: "s3PhotoUpload"}, 
+				React.createElement("input", {ref: "file", style: { display : "none"}, disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
+				React.createElement("div", {className: "photo", onClick: this.onClickPhoto, onTouchEnd: this.onClickPhoto}, 
+					del, 
+					React.createElement("img", {className: "preview", src: this.props.src}), 
+					React.createElement("div", {className: "progress"}, 
+						React.createElement("div", {className: "bar", style:  { width : this.progress()} })
 					)
-				),
-				React.DOM.p( {className:"status"}, this.state.uploadStatus)
+				), 
+				React.createElement("p", {className: "status"}, this.state.uploadStatus)
 			)
 		);
 	}
