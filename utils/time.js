@@ -1,4 +1,3 @@
-
 var time = {
 	months : ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'],
 	days : { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 },
@@ -26,12 +25,12 @@ var time = {
 	},
 
 	// Ensure Value is a valid date.
-	dateValue : function (value) {
+	validDateObject : function (value) {
 		if (!this.isDate(value)) {
 			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
+				value = new Date(value)
 			} else {
-				return null;
+				return false;
 			}
 		}
 
@@ -42,28 +41,98 @@ var time = {
 		return Math.round((date - startDate) / (1000*60*60*24))
 	},
 
-	// dateObjects : function (obj) {
-	// 	var k, v;
-	// 	if (this.isArray(obj)) {
-	// 		obj.forEach(this.dateObjects);
-	// 	} else {
-	// 		for (k in obj) {
-	// 			v = obj[k];
-	// 			switch(this.type(v)) {
-	// 				case "Date": break;
-	// 				case "String": break;
-	// 				case "Object":
-	// 				case "Array":
-	// 				default:
-	// 					this.dateObjects(v);
-	// 					break;
-	// 			}
-	// 		}
-	// 	}
-	// },
-	// dateStrings : function (obj) {
+	dateTimeString : function (date) {
+		if (!time.validDateObject(date)) { return ""; }
 
-	// }
+		var mins = date.getMinutes()
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
+		
+		if (mins === 0) { mins = "00"; }
+		if (hours == 0) { hours = "12"; }
+
+		return this.months[date.getMonth()]  + " " + date.getDate() + " " + hours + ":" + mins + " " + phase;
+	},
+
+	timeString : function (date) {
+		if (!date) { return ""; }
+
+		var mins = date.getMinutes()
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
+		
+		if (mins === 0) { mins = "00"; }
+		if (hours == 0) { hours = "12"; }
+
+		return hours + ":" + mins + " " + phase;
+	},
+
+	timeRangeString : function (start,stop) {
+		if (!strt) { return ""; }
+
+		var mins = date.getMinutes()
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
+		
+		if (mins === 0) { mins = "00"; }
+		if (hours == 0) { hours = "12"; }
+
+		return hours + ":" + mins + " " + phase;
+	},
+
+	relativeDateString : function (date, now) {
+		if (!now) { now = new Date(); }
+		return (date.valueOf() > now.valueOf()) ? time.relativeFutureDateString(date, now) : time.relativePastDateString(date, now);
+	},
+
+	shiftDate : function (minutes, hours, days) {
+		var n = new Date()
+		n.setMinutes(n.getMinutes()+minutes);
+		n.setHours(n.getHours()+hours);
+		n.setDate(n.getDate()+days);
+		return n;
+	},
+
+	// http://ejohn.org/blog/javascript-pretty-date/
+	relativePastDateString : function (date, now) {
+		if (!now) { now = new Date(); }
+		 
+    var diff = (( (now).getTime() - date.getTime()) / 1000),
+        dayDiff = Math.floor(diff / 86400);
+
+    if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 31) return;
+
+		return dayDiff == 0 && (
+														diff < 60 && "just now" ||
+														diff < 120 && "1 minute ago" ||
+														diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+														diff < 7200 && "1 hour ago" ||
+														diff < 86400 && Math.floor( diff / 3600 ) + " hours ago" ) ||
+													dayDiff == 1 && "Yesterday" ||
+													dayDiff < 7 && dayDiff + " days ago" ||
+													dayDiff < 31 && Math.ceil( dayDiff / 7 ) + " weeks ago";
+
+	},
+
+	relativeFutureDateString : function (date, now) {
+		if (!now) { now = new Date(); }
+
+	  var diff = ((date.getTime() - (now).getTime()) / 1000),
+		    dayDiff = Math.floor(diff / 86400);
+
+    if (isNaN(dayDiff) || dayDiff < 0 || dayDiff >= 31) return;
+
+		return dayDiff == 0 && (
+														diff < 60 && "just now" ||
+														diff < 120 && "in 1 minute" ||
+														diff < 3600 && "in " + Math.floor( diff / 60 ) + " minutes" ||
+														diff < 7200 && "in 1 hour" ||
+														diff < 86400 && "in " + Math.floor( diff / 3600 ) + " hours") ||
+													dayDiff == 1 && "Tomorrow" ||
+													dayDiff < 7 && "in " + dayDiff + " days" ||
+													dayDiff < 31 && "in " + Math.ceil( dayDiff / 7 ) + " weeks";
+	}
+
 }
 
 module.exports = time;

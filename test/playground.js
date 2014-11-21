@@ -72,7 +72,7 @@ var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 module.exports = AutoGrowTextArea;
 },{}],2:[function(require,module,exports){
 module.exports=require(1)
-},{"/Users/brendan/Dev/node_modules/ff-react/components/AutoGrowTextArea.js":1}],3:[function(require,module,exports){
+},{"/Users/brendan/dev/node_modules/ff-react/components/AutoGrowTextArea.js":1}],3:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * ** NOT A COMPONENT **

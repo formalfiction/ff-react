@@ -1,6 +1,6 @@
 {
   "name": "ff-react",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "Building-Block components for React.js, put out by formalfiction",
   "main": "ff-react.js",
   "directories": {
@@ -32,12 +32,14 @@
     "underscore": "^1.7.0"
   },
   "devDependencies": {
+    "assert": "^1.1.2",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.0.1",
     "grunt-contrib-stylus": "^0.17.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-shell": "^1.1.1",
     "http-server": "~0.7.1",
-    "react": "~0.11.2"
+    "react": "~0.11.2",
+    "should": "^4.3.0"
   }
 }
