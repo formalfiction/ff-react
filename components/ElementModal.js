@@ -4,7 +4,7 @@
 // stateless, by default shows a header above with
 // no title & a close button that triggers onClose prop
 
-var ElementModal = React.createClass({
+var ElementModal = React.createClass({displayName: 'ElementModal',
 	propTypes : {
 		element : React.PropTypes.element.isRequired,
 		// supply a close handler func to actually close the
@@ -37,19 +37,19 @@ var ElementModal = React.createClass({
 	header : function () {
 		if (this.props.showHeader) {
 			return (
-				<header>
-					<h4>{this.props.title}</h4>
-					<div className="close ss-icon" onClick={this.onClose} onTouchEnd={this.onClose}>close</div>
-				</header>
+				React.createElement("header", null, 
+					React.createElement("h4", null, this.props.title), 
+					React.createElement("div", {className: "close ss-icon", onClick: this.onClose, onTouchEnd: this.onClose}, "close")
+				)
 			);
 		}
 	},
 	render : function () {
 		return (
-			<div className="modal dialogue">
-				{this.header()}
-				{this.props.element}
-			</div>
+			React.createElement("div", {className: "modal dialogue"}, 
+				this.header(), 
+				this.props.element
+			)
 		);
 	}
 });

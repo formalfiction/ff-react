@@ -25,9 +25,11 @@ var time = {
 	},
 
 	// Ensure Value is a valid date.
-	validDateObject : function (value) {
+	validDate : function (value) {
 		if (!this.isDate(value)) {
-			if (typeof value === "number" && value != NaN) {
+			if ( (typeof value === "number" && value != NaN) ||
+					 (typeof value === "string")
+				 ) {
 				value = new Date(value)
 			} else {
 				return false;
@@ -42,7 +44,8 @@ var time = {
 	},
 
 	dateTimeString : function (date) {
-		if (!time.validDateObject(date)) { return ""; }
+		date = this.validDate(date)
+		if (!date) { return ""; }
 
 		var mins = date.getMinutes()
 			, phase = (date.getHours() < 12) ? "am" : "pm"
@@ -55,6 +58,7 @@ var time = {
 	},
 
 	timeString : function (date) {
+		date = this.validDate(date)
 		if (!date) { return ""; }
 
 		var mins = date.getMinutes()
@@ -68,7 +72,9 @@ var time = {
 	},
 
 	timeRangeString : function (start,stop) {
-		if (!strt) { return ""; }
+		start = this.validDate(start)
+		stop = this.validDate(stop)
+		if (!start || !stop) { return ""; }
 
 		var mins = date.getMinutes()
 			, phase = (date.getHours() < 12) ? "am" : "pm"
@@ -80,10 +86,6 @@ var time = {
 		return hours + ":" + mins + " " + phase;
 	},
 
-	relativeDateString : function (date, now) {
-		if (!now) { now = new Date(); }
-		return (date.valueOf() > now.valueOf()) ? time.relativeFutureDateString(date, now) : time.relativePastDateString(date, now);
-	},
 
 	shiftDate : function (minutes, hours, days) {
 		var n = new Date()
@@ -93,8 +95,18 @@ var time = {
 		return n;
 	},
 
+	relativeDateString : function (date, now) {
+		date = this.validDate(date)
+		if (!date) { return ""; }
+		
+		if (!now) { now = new Date(); }
+		return (date.valueOf() > now.valueOf()) ? time.relativeFutureDateString(date, now) : time.relativePastDateString(date, now);
+	},
+
 	// http://ejohn.org/blog/javascript-pretty-date/
 	relativePastDateString : function (date, now) {
+		date = this.validDate(date)
+		if (!date) { return ""; }
 		if (!now) { now = new Date(); }
 		 
     var diff = (( (now).getTime() - date.getTime()) / 1000),
@@ -115,6 +127,7 @@ var time = {
 	},
 
 	relativeFutureDateString : function (date, now) {
+		if (!this.validDate(date)) { return ""; }
 		if (!now) { now = new Date(); }
 
 	  var diff = ((date.getTime() - (now).getTime()) / 1000),
