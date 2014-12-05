@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 /*
-	Fastbuttons work in conjunction with utils/clickbuster
+	TouchButtons work in conjunction with utils/clickbuster
 	to create native-like buttons in js. They circumnavigate
 	the delayed "ghost click" problem.
 */

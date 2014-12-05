@@ -1,10 +1,7 @@
 /** @jsx React.DOM */
 
 /*
-	FastAnchor is fastButton for anchor (<a>) tags.
-	they work in conjunction with utils/clickbuster
-	to create native-like buttons in js. They circumnavigate
-	the delayed "ghost click" problem.
+	TouchAnchor is TouchButton for anchor (<a>) tags.
 */
 
 var clickbuster = require('../utils/clickbuster');

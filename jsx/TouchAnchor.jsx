@@ -1,16 +1,14 @@
 /** @jsx React.DOM */
 
 /*
-	Fastbuttons work in conjunction with utils/clickbuster
-	to create native-like buttons in js. They circumnavigate
-	the delayed "ghost click" problem.
+	TouchAnchor is TouchButton for anchor (<a>) tags.
 */
 
 var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var FastButton = React.createClass({
+var FastAnchor = React.createClass({
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,
@@ -22,7 +20,7 @@ var FastButton = React.createClass({
 	// lifecycle
 	getDefaultProps : function () {
 		return {
-			text : "button",
+			text : "link",
 			moveThreshold : 10
 		}
 	},
@@ -66,9 +64,9 @@ var FastButton = React.createClass({
 	// Render
 	render : function () {
 		return (
-			<button className={this.props.className} onClick={this.onClick} onTouchStart={this.onTouchStart}>{this.props.text}</button>
+			<a className={this.props.className} onClick={this.onClick} onTouchStart={this.onTouchStart}>{this.props.text}</a>
 		);
 	}
 });
 
-module.exports = FastButton;
+module.exports = FastAnchor;

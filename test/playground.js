@@ -493,7 +493,7 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 });
 
 module.exports = DatePicker;
-},{"./MonthCalendar":21,"react":185}],8:[function(require,module,exports){
+},{"./MonthCalendar":19,"react":185}],8:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1004,157 +1004,6 @@ module.exports = ElementModal;
 },{}],11:[function(require,module,exports){
 /** @jsx React.DOM */
 
-/*
-	FastAnchor is fastButton for anchor (<a>) tags.
-	they work in conjunction with utils/clickbuster
-	to create native-like buttons in js. They circumnavigate
-	the delayed "ghost click" problem.
-*/
-
-var clickbuster = require('../utils/clickbuster');
-
-var startX, startY;
-
-var FastAnchor = React.createClass({displayName: 'FastAnchor',
-	propTypes : {
-		// the text label for the button
-		text : React.PropTypes.string,
-		moveThreshold : React.PropTypes.number,
-		// unified click fn handler will also be called on touchEnd
-		onClick : React.PropTypes.func.isRequired
-	},
-
-	// lifecycle
-	getDefaultProps : function () {
-		return {
-			text : "link",
-			moveThreshold : 10
-		}
-	},
-
-	// Event Handlers
-	onTouchStart : function (e) {
-		e.stopPropagation();
-
-	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
-	  document.body.addEventListener('touchmove', this.onTouchMove, false);
-
-	  startX = e.touches[0].clientX;
-	  startY = e.touches[0].clientY;
-	},
-	onTouchMove : function (e){
-	  if (Math.abs(event.touches[0].clientX - startX) > this.props.moveThreshold ||
-	      Math.abs(event.touches[0].clientY - startY) > this.props.moveThreshold) {
-	    this.onReset(e);
-	  }
-	},
-	onTouchEnd : function (e) {
-		this.onClick(e);
-	},
-	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
-	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
-	},
-	onClick : function (e) {
-		e.stopPropagation();
-	  this.onReset(e);
-
-	  if (e.type == 'touchend') {
-	    clickbuster.preventGhostClick(startX, startY);
-	  }
-
-	  if (typeof this.props.onClick === "function") {
-	  	this.props.onClick(e);
-	  }
-	},
-
-	// Render
-	render : function () {
-		return (
-			React.createElement("a", {className: this.props.className, onClick: this.onClick, onTouchStart: this.onTouchStart}, this.props.text)
-		);
-	}
-});
-
-module.exports = FastAnchor;
-},{"../utils/clickbuster":187}],12:[function(require,module,exports){
-/** @jsx React.DOM */
-
-/*
-	Fastbuttons work in conjunction with utils/clickbuster
-	to create native-like buttons in js. They circumnavigate
-	the delayed "ghost click" problem.
-*/
-
-var clickbuster = require('../utils/clickbuster');
-
-var startX, startY;
-
-var FastButton = React.createClass({displayName: 'FastButton',
-	propTypes : {
-		// the text label for the button
-		text : React.PropTypes.string,
-		moveThreshold : React.PropTypes.number,
-		// unified click fn handler will also be called on touchEnd
-		onClick : React.PropTypes.func.isRequired
-	},
-
-	// lifecycle
-	getDefaultProps : function () {
-		return {
-			text : "button",
-			moveThreshold : 10
-		}
-	},
-
-	// Event Handlers
-	onTouchStart : function (e) {
-		e.stopPropagation();
-
-	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
-	  document.body.addEventListener('touchmove', this.onTouchMove, false);
-
-	  startX = e.touches[0].clientX;
-	  startY = e.touches[0].clientY;
-	},
-	onTouchMove : function (e){
-	  if (Math.abs(event.touches[0].clientX - startX) > this.props.moveThreshold ||
-	      Math.abs(event.touches[0].clientY - startY) > this.props.moveThreshold) {
-	    this.onReset(e);
-	  }
-	},
-	onTouchEnd : function (e) {
-		this.onClick(e);
-	},
-	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
-	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
-	},
-	onClick : function (e) {
-		e.stopPropagation();
-	  this.onReset(e);
-
-	  if (e.type == 'touchend') {
-	    clickbuster.preventGhostClick(startX, startY);
-	  }
-
-	  if (typeof this.props.onClick === "function") {
-	  	this.props.onClick(e);
-	  }
-	},
-
-	// Render
-	render : function () {
-		return (
-			React.createElement("button", {className: this.props.className, onClick: this.onClick, onTouchStart: this.onTouchStart}, this.props.text)
-		);
-	}
-});
-
-module.exports = FastButton;
-},{"../utils/clickbuster":187}],13:[function(require,module,exports){
-/** @jsx React.DOM */
-
 /* Basic 505 Error Component */
 
 var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
@@ -1189,7 +1038,7 @@ var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
 });
 
 module.exports = FiveOhFive
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Standard Not-Found Component with a go-back button. */
@@ -1228,7 +1077,7 @@ var FourOhFour = React.createClass({displayName: 'FourOhFour',
 });
 
 module.exports = FourOhFour;
-},{}],15:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ListItem = require('./ListItem');
@@ -1244,7 +1093,7 @@ var List = React.createClass({displayName: 'List',
 });
 
 module.exports = List;
-},{"./ListItem":16}],16:[function(require,module,exports){
+},{"./ListItem":14}],14:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ListItem = React.createClass({displayName: 'ListItem',
@@ -1257,7 +1106,7 @@ var ListItem = React.createClass({displayName: 'ListItem',
 });
 
 module.exports = ListItem;
-},{}],17:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Map component handles display & interaction with a map.
@@ -1285,7 +1134,7 @@ var Map = React.createClass({displayName: 'Map',
 });
 
 module.exports = Map;
-},{}],18:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var Showdown = require('../deps/Showdown');
@@ -1359,7 +1208,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 });
 
 module.exports = MarkdownEditor;
-},{"../deps/Showdown":38}],19:[function(require,module,exports){
+},{"../deps/Showdown":38}],17:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -1389,7 +1238,7 @@ var MarkdownText = React.createClass({displayName: 'MarkdownText',
 });
 
 module.exports = MarkdownText;
-},{"../deps/Showdown":38}],20:[function(require,module,exports){
+},{"../deps/Showdown":38}],18:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Message Box Compnent */
@@ -1417,7 +1266,7 @@ var Message = React.createClass({displayName: 'Message',
 });
 
 module.exports = Message;
-},{}],21:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1574,7 +1423,7 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 });
 
 module.exports = MonthCalendar;
-},{}],22:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var AutoGrowTextarea = require('./AutoGrowTextarea')
@@ -1708,7 +1557,7 @@ var Playground = React.createClass({displayName: 'Playground',
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AutoGrowTextarea":2,"./Clock":5,"./DatePicker":7,"./DateTimePicker":8,"./Map":17,"./MarkdownEditor":18,"./MarkdownText":19,"./PriceInput":23,"./ResultsTextInput":24,"./S3PhotoUploader":25,"./Signature":26,"./Slider":27,"./TagInput":28,"./TimePicker":30,"./ValidTextInput":32}],23:[function(require,module,exports){
+},{"./AutoGrowTextarea":2,"./Clock":5,"./DatePicker":7,"./DateTimePicker":8,"./Map":15,"./MarkdownEditor":16,"./MarkdownText":17,"./PriceInput":21,"./ResultsTextInput":22,"./S3PhotoUploader":23,"./Signature":24,"./Slider":25,"./TagInput":26,"./TimePicker":28,"./ValidTextInput":32}],21:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -1785,7 +1634,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 });
 
 module.exports = PriceInput;
-},{"../deps/MaskMoney":36}],24:[function(require,module,exports){
+},{"../deps/MaskMoney":36}],22:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ReactPropTypes = React.PropTypes
@@ -1893,7 +1742,7 @@ var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
 });
 
 module.exports = ResultsTextInput;
-},{"../constants/KeyCodes":35}],25:[function(require,module,exports){
+},{"../constants/KeyCodes":35}],23:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -2008,7 +1857,7 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 });
 
 module.exports = S3PhotoUploader;
-},{"../deps/S3Upload":37}],26:[function(require,module,exports){
+},{"../deps/S3Upload":37}],24:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * SignaturePad takes user signatures & spits out
@@ -2081,7 +1930,7 @@ var Signature = React.createClass({displayName: 'Signature',
 });
 
 module.exports= Signature;
-},{"../deps/SignaturePad":39}],27:[function(require,module,exports){
+},{"../deps/SignaturePad":39}],25:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -2236,7 +2085,7 @@ var Slider = React.createClass({displayName: 'Slider',
 
 module.exports = Slider;
 
-},{}],28:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  *  @stateful
@@ -2360,7 +2209,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 });
 
 module.exports = TagInput;
-},{"../constants/KeyCodes":35}],29:[function(require,module,exports){
+},{"../constants/KeyCodes":35}],27:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Tags displays a list of tags.
@@ -2407,7 +2256,7 @@ var Tags = React.createClass({displayName: 'Tags',
 });
 
 module.exports = Tags;
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * TimePicker Pairs the Clock Component with an
@@ -2499,7 +2348,155 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 });
 
 module.exports = TimePicker;
-},{"./Clock":5}],31:[function(require,module,exports){
+},{"./Clock":5}],29:[function(require,module,exports){
+/** @jsx React.DOM */
+
+/*
+	TouchAnchor is TouchButton for anchor (<a>) tags.
+*/
+
+var clickbuster = require('../utils/clickbuster');
+
+var startX, startY;
+
+var FastAnchor = React.createClass({displayName: 'FastAnchor',
+	propTypes : {
+		// the text label for the button
+		text : React.PropTypes.string,
+		moveThreshold : React.PropTypes.number,
+		// unified click fn handler will also be called on touchEnd
+		onClick : React.PropTypes.func.isRequired
+	},
+
+	// lifecycle
+	getDefaultProps : function () {
+		return {
+			text : "link",
+			moveThreshold : 10
+		}
+	},
+
+	// Event Handlers
+	onTouchStart : function (e) {
+		e.stopPropagation();
+
+	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
+	  document.body.addEventListener('touchmove', this.onTouchMove, false);
+
+	  startX = e.touches[0].clientX;
+	  startY = e.touches[0].clientY;
+	},
+	onTouchMove : function (e){
+	  if (Math.abs(event.touches[0].clientX - startX) > this.props.moveThreshold ||
+	      Math.abs(event.touches[0].clientY - startY) > this.props.moveThreshold) {
+	    this.onReset(e);
+	  }
+	},
+	onTouchEnd : function (e) {
+		this.onClick(e);
+	},
+	onReset : function (e) {
+		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
+	},
+	onClick : function (e) {
+		e.stopPropagation();
+	  this.onReset(e);
+
+	  if (e.type == 'touchend') {
+	    clickbuster.preventGhostClick(startX, startY);
+	  }
+
+	  if (typeof this.props.onClick === "function") {
+	  	this.props.onClick(e);
+	  }
+	},
+
+	// Render
+	render : function () {
+		return (
+			React.createElement("a", {className: this.props.className, onClick: this.onClick, onTouchStart: this.onTouchStart}, this.props.text)
+		);
+	}
+});
+
+module.exports = FastAnchor;
+},{"../utils/clickbuster":187}],30:[function(require,module,exports){
+/** @jsx React.DOM */
+
+/*
+	TouchButtons work in conjunction with utils/clickbuster
+	to create native-like buttons in js. They circumnavigate
+	the delayed "ghost click" problem.
+*/
+
+var clickbuster = require('../utils/clickbuster');
+
+var startX, startY;
+
+var FastButton = React.createClass({displayName: 'FastButton',
+	propTypes : {
+		// the text label for the button
+		text : React.PropTypes.string,
+		moveThreshold : React.PropTypes.number,
+		// unified click fn handler will also be called on touchEnd
+		onClick : React.PropTypes.func.isRequired
+	},
+
+	// lifecycle
+	getDefaultProps : function () {
+		return {
+			text : "button",
+			moveThreshold : 10
+		}
+	},
+
+	// Event Handlers
+	onTouchStart : function (e) {
+		e.stopPropagation();
+
+	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
+	  document.body.addEventListener('touchmove', this.onTouchMove, false);
+
+	  startX = e.touches[0].clientX;
+	  startY = e.touches[0].clientY;
+	},
+	onTouchMove : function (e){
+	  if (Math.abs(event.touches[0].clientX - startX) > this.props.moveThreshold ||
+	      Math.abs(event.touches[0].clientY - startY) > this.props.moveThreshold) {
+	    this.onReset(e);
+	  }
+	},
+	onTouchEnd : function (e) {
+		this.onClick(e);
+	},
+	onReset : function (e) {
+		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
+	},
+	onClick : function (e) {
+		e.stopPropagation();
+	  this.onReset(e);
+
+	  if (e.type == 'touchend') {
+	    clickbuster.preventGhostClick(startX, startY);
+	  }
+
+	  if (typeof this.props.onClick === "function") {
+	  	this.props.onClick(e);
+	  }
+	},
+
+	// Render
+	render : function () {
+		return (
+			React.createElement("button", {className: this.props.className, onClick: this.onClick, onTouchStart: this.onTouchStart}, this.props.text)
+		);
+	}
+});
+
+module.exports = FastButton;
+},{"../utils/clickbuster":187}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
