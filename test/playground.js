@@ -1027,7 +1027,7 @@ var FastAnchor = React.createClass({displayName: 'FastAnchor',
 	// lifecycle
 	getDefaultProps : function () {
 		return {
-			text : "button",
+			text : "link",
 			moveThreshold : 10
 		}
 	},
@@ -1051,6 +1051,10 @@ var FastAnchor = React.createClass({displayName: 'FastAnchor',
 	onTouchEnd : function (e) {
 		this.onClick(e);
 	},
+	onReset : function (e) {
+		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
+	},
 	onClick : function (e) {
 		e.stopPropagation();
 	  this.onReset(e);
@@ -1062,10 +1066,6 @@ var FastAnchor = React.createClass({displayName: 'FastAnchor',
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
-	},
-	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this, false);
-	  document.body.removeEventListener('touchmove', this, false);
 	},
 
 	// Render
@@ -1126,6 +1126,10 @@ var FastButton = React.createClass({displayName: 'FastButton',
 	onTouchEnd : function (e) {
 		this.onClick(e);
 	},
+	onReset : function (e) {
+		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
+	},
 	onClick : function (e) {
 		e.stopPropagation();
 	  this.onReset(e);
@@ -1137,10 +1141,6 @@ var FastButton = React.createClass({displayName: 'FastButton',
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
-	},
-	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this, false);
-	  document.body.removeEventListener('touchmove', this, false);
 	},
 
 	// Render

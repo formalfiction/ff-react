@@ -46,6 +46,10 @@ var FastButton = React.createClass({
 	onTouchEnd : function (e) {
 		this.onClick(e);
 	},
+	onReset : function (e) {
+		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
+	},
 	onClick : function (e) {
 		e.stopPropagation();
 	  this.onReset(e);
@@ -57,10 +61,6 @@ var FastButton = React.createClass({
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
-	},
-	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this, false);
-	  document.body.removeEventListener('touchmove', this, false);
 	},
 
 	// Render
