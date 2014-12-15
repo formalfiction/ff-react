@@ -10,13 +10,16 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, PriceInput = require('./PriceInput')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
+	, Select = require('./Select')
 	, Signature = require('./Signature')
+	, Slider = require('./Slider')
+	, SlideShow = require('./SlideShow')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
-	, ValidTextInput = require('./ValidTextInput')
-	, Slider = require('./Slider');
+	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader","Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput", "Slider"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+									"Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput", "Slider","SlideShow","Select"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -25,19 +28,13 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "Slider",
+			component : "Select",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
 				TagInput : ["a tag","taggie","tag","snag"],
-				slides : [
-					"http://i.imgur.com/vdiCQB2.jpg",
-					"http://i.imgur.com/6YS1sqT.jpg",
-					"http://i.imgur.com/YSD5Now.jpg",
-					"http://i.imgur.com/QSImV2B.jpg",
-					"http://i.imgur.com/iQXytyM.jpg"
-				]
+				Select : 0,
 			}
 		}
 	},
@@ -107,8 +104,29 @@ var Playground = React.createClass({displayName: 'Playground',
 		case "ValidTextInput":
 			component = React.createElement(ValidTextInput, {label: "valid text field", placeholder: "stuff", valid: false})
 			break;
+		case "SlideShow":
+			var slides = [
+					"http://i.imgur.com/vdiCQB2.jpg",
+					"http://i.imgur.com/6YS1sqT.jpg",
+					"http://i.imgur.com/YSD5Now.jpg",
+					"http://i.imgur.com/QSImV2B.jpg",
+					"http://i.imgur.com/iQXytyM.jpg"
+				]
+			component = React.createElement(SlideShow, {slides: slides})
+			break;
 		case "Slider":
-			component = React.createElement(Slider, {slides: this.state.values.slides})
+			component = React.createElement(Slider, null)
+			break;
+		case "Select":
+			var opts = [
+				[0,"groceries"],
+				[1,"apples"],
+				[2,"bananas"],
+				[3,"oranges"],
+				[4,"dates"],
+				[5,"prunes"]
+			];
+			component = React.createElement(Select, {name: "Select", value: this.state.values.Select, options: opts, onValueChange: this.onValueChange})
 			break;
  		}
 		return (

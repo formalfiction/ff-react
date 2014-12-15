@@ -37,4 +37,4 @@ var Switch = React.createClass({displayName: 'Switch',
 	}
 });
 
-module.exports = UseGeolocation
+module.exports = Switch

@@ -38,8 +38,8 @@ var FastButton = React.createClass({
 	  startY = e.touches[0].clientY;
 	},
 	onTouchMove : function (e){
-	  if (Math.abs(event.touches[0].clientX - startX) > this.props.moveThreshold ||
-	      Math.abs(event.touches[0].clientY - startY) > this.props.moveThreshold) {
+	  if (Math.abs(e.touches[0].clientX - startX) > this.props.moveThreshold ||
+	      Math.abs(e.touches[0].clientY - startY) > this.props.moveThreshold) {
 	    this.onReset(e);
 	  }
 	},
