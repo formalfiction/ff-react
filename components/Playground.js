@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 
 var AutoGrowTextarea = require('./AutoGrowTextarea')
+	, CronInput = require('./CronInput')
+	, CronInputs = require('./CronInputs')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
@@ -131,13 +133,16 @@ var Playground = React.createClass({displayName: 'Playground',
  		}
 		return (
 			React.createElement("div", {className: "components playground"}, 
-				React.createElement("h1", null, "Component Playground"), 
-				React.createElement("select", {value: this.state.component, onChange: this.pickComponent}, 
-					options
+				React.createElement("header", null, 
+					React.createElement("div", {className: "content"}, 
+						React.createElement("h1", null, "Component Playground"), 
+						React.createElement("select", {value: this.state.component, onChange: this.pickComponent}, 
+							options
+						), 
+						React.createElement("h3", {className: "title"}, "Component: ", this.state.component)
+					)
 				), 
-				React.createElement("hr", null), 
 				React.createElement("div", {className: "component"}, 
-					React.createElement("h3", {className: "title"}, this.state.component), 
 					React.createElement("div", {className: "wrapper"}, 
 						component
 					)

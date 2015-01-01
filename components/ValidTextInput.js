@@ -2,14 +2,15 @@
 
 var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 	propTypes : {
+		// gotta name yo fields
+		name : React.PropTypes.string.isRequired,
+		
 		// className will set on the containing div
 		className : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
 		// leave undefined to display no message
 		message : React.PropTypes.string,
-		// gotta name yo fields
-		name : React.PropTypes.string.isRequired,
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
 		// leave undefined to display no valid

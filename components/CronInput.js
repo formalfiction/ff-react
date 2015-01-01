@@ -8,7 +8,7 @@
 
 var cronizer = require('cronizer');
 
-var CronInput = React.createClass({
+var CronInput = React.createClass({displayName: 'CronInput',
 	propTypes : {
 		// name this thing.
 		name : React.PropTypes.string.isRequired,
@@ -62,7 +62,7 @@ var CronInput = React.createClass({
 	pattern : function () {
 		if (this.props.showPattern) {
 			return (
-				<div className="pattern">this.props.value.pattern</div>
+				React.createElement("div", {className: "pattern"}, "this.props.value.pattern")
 			);
 		}
 		
@@ -73,16 +73,16 @@ var CronInput = React.createClass({
 			, pattern = this.props.value.pattern;
 
 		return (
-			<div className={this.props.className}>
-				<input ref="input" 
-							 type="text"
-							 disabled={this.props.disabled}
-							 onChange={this.onChange}
-							 onFocus={this.onFocus}
-							 onBlur={this.onBlur} />
-				<div className="ss-icon">{this.validation()}</div>
-				this.pattern()
-			</div>
+			React.createElement("div", {className: this.props.className}, 
+				React.createElement("input", {ref: "input", 
+							 type: "text", 
+							 disabled: this.props.disabled, 
+							 onChange: this.onChange, 
+							 onFocus: this.onFocus, 
+							 onBlur: this.onBlur}), 
+				React.createElement("div", {className: "ss-icon"}, this.validation()), 
+				"this.pattern()"
+			)
 		);
 	}
 });
