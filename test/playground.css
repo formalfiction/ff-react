@@ -13,6 +13,9 @@
 .clock .separator {
   margin: 25px 5px;
 }
+.cronInput {
+  margin: 0;
+}
 .datePicker {
   position: relative;
 }

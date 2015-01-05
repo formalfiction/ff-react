@@ -13,7 +13,6 @@ var DeviceStore = Store({
 	addListeners : function () {
 		window.addEventListener("resize", onResize);
 		window.addEventListener("orientationchange", onResize);
-
 	},
 	removeListeners : function () {
 		window.removeEventListener("resize", DeviceStore.onResize);
@@ -21,9 +20,8 @@ var DeviceStore = Store({
 
 	// subscribe to all events
 	onChange : function () {
-
+		
 	},
-
 
 	name : function () {
 

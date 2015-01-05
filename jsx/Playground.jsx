@@ -2,7 +2,6 @@
 
 var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, CronInput = require('./CronInput')
-	, CronInputs = require('./CronInputs')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
