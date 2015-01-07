@@ -5,6 +5,7 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
+	, HoursInput = require('./HoursInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
@@ -19,8 +20,8 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, TimePicker = require('./TimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput", "Slider","SlideShow","Select"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+									"Signature","Signup","TimePicker","DateTimePicker","ValidTextInput", "Slider","SlideShow","Select"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -29,7 +30,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "Select",
+			component : "HoursInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -68,6 +69,9 @@ var Playground = React.createClass({
 			break;
 		case "DatePicker":
 			component = <DatePicker />
+			break;
+		case "HoursInput":
+			component = <HoursInput name="HoursInput" onValueChange={this.onValueChange} />
 			break;
 		case "Login":
 			component = <Login />

@@ -367,6 +367,402 @@ function earliestOpening (opening, date) {
 
 }
 },{}],2:[function(require,module,exports){
+module.exports = require('./lib/cronizer')
+},{"./lib/cronizer":4}],3:[function(require,module,exports){
+
+function Token (cases, type) {
+	this.cases = cases;
+	this.type = type;
+
+	return this;
+}
+
+Token.prototype.match = function (string) {
+	for (var i=0,c; c=this.cases[i]; i++) {
+		for (var j=0,m; m=c.match[j]; j++) {
+			if (string === m) {
+				return  [this.type, c.value];
+			}
+		}
+	}
+
+	return false;
+}
+
+
+module.exports = Token;
+},{}],4:[function(require,module,exports){
+/*
+ * Cronizer is intended to take plain english statements about *days* &
+ * turn them into cron statements. It doesn't handle times, but rather assumes
+ * we're matching a day
+ *
+ * possible statements (should) include things like:
+ * May 10th every year @ midnight
+ * Weekdays @ 4:30
+ * Every Monday, Tuesday, Friday
+ * Saturday & Sunday
+ * The first and third Sunday of the month
+ * 1st & third sunday
+ * May 10 every year
+ * Tuesdays & thursdays
+ * Last Sunday in October
+ * Third Tuesday in May
+*/
+
+var Tokens = require('./tokens')
+	, utils = require('./utils')
+	, fields = require("./fields");
+
+
+function Cronizer (options) {
+	this.options = options;
+}
+
+utils.extend(Cronizer.prototype, {
+	parse : function (statement) {
+		var context = this.newContext(statement);
+
+		// 1. Identify each token in the statement string
+		this.identify(context);
+		if (context.error) {
+			// console.log(context.error);
+			return false;
+		}
+
+		// 2. Reduce tokens
+		this.reduce(context);
+		if (context.error) {
+			// console.log(context.error);
+			return false;
+		}
+
+		// 3.
+		return this.result(context);
+	},
+
+	newContext : function (statement) {
+		return {
+			statement : statement,
+			tokens : this.tokens(statement),
+			symbols : [],
+			results : [[],[],[],[],[]],
+			state : {
+				foundAt : false
+			},
+			error : undefined
+		}
+	},
+
+	tokens : function tokens (statement) {
+		var tokens;
+
+		tokens = statement.trim().toLowerCase();
+		// space out commas to capture
+		tokens = tokens.replace(/,/g, " ,");
+		// remove multiple spaces
+		tokens = tokens.replace(/\s{2,}/g,' ');
+
+
+		return tokens.split(" ");
+	},
+
+	// Symbol identification
+	identify : function identify (context) {
+
+		for (var i=0,token; token=context.tokens[i]; i++) {
+			var symbol = this.identifySymbol(token, context.state);
+			
+			// if we can't identify a symbol, everything
+			// is presumed to be broken. bail.
+			if (!symbol) { 
+				context.error = "couldn't identify symbol: \"" + token + "\"";
+				return context;
+			}
+
+			// check for at field, don't add it to symbols
+			if (symbol[0] === fields.AT) {
+				context.state.foundAt = true;
+				continue;
+			}
+
+			context.symbols.push(symbol);
+		}
+
+		return context;
+	},
+
+	identifySymbol : function identifySymbol (string, state) {
+		var symbol;
+		for(var i=0,t; t=Tokens[i]; i++) {
+			symbol = t.match(string);
+			if (symbol) {
+				return symbol;
+			}
+		}
+
+		return false;
+	},
+
+	// Reduce should combine away any modifier fields
+	// with the symbols the effect, leaving only
+	// cron fields in the symbols array
+	reduce : function reduce(context) {
+		var clean;
+
+
+		while (true) {
+			if (!this.reduceSymbols(context)) {
+				return context;
+			}
+		}
+	},
+
+	reduceSymbols : function reduceSymbols (context) {
+		for (var i=0,s; s=context.symbols[i]; i++) {
+			switch (s[0]) {
+				case fields.ALL:
+					context.symbols = [s];
+					return false;
+					break;
+				case fields.AND:
+					var left = context.symbols[i - 1]
+						, right = context.symbols[i + 1];
+					
+					// need a left & a right to join
+
+					if (!left || !right) {
+						context.error = "unmathed and identifier";
+						return false;
+					}
+					// if types don't match we can't join
+					if (left[0] != right[0]) {
+						context.error = "unmathed and types on either side of and symbol";
+						return false;
+					}
+
+					context.symbols.splice(i-1, 3, [ left[0], left[1] + "," + right[1]]);
+					return true;
+
+					break;
+				case fields.NOT:
+					break;
+				case fields.PREFIX:
+					break;
+				case fields.SUFFIX:
+					break;
+				case fields.JOIN:
+					break;
+				case fields.IGNORE:
+					break;
+			}
+		}
+
+		return false;
+	},
+
+	/* At this point the only symbol types in the symbols array
+	 * should be one of the cron fields:
+	 * SECOND,MINUTE,HOUR,MONTH_DAY,MONTH,WEEK_DAY,ALL
+	 */
+	result : function result (context) {
+		var fo = this.fieldOrder();
+
+		if (context.error) { return false; }
+		// if (typeof symbols === "string" || !symbols) { return symbols; }
+
+		// if we haven't found an at symbol
+		// assume we're dealing with midnights.
+		if (!context.state.foundAt) {
+			context.results[0] = ["0"];
+			context.results[1] = ["0"];
+		}
+
+		// Sort symbols into the fields they affect
+		for (var i=0,s; s=context.symbols[i]; i++) {
+			if (s[0] === fields.ALL) { return s[1]; }
+			var field = fo[s[0]];
+			context.results[field].push(s[1]);
+		}
+
+		// Reduce sets to corresponding arrays
+		for (var i=0,r; r=context.results[i]; i++) {
+			r = r.join();
+			if (!r || r === "") { 
+				r = "*";
+			}
+			context.results[i] = r;
+		}
+
+		return context.results.join(" ");
+	},
+
+	fieldOrder : function () {
+		var fo = {}
+		// currently don't support seconds
+		// fo[fields.SECOND] = 0;
+		fo[fields.MINUTE] = 0;
+		fo[fields.HOUR] = 1;
+		fo[fields.MONTH_DAY] = 2;
+		fo[fields.MONTH] = 3;
+		fo[fields.WEEK_DAY] = 4;
+		return fo
+	}
+});
+
+
+module.exports = Cronizer;
+},{"./fields":5,"./tokens":6,"./utils":7}],5:[function(require,module,exports){
+// Constants to represent fields in a cron pattern
+module.exports = {
+	// Cron Fields
+	SECOND : "SECOND",
+	MINUTE : "MINUTE",
+	HOUR : "HOUR",
+	MONTH_DAY : "MONTH_DAY",
+	MONTH : "MONTH",
+	WEEK_DAY : "WEEK_DAY",
+	ALL : "ALL",
+
+	// Modifier fields
+	AT : "AT",
+	AND : "AND",
+	NOT : "NOT",
+	PREFIX : "PREFIX",
+	SUFFIX : "SUFFIX",
+	IGNORE : "IGNORE"
+	
+}
+},{}],6:[function(require,module,exports){
+var Token = require('./Token')
+	, fields = require('./fields');
+
+/*
+ * May 10th every year @ midnight
+ * Weekdays @ 4:30
+ * Every Monday, Tuesday, Friday
+ * Saturday & Sunday
+ * The first and third Sunday of the month
+ * 1st & third sunday
+ * May 10 every year
+ * Tuesdays & thursdays
+ * Last Sunday in October
+ * Third Tuesday in May
+ */
+
+// var second = new Token(['']);
+// var minute = new Token(['']);
+// var hour = new Token([
+// ]);
+
+var all = new Token([
+	{ match : ["daily","midnight"], value : "0 0 * * *" },
+	{ match : ["annually","yearly", "*"], value : "0 0 1 1 *" },
+	{ match : ["monthly"], value : "0 0 1 * *" },
+	{ match : ["weekly"], value : "0 0 * * 0" }
+], fields.ALL);
+
+var monthDay = new Token([
+	{ match : ["1st", "1"], value : 1},
+	{ match : ["2nd", "2"], value : 2},
+	{ match : ["3rd", "3"], value : 3},
+	{ match : ["4th", "4"], value : 4},
+	{ match : ["5th", "5"], value : 5},
+	{ match : ["6th", "6"], value : 6},
+	{ match : ["7th", "7"], value : 7},
+	{ match : ["8th", "8"], value : 8},
+	{ match : ["9th", "9"], value : 9},
+	{ match : ["10th", "10"], value : 10},
+	{ match : ["11th", "11"], value : 11},
+	{ match : ["12th", "12"], value : 12},
+	{ match : ["13th", "13"], value : 13},
+	{ match : ["14th", "14"], value : 14},
+	{ match : ["16th", "15"], value : 15},
+	{ match : ["16th", "16"], value : 16},
+	{ match : ["17th", "17"], value : 17},
+	{ match : ["18th", "18"], value : 18},
+	{ match : ["19th", "19"], value : 19},
+	{ match : ["20th", "20"], value : 20},
+	{ match : ["21st", "21"], value : 21},
+	{ match : ["22nd", "22"], value : 22},
+	{ match : ["23rd", "23"], value : 23},
+	{ match : ["24th", "24"], value : 24},
+	{ match : ["25th", "25"], value : 25},
+	{ match : ["26th", "26"], value : 26},
+	{ match : ["27th", "27"], value : 27},
+	{ match : ["28th", "28"], value : 28},
+	{ match : ["29th", "29"], value : 29},
+	{ match : ["30th", "30"], value : 30},
+	{ match : ["31st", "31"], value : 31},
+], fields.MONTH_DAY);
+
+var month = new Token([
+	{ match : ["january", "jan"], value : 0 },
+	{ match : ["february", "feb"], value : 1 },
+	{ match : ["march", "mar"], value : 2 },
+	{ match : ["april", "apr"], value : 3 },
+	{ match : ["may"], value : 4 },
+	{ match : ["june", "jun"], value : 5 },
+	{ match : ["july", "jul"], value : 6 },
+	{ match : ["august", "aug"], value : 7 },
+	{ match : ["september", "sept", "sep"], value : 8 },
+	{ match : ["october", "oct"], value : 9 },
+	{ match : ["november", "nov"], value : 10 },
+	{ match : ["december", "dec"], value : 11 },
+], fields.MONTH);
+
+var weekDay = new Token([
+	{ match : ["sundays", "sunday", "sun", "su"], value : 0 },
+	{ match : ["mondays","monday","mon", "mo"], value : 1 },
+	{ match : ["tuesdays","tuesday", "tues", "tue", "tu"], value : 2 },
+	{ match : ["wednesdays", "wednesday", "wed", "we"], value : 3 },
+	{ match : ["thursdays", "thursday", "thurs", "thur", "th"], value : 4 },
+	{ match : ["fridays", "friday", "fri", "fr"], value : 5 },
+	{ match : ["saturdays", "saturday", "sat", "sa"], value : 6 },
+	{ match : ["day"], value : "*"	}
+], fields.WEEK_DAY);
+
+var at = new Token([
+	{ match : ['at','@','on'], value : null }
+], fields.AT);
+
+var and = new Token([
+	{ match : ["and", "&", ","], value : null }
+], fields.AND);
+
+var not = new Token([
+	{ match : ["not","except","but"], value : null }
+], fields.NOT);
+
+var Tokens = [
+	all,
+	// second,
+	// minute,
+	// hour,
+	monthDay,
+	month,
+	weekDay,
+	at,
+	and,
+	not,
+]
+
+module.exports = Tokens;
+},{"./Token":3,"./fields":5}],7:[function(require,module,exports){
+
+module.exports = {
+	extend : function extend(obj) {
+		Array.prototype.slice.call(arguments, 1).forEach(function(source){
+			if (source) {
+		    for (var prop in source) {
+		      obj[prop] = source[prop];
+		    }
+	    }
+		});
+		return obj;
+	}
+}
+},{}],8:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Autogrow is a text area that grows & shrinks 
@@ -438,9 +834,9 @@ var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
 });
 
 module.exports = AutoGrowTextArea;
-},{}],3:[function(require,module,exports){
-module.exports=require(2)
-},{"/Users/brendan/dev/node_modules/ff-react/components/AutoGrowTextArea.js":2}],4:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
+module.exports=require(8)
+},{"/Users/brendan/dev/node_modules/ff-react/components/AutoGrowTextArea.js":8}],10:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var BasicForm = React.createClass({displayName: 'BasicForm',
@@ -453,7 +849,7 @@ var BasicForm = React.createClass({displayName: 'BasicForm',
 });
 
 module.exports = BasicForm;
-},{}],5:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * ** NOT A COMPONENT **
@@ -557,7 +953,7 @@ function handleField (obj, i, fields) {
 }
 
 module.exports = BasicFormFields;
-},{"./ValidTextInput":37,"underscore":197}],6:[function(require,module,exports){
+},{"./ValidTextInput":43,"underscore":197}],12:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Clock is used for selecting time values in 15-minute
@@ -567,12 +963,16 @@ module.exports = BasicFormFields;
  * 
  */
 
+var hours = ["01","02","03","04","05","06","07","08","09","10","11","12"]
+	, minutes = ["00","15","30","45"]
+	, phase = ["am","pm"];
 
 var Clock = React.createClass({displayName: 'Clock',
-	
-	hours : ["01","02","03","04","05","06","07","08","09","10","11","12"],
-	minutes : ["00","15","30","45"],
-	phase : ["am","pm"],
+	propTypes : {
+		name : React.PropTypes.string,
+		onValueChange : React.PropTypes.func,
+		disabled : React.PropTypes.bool
+	},
 
 	// Methods
 	// Break a date value up into the needed hours / minutes / phase
@@ -672,18 +1072,18 @@ var Clock = React.createClass({displayName: 'Clock',
 			React.createElement("div", {className: "clock", onMouseDown: this.props.onMouseDown}, 
 				React.createElement("div", {className: "hours segment"}, 
 					React.createElement("a", {onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.hours[values.hours]), 
+					React.createElement("h5", null, hours[values.hours]), 
 					React.createElement("a", {onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("h5", {className: "separator segment"}, ":"), 
 				React.createElement("div", {className: "minutes segment"}, 
 					React.createElement("a", {onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.minutes[values.minutes]), 
+					React.createElement("h5", null, minutes[values.minutes]), 
 					React.createElement("a", {onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("div", {className: "phase segment"}, 
 					React.createElement("a", {onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.phase[values.phase]), 
+					React.createElement("h5", null, phase[values.phase]), 
 					React.createElement("a", {onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
 				)
 			)
@@ -692,7 +1092,7 @@ var Clock = React.createClass({displayName: 'Clock',
 });
 
 module.exports = Clock
-},{}],7:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -737,7 +1137,7 @@ var ConfirmDialogue = React.createClass({displayName: 'ConfirmDialogue',
 });
 
 module.exports = ConfirmDialogue;
-},{}],8:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* CronInput takes a human-readable string input & tries to
@@ -828,7 +1228,7 @@ var CronInput = React.createClass({displayName: 'CronInput',
 });
 
 module.exports = CronInput;
-},{"cronizer":46}],9:[function(require,module,exports){
+},{"cronizer":2}],15:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * @stateful
@@ -952,7 +1352,7 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 });
 
 module.exports = DatePicker;
-},{"./MonthCalendar":22,"react":196}],10:[function(require,module,exports){
+},{"./MonthCalendar":28,"react":196}],16:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1369,7 +1769,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 });
 
 module.exports = DateTimePicker;
-},{"../deps/iscroll":45}],11:[function(require,module,exports){
+},{"../deps/iscroll":51}],17:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1402,7 +1802,7 @@ var DurationPicker = React.createClass({displayName: 'DurationPicker',
 });
 
 module.exports = DurationPicker;
-},{}],12:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /** @jsx React.DOM */
 
 // modal wrapper for any react element
@@ -1460,7 +1860,7 @@ var ElementModal = React.createClass({displayName: 'ElementModal',
 });
 
 module.exports = ElementModal;
-},{}],13:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Basic 505 Error Component */
@@ -1497,7 +1897,7 @@ var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
 });
 
 module.exports = FiveOhFive
-},{}],14:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Standard Not-Found Component with a go-back button. */
@@ -1536,7 +1936,7 @@ var FourOhFour = React.createClass({displayName: 'FourOhFour',
 });
 
 module.exports = FourOhFour;
-},{}],15:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
@@ -1545,7 +1945,17 @@ module.exports = FourOhFour;
  * 
  */
 
-var Hours = require('Hours');
+var Clock = require('./Clock')
+	, Hours = require('Hours')
+	, days = [
+		["Su","Sun."],
+		["Mo","Mon."],
+		["Tu","Tue."],
+		["We","Wed."],
+		["Th","Thu."],
+		["Fr","Fri."],
+		["Sa","Sat."]
+	];
 
 var HoursInput = React.createClass({displayName: 'HoursInput',
 	propTypes : {
@@ -1559,29 +1969,88 @@ var HoursInput = React.createClass({displayName: 'HoursInput',
 	},
 	getInitialState : function () {
 		return {
-			value : ""
+			Su : false,
+			Mo : false,
+			Tu : false,
+			We : false,
+			Th : false,
+			Fr : false,
+			Sa : false,
+			allDay : true,
+			startHour : 9,
+			startMin : 00,
+			stopHour : 17,
+			stopMin : 0
 		}
 	},
 
 
+	// methods
+	value : function () {
+		// @todo
+		return "Mo-Fr 9:00-17:00"
+	},
+
+	// event handlers
+	onToggleDay : function (e) {
+		var abr = e.target.getAttribute("ref")
+			, o = {};
+
+		o[abr] = !this.state[abr];
+		this.setState(o);
+
+		this.onChange();
+	},
+
+	onHourChange : function (e) {
+		
+		this.onChange();
+	},
+
+	onChange : function () {
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(this.value(), this.props.name);
+		}
+	},
 
 	// render
+	dayClass : function (abr) {
+		return (this.state[abr]) ? "day selected" : "day";
+	},
 	renderDays : function () {
+		var out = [];
+
+		for (var i=0,day; day=days[i]; i++) {
+			out.push(React.createElement("div", {key: i, ref: day[0], className: this.dayClass(day[0])}, day[1]));
+		}
+
 		return (
-			React.createElement("div", {className: "days"})
+			React.createElement("div", {className: "days"}, 
+				out
+			)
 		);
+	},
+	renderHour : function (name) {
+
 	},
 	render : function () {
 		return (
-			React.createElement("div", {className: "hoursInput"}
-
+			React.createElement("div", {className: "hoursInput"}, 
+				this.renderDays(), 
+				React.createElement(Clock, {name: "start", disabled: this.state.allDay}), 
+				React.createElement("p", null, "-"), 
+				React.createElement(Clock, {name: "stop", disabled: this.state.allDay}), 
+				React.createElement("div", {className: "check"}, 
+					React.createElement("input", {type: "checkbox", checked: this.state.allDay}), 
+					React.createElement("label", null, "all day")
+				)
 			)
 		)
 	}
 });
 
 module.exports = HoursInput;
-},{"Hours":1}],16:[function(require,module,exports){
+},{"./Clock":12,"Hours":1}],22:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ListItem = require('./ListItem');
@@ -1597,7 +2066,7 @@ var List = React.createClass({displayName: 'List',
 });
 
 module.exports = List;
-},{"./ListItem":17}],17:[function(require,module,exports){
+},{"./ListItem":23}],23:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ListItem = React.createClass({displayName: 'ListItem',
@@ -1610,7 +2079,7 @@ var ListItem = React.createClass({displayName: 'ListItem',
 });
 
 module.exports = ListItem;
-},{}],18:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Map component handles display & interaction with a map.
@@ -1638,7 +2107,7 @@ var Map = React.createClass({displayName: 'Map',
 });
 
 module.exports = Map;
-},{}],19:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var Showdown = require('../deps/Showdown');
@@ -1712,7 +2181,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 });
 
 module.exports = MarkdownEditor;
-},{"../deps/Showdown":43}],20:[function(require,module,exports){
+},{"../deps/Showdown":49}],26:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -1742,7 +2211,7 @@ var MarkdownText = React.createClass({displayName: 'MarkdownText',
 });
 
 module.exports = MarkdownText;
-},{"../deps/Showdown":43}],21:[function(require,module,exports){
+},{"../deps/Showdown":49}],27:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Message Box Compnent */
@@ -1770,7 +2239,7 @@ var Message = React.createClass({displayName: 'Message',
 });
 
 module.exports = Message;
-},{}],22:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1927,7 +2396,7 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 });
 
 module.exports = MonthCalendar;
-},{}],23:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var AutoGrowTextarea = require('./AutoGrowTextarea')
@@ -1935,6 +2404,7 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
+	, HoursInput = require('./HoursInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
@@ -1949,8 +2419,8 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, TimePicker = require('./TimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Signature","Signup","TimePicker","DateTimePicker", "ValidTextInput", "Slider","SlideShow","Select"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+									"Signature","Signup","TimePicker","DateTimePicker","ValidTextInput", "Slider","SlideShow","Select"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -1959,7 +2429,7 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
-			component : "Select",
+			component : "HoursInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -1998,6 +2468,9 @@ var Playground = React.createClass({displayName: 'Playground',
 			break;
 		case "DatePicker":
 			component = React.createElement(DatePicker, null)
+			break;
+		case "HoursInput":
+			component = React.createElement(HoursInput, {name: "HoursInput", onValueChange: this.onValueChange})
 			break;
 		case "Login":
 			component = React.createElement(Login, null)
@@ -2083,7 +2556,7 @@ var Playground = React.createClass({displayName: 'Playground',
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AutoGrowTextarea":3,"./Clock":6,"./CronInput":8,"./DatePicker":9,"./DateTimePicker":10,"./Map":18,"./MarkdownEditor":19,"./MarkdownText":20,"./PriceInput":24,"./ResultsTextInput":25,"./S3PhotoUploader":26,"./Select":27,"./Signature":28,"./SlideShow":29,"./Slider":30,"./TagInput":31,"./TimePicker":33,"./ValidTextInput":37}],24:[function(require,module,exports){
+},{"./AutoGrowTextarea":9,"./Clock":12,"./CronInput":14,"./DatePicker":15,"./DateTimePicker":16,"./HoursInput":21,"./Map":24,"./MarkdownEditor":25,"./MarkdownText":26,"./PriceInput":30,"./ResultsTextInput":31,"./S3PhotoUploader":32,"./Select":33,"./Signature":34,"./SlideShow":35,"./Slider":36,"./TagInput":37,"./TimePicker":39,"./ValidTextInput":43}],30:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -2160,7 +2633,7 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 });
 
 module.exports = PriceInput;
-},{"../deps/MaskMoney":41}],25:[function(require,module,exports){
+},{"../deps/MaskMoney":47}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ReactPropTypes = React.PropTypes
@@ -2268,7 +2741,7 @@ var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
 });
 
 module.exports = ResultsTextInput;
-},{"../constants/KeyCodes":40}],26:[function(require,module,exports){
+},{"../constants/KeyCodes":46}],32:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -2383,7 +2856,7 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 });
 
 module.exports = S3PhotoUploader;
-},{"../deps/S3Upload":42}],27:[function(require,module,exports){
+},{"../deps/S3Upload":48}],33:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var Select = React.createClass({displayName: 'Select',
@@ -2512,7 +2985,7 @@ var Select = React.createClass({displayName: 'Select',
 });
 
 module.exports = Select;
-},{}],28:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * SignaturePad takes user signatures & spits out
@@ -2585,7 +3058,7 @@ var Signature = React.createClass({displayName: 'Signature',
 });
 
 module.exports= Signature;
-},{"../deps/SignaturePad":44}],29:[function(require,module,exports){
+},{"../deps/SignaturePad":50}],35:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -2740,7 +3213,7 @@ var SlideShow = React.createClass({displayName: 'SlideShow',
 
 module.exports = SlideShow;
 
-},{}],30:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var startX, startY;
@@ -2841,7 +3314,7 @@ var Slider = React.createClass({displayName: 'Slider',
 });
 
 module.exports = Slider;
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  *  @stateful
@@ -2965,7 +3438,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 });
 
 module.exports = TagInput;
-},{"../constants/KeyCodes":40}],32:[function(require,module,exports){
+},{"../constants/KeyCodes":46}],38:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Tags displays a list of tags.
@@ -3012,7 +3485,7 @@ var Tags = React.createClass({displayName: 'Tags',
 });
 
 module.exports = Tags;
-},{}],33:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * TimePicker Pairs the Clock Component with an
@@ -3104,7 +3577,7 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 });
 
 module.exports = TimePicker;
-},{"./Clock":6}],34:[function(require,module,exports){
+},{"./Clock":12}],40:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -3177,7 +3650,7 @@ var FastAnchor = React.createClass({displayName: 'FastAnchor',
 });
 
 module.exports = FastAnchor;
-},{"../utils/clickbuster":198}],35:[function(require,module,exports){
+},{"../utils/clickbuster":198}],41:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -3252,7 +3725,7 @@ var FastButton = React.createClass({displayName: 'FastButton',
 });
 
 module.exports = FastButton;
-},{"../utils/clickbuster":198}],36:[function(require,module,exports){
+},{"../utils/clickbuster":198}],42:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
@@ -3328,7 +3801,7 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 });
 
 module.exports = ValidSelectInput;
-},{}],37:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
@@ -3401,7 +3874,7 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 });
 
 module.exports = ValidTextInput;
-},{}],38:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
@@ -3464,7 +3937,7 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 });
 
 module.exports = ValidTextareaInput;
-},{}],39:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
@@ -3505,7 +3978,7 @@ var Switch = React.createClass({displayName: 'Switch',
 });
 
 module.exports = Switch
-},{}],40:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var KeyCodes = {
 	enter : 13,
 	left : 37,
@@ -3518,7 +3991,7 @@ var KeyCodes = {
 }
 
 module.exports = KeyCodes;
-},{}],41:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 // jQuery MaskMoney Plugin
 // @url: https://github.com/plentz/jquery-maskmoney
 (function ($) {
@@ -3924,7 +4397,7 @@ module.exports = KeyCodes;
 })(window.jQuery || window.Zepto);
 
 module.exports = $.maskMoney;
-},{}],42:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 // https://github.com/tadruj/s3upload-coffee-javascript
 
 function S3Upload(el, options) {
@@ -4042,7 +4515,7 @@ S3Upload.prototype.uploadFile = function(file) {
 };
 
 module.exports = S3Upload;
-},{}],43:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 //
 // showdown.js -- A javascript port of Markdown.
 //
@@ -5497,7 +5970,7 @@ if (typeof define === 'function' && define.amd) {
         return Showdown;
     });
 }
-},{}],44:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var SignaturePad = (function (document) {
     "use strict";
 
@@ -5835,7 +6308,7 @@ var SignaturePad = (function (document) {
 })(document)
 
 module.exports = SignaturePad;
-},{}],45:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /*! iScroll v5.1.3 ~ (c) 2008-2014 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
@@ -7849,402 +8322,6 @@ if ( typeof module != 'undefined' && module.exports ) {
 }
 
 })(window, document, Math);
-},{}],46:[function(require,module,exports){
-module.exports = require('./lib/cronizer')
-},{"./lib/cronizer":48}],47:[function(require,module,exports){
-
-function Token (cases, type) {
-	this.cases = cases;
-	this.type = type;
-
-	return this;
-}
-
-Token.prototype.match = function (string) {
-	for (var i=0,c; c=this.cases[i]; i++) {
-		for (var j=0,m; m=c.match[j]; j++) {
-			if (string === m) {
-				return  [this.type, c.value];
-			}
-		}
-	}
-
-	return false;
-}
-
-
-module.exports = Token;
-},{}],48:[function(require,module,exports){
-/*
- * Cronizer is intended to take plain english statements about *days* &
- * turn them into cron statements. It doesn't handle times, but rather assumes
- * we're matching a day
- *
- * possible statements (should) include things like:
- * May 10th every year @ midnight
- * Weekdays @ 4:30
- * Every Monday, Tuesday, Friday
- * Saturday & Sunday
- * The first and third Sunday of the month
- * 1st & third sunday
- * May 10 every year
- * Tuesdays & thursdays
- * Last Sunday in October
- * Third Tuesday in May
-*/
-
-var Tokens = require('./tokens')
-	, utils = require('./utils')
-	, fields = require("./fields");
-
-
-function Cronizer (options) {
-	this.options = options;
-}
-
-utils.extend(Cronizer.prototype, {
-	parse : function (statement) {
-		var context = this.newContext(statement);
-
-		// 1. Identify each token in the statement string
-		this.identify(context);
-		if (context.error) {
-			// console.log(context.error);
-			return false;
-		}
-
-		// 2. Reduce tokens
-		this.reduce(context);
-		if (context.error) {
-			// console.log(context.error);
-			return false;
-		}
-
-		// 3.
-		return this.result(context);
-	},
-
-	newContext : function (statement) {
-		return {
-			statement : statement,
-			tokens : this.tokens(statement),
-			symbols : [],
-			results : [[],[],[],[],[]],
-			state : {
-				foundAt : false
-			},
-			error : undefined
-		}
-	},
-
-	tokens : function tokens (statement) {
-		var tokens;
-
-		tokens = statement.trim().toLowerCase();
-		// space out commas to capture
-		tokens = tokens.replace(/,/g, " ,");
-		// remove multiple spaces
-		tokens = tokens.replace(/\s{2,}/g,' ');
-
-
-		return tokens.split(" ");
-	},
-
-	// Symbol identification
-	identify : function identify (context) {
-
-		for (var i=0,token; token=context.tokens[i]; i++) {
-			var symbol = this.identifySymbol(token, context.state);
-			
-			// if we can't identify a symbol, everything
-			// is presumed to be broken. bail.
-			if (!symbol) { 
-				context.error = "couldn't identify symbol: \"" + token + "\"";
-				return context;
-			}
-
-			// check for at field, don't add it to symbols
-			if (symbol[0] === fields.AT) {
-				context.state.foundAt = true;
-				continue;
-			}
-
-			context.symbols.push(symbol);
-		}
-
-		return context;
-	},
-
-	identifySymbol : function identifySymbol (string, state) {
-		var symbol;
-		for(var i=0,t; t=Tokens[i]; i++) {
-			symbol = t.match(string);
-			if (symbol) {
-				return symbol;
-			}
-		}
-
-		return false;
-	},
-
-	// Reduce should combine away any modifier fields
-	// with the symbols the effect, leaving only
-	// cron fields in the symbols array
-	reduce : function reduce(context) {
-		var clean;
-
-
-		while (true) {
-			if (!this.reduceSymbols(context)) {
-				return context;
-			}
-		}
-	},
-
-	reduceSymbols : function reduceSymbols (context) {
-		for (var i=0,s; s=context.symbols[i]; i++) {
-			switch (s[0]) {
-				case fields.ALL:
-					context.symbols = [s];
-					return false;
-					break;
-				case fields.AND:
-					var left = context.symbols[i - 1]
-						, right = context.symbols[i + 1];
-					
-					// need a left & a right to join
-
-					if (!left || !right) {
-						context.error = "unmathed and identifier";
-						return false;
-					}
-					// if types don't match we can't join
-					if (left[0] != right[0]) {
-						context.error = "unmathed and types on either side of and symbol";
-						return false;
-					}
-
-					context.symbols.splice(i-1, 3, [ left[0], left[1] + "," + right[1]]);
-					return true;
-
-					break;
-				case fields.NOT:
-					break;
-				case fields.PREFIX:
-					break;
-				case fields.SUFFIX:
-					break;
-				case fields.JOIN:
-					break;
-				case fields.IGNORE:
-					break;
-			}
-		}
-
-		return false;
-	},
-
-	/* At this point the only symbol types in the symbols array
-	 * should be one of the cron fields:
-	 * SECOND,MINUTE,HOUR,MONTH_DAY,MONTH,WEEK_DAY,ALL
-	 */
-	result : function result (context) {
-		var fo = this.fieldOrder();
-
-		if (context.error) { return false; }
-		// if (typeof symbols === "string" || !symbols) { return symbols; }
-
-		// if we haven't found an at symbol
-		// assume we're dealing with midnights.
-		if (!context.state.foundAt) {
-			context.results[0] = ["0"];
-			context.results[1] = ["0"];
-		}
-
-		// Sort symbols into the fields they affect
-		for (var i=0,s; s=context.symbols[i]; i++) {
-			if (s[0] === fields.ALL) { return s[1]; }
-			var field = fo[s[0]];
-			context.results[field].push(s[1]);
-		}
-
-		// Reduce sets to corresponding arrays
-		for (var i=0,r; r=context.results[i]; i++) {
-			r = r.join();
-			if (!r || r === "") { 
-				r = "*";
-			}
-			context.results[i] = r;
-		}
-
-		return context.results.join(" ");
-	},
-
-	fieldOrder : function () {
-		var fo = {}
-		// currently don't support seconds
-		// fo[fields.SECOND] = 0;
-		fo[fields.MINUTE] = 0;
-		fo[fields.HOUR] = 1;
-		fo[fields.MONTH_DAY] = 2;
-		fo[fields.MONTH] = 3;
-		fo[fields.WEEK_DAY] = 4;
-		return fo
-	}
-});
-
-
-module.exports = Cronizer;
-},{"./fields":49,"./tokens":50,"./utils":51}],49:[function(require,module,exports){
-// Constants to represent fields in a cron pattern
-module.exports = {
-	// Cron Fields
-	SECOND : "SECOND",
-	MINUTE : "MINUTE",
-	HOUR : "HOUR",
-	MONTH_DAY : "MONTH_DAY",
-	MONTH : "MONTH",
-	WEEK_DAY : "WEEK_DAY",
-	ALL : "ALL",
-
-	// Modifier fields
-	AT : "AT",
-	AND : "AND",
-	NOT : "NOT",
-	PREFIX : "PREFIX",
-	SUFFIX : "SUFFIX",
-	IGNORE : "IGNORE"
-	
-}
-},{}],50:[function(require,module,exports){
-var Token = require('./Token')
-	, fields = require('./fields');
-
-/*
- * May 10th every year @ midnight
- * Weekdays @ 4:30
- * Every Monday, Tuesday, Friday
- * Saturday & Sunday
- * The first and third Sunday of the month
- * 1st & third sunday
- * May 10 every year
- * Tuesdays & thursdays
- * Last Sunday in October
- * Third Tuesday in May
- */
-
-// var second = new Token(['']);
-// var minute = new Token(['']);
-// var hour = new Token([
-// ]);
-
-var all = new Token([
-	{ match : ["daily","midnight"], value : "0 0 * * *" },
-	{ match : ["annually","yearly", "*"], value : "0 0 1 1 *" },
-	{ match : ["monthly"], value : "0 0 1 * *" },
-	{ match : ["weekly"], value : "0 0 * * 0" }
-], fields.ALL);
-
-var monthDay = new Token([
-	{ match : ["1st", "1"], value : 1},
-	{ match : ["2nd", "2"], value : 2},
-	{ match : ["3rd", "3"], value : 3},
-	{ match : ["4th", "4"], value : 4},
-	{ match : ["5th", "5"], value : 5},
-	{ match : ["6th", "6"], value : 6},
-	{ match : ["7th", "7"], value : 7},
-	{ match : ["8th", "8"], value : 8},
-	{ match : ["9th", "9"], value : 9},
-	{ match : ["10th", "10"], value : 10},
-	{ match : ["11th", "11"], value : 11},
-	{ match : ["12th", "12"], value : 12},
-	{ match : ["13th", "13"], value : 13},
-	{ match : ["14th", "14"], value : 14},
-	{ match : ["16th", "15"], value : 15},
-	{ match : ["16th", "16"], value : 16},
-	{ match : ["17th", "17"], value : 17},
-	{ match : ["18th", "18"], value : 18},
-	{ match : ["19th", "19"], value : 19},
-	{ match : ["20th", "20"], value : 20},
-	{ match : ["21st", "21"], value : 21},
-	{ match : ["22nd", "22"], value : 22},
-	{ match : ["23rd", "23"], value : 23},
-	{ match : ["24th", "24"], value : 24},
-	{ match : ["25th", "25"], value : 25},
-	{ match : ["26th", "26"], value : 26},
-	{ match : ["27th", "27"], value : 27},
-	{ match : ["28th", "28"], value : 28},
-	{ match : ["29th", "29"], value : 29},
-	{ match : ["30th", "30"], value : 30},
-	{ match : ["31st", "31"], value : 31},
-], fields.MONTH_DAY);
-
-var month = new Token([
-	{ match : ["january", "jan"], value : 0 },
-	{ match : ["february", "feb"], value : 1 },
-	{ match : ["march", "mar"], value : 2 },
-	{ match : ["april", "apr"], value : 3 },
-	{ match : ["may"], value : 4 },
-	{ match : ["june", "jun"], value : 5 },
-	{ match : ["july", "jul"], value : 6 },
-	{ match : ["august", "aug"], value : 7 },
-	{ match : ["september", "sept", "sep"], value : 8 },
-	{ match : ["october", "oct"], value : 9 },
-	{ match : ["november", "nov"], value : 10 },
-	{ match : ["december", "dec"], value : 11 },
-], fields.MONTH);
-
-var weekDay = new Token([
-	{ match : ["sundays", "sunday", "sun", "su"], value : 0 },
-	{ match : ["mondays","monday","mon", "mo"], value : 1 },
-	{ match : ["tuesdays","tuesday", "tues", "tue", "tu"], value : 2 },
-	{ match : ["wednesdays", "wednesday", "wed", "we"], value : 3 },
-	{ match : ["thursdays", "thursday", "thurs", "thur", "th"], value : 4 },
-	{ match : ["fridays", "friday", "fri", "fr"], value : 5 },
-	{ match : ["saturdays", "saturday", "sat", "sa"], value : 6 },
-	{ match : ["day"], value : "*"	}
-], fields.WEEK_DAY);
-
-var at = new Token([
-	{ match : ['at','@','on'], value : null }
-], fields.AT);
-
-var and = new Token([
-	{ match : ["and", "&", ","], value : null }
-], fields.AND);
-
-var not = new Token([
-	{ match : ["not","except","but"], value : null }
-], fields.NOT);
-
-var Tokens = [
-	all,
-	// second,
-	// minute,
-	// hour,
-	monthDay,
-	month,
-	weekDay,
-	at,
-	and,
-	not,
-]
-
-module.exports = Tokens;
-},{"./Token":47,"./fields":49}],51:[function(require,module,exports){
-
-module.exports = {
-	extend : function extend(obj) {
-		Array.prototype.slice.call(arguments, 1).forEach(function(source){
-			if (source) {
-		    for (var prop in source) {
-		      obj[prop] = source[prop];
-		    }
-	    }
-		});
-		return obj;
-	}
-}
 },{}],52:[function(require,module,exports){
 // shim for using process in browser
 
@@ -8253,6 +8330,8 @@ var process = module.exports = {};
 process.nextTick = (function () {
     var canSetImmediate = typeof window !== 'undefined'
     && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
     var canPost = typeof window !== 'undefined'
     && window.postMessage && window.addEventListener
     ;
@@ -8261,8 +8340,29 @@ process.nextTick = (function () {
         return function (f) { return window.setImmediate(f) };
     }
 
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
     if (canPost) {
-        var queue = [];
         window.addEventListener('message', function (ev) {
             var source = ev.source;
             if ((source === window || source === null) && ev.data === 'process-tick') {
@@ -8302,7 +8402,7 @@ process.emit = noop;
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
-}
+};
 
 // TODO(shtylman)
 process.cwd = function () { return '/' };
@@ -28345,4 +28445,4 @@ var clickbuster = {
 document.addEventListener('click', clickbuster.onClick, true);
 
 module.exports = clickbuster;
-},{}]},{},[2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39]);
+},{}]},{},[8,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45]);

@@ -99,6 +99,23 @@
 .dateTimePicker .picker .phase {
   width: 15%;
 }
+.hoursInput {
+  width: 100%;
+}
+.hoursInput .days {
+  float: left;
+}
+.hoursInput .days .day {
+  float: left;
+  border: 1px solid #888;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  padding-top: 12px;
+}
+.hoursInput .days .day.selected {
+  background: #999;
+}
 .modal {
   z-index: 3;
   margin: auto;

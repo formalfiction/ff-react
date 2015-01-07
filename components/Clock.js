@@ -7,12 +7,16 @@
  * 
  */
 
+var hours = ["01","02","03","04","05","06","07","08","09","10","11","12"]
+	, minutes = ["00","15","30","45"]
+	, phase = ["am","pm"];
 
 var Clock = React.createClass({displayName: 'Clock',
-	
-	hours : ["01","02","03","04","05","06","07","08","09","10","11","12"],
-	minutes : ["00","15","30","45"],
-	phase : ["am","pm"],
+	propTypes : {
+		name : React.PropTypes.string,
+		onValueChange : React.PropTypes.func,
+		disabled : React.PropTypes.bool
+	},
 
 	// Methods
 	// Break a date value up into the needed hours / minutes / phase
@@ -112,18 +116,18 @@ var Clock = React.createClass({displayName: 'Clock',
 			React.createElement("div", {className: "clock", onMouseDown: this.props.onMouseDown}, 
 				React.createElement("div", {className: "hours segment"}, 
 					React.createElement("a", {onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.hours[values.hours]), 
+					React.createElement("h5", null, hours[values.hours]), 
 					React.createElement("a", {onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("h5", {className: "separator segment"}, ":"), 
 				React.createElement("div", {className: "minutes segment"}, 
 					React.createElement("a", {onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.minutes[values.minutes]), 
+					React.createElement("h5", null, minutes[values.minutes]), 
 					React.createElement("a", {onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("div", {className: "phase segment"}, 
 					React.createElement("a", {onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, this.phase[values.phase]), 
+					React.createElement("h5", null, phase[values.phase]), 
 					React.createElement("a", {onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
 				)
 			)
