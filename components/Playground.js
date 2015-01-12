@@ -37,6 +37,7 @@ var Playground = React.createClass({displayName: 'Playground',
 				DateTimePickerCenter : thirtyDaysAgo,
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
+				HoursInput : "Mo-Sa 9:00-17:00"
 			}
 		}
 	},
@@ -71,7 +72,7 @@ var Playground = React.createClass({displayName: 'Playground',
 			component = React.createElement(DatePicker, null)
 			break;
 		case "HoursInput":
-			component = React.createElement(HoursInput, {name: "HoursInput", onValueChange: this.onValueChange})
+			component = React.createElement(HoursInput, {name: "HoursInput", value: this.state.values.HoursInput, onValueChange: this.onValueChange})
 			break;
 		case "Login":
 			component = React.createElement(Login, null)

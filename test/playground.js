@@ -2,7 +2,16 @@
 var days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
 	, dayNames = { "Su" : 0,"Mo" : 1,"Tu" : 2,"We" : 3,"Th" : 4,"Fr" : 5,"Sa" : 6 }
  	, jsDaysOfWeek = { "Sun" : 0, "Mon" : 1, "Tue" : 2, "Wed" : 3, "Thu" : 4, "Fri" : 5, "Sat" : 6 }
- 	, jsDayNums = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+ 	, jsDayNums = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+ 	, longDayNames = {  "Su" : "Sunday",
+											"Mo" : "Monday",
+											"Tu" : "Tuesday",
+											"We" : "Wednesday",
+											"Th" : "Thursday",
+											"Fr" : "Friday",
+											"Sa" : "Saturday"
+										}
+
 
 var Hours;
 
@@ -60,12 +69,12 @@ module.exports = Hours = {
 
 		var split = opening.split(" ");
 		if (!containsDay(date, split[0])) {
-			return false
+			return false;
 		}
 
 		if (split.length === 2) {
 			if (!containsHour(date, split[1])) {
-				return false
+				return false;
 			}
 		}
 
@@ -145,6 +154,41 @@ module.exports = Hours = {
 
 		return results;
 	},
+
+	// Takes hours & breaks it out into an array of
+	// objects that describe the opening
+	hoursObject : function (hours) {
+
+	},
+	// Takes an opening string & breaks it out into an
+	// object that describes the opening
+	openingObject : function (opening) {
+		var split = opening.split(" ")
+			, days = daysOpenObject(split[0]);
+
+		// deal with hours
+		if (split.length === 2) {
+			hours = hoursOpenObject(split[1]);
+			days.allDay = hours.allDay;
+			days.startHr = hours.startHr;
+			days.startMin = hours.startMin;
+			days.stopHr = hours.stopHr;
+			days.stopMin = hours.stopMin;
+		} else {
+			days.allDay = true;
+			days.startHr = 0;
+			days.startMin = 0;
+			days.stopHr = 23;
+			days.stopMin = 59;
+		}
+
+		return days;
+	},
+	openingObjectToString : function (obj) {
+		var days = openingDaysString(obj)
+			, hours = openingHoursString(obj);
+		return (days + " " + hours).trim();
+	}
 }; 
 
 function containsDay(date, dayPhase) {
@@ -261,16 +305,6 @@ function SpanDays(span) {
 
 
 // String Conversion
-var longDayNames = {
-	"Su" : "Sunday",
-	"Mo" : "Monday",
-	"Tu" : "Tuesday",
-	"We" : "Wednesday",
-	"Th" : "Thursday",
-	"Fr" : "Friday",
-	"Sa" : "Saturday"
-}
-
 function openingToString (opening) {
 	var split = opening.split(" ")
 		, days = split[0]
@@ -365,6 +399,110 @@ function earliestOpening (opening, date) {
 		return Hours.relativeDate(jsDayNums[day],0,0);
 	}
 
+}
+
+function daysOpenObject(dayPhase) {
+	var strings = dayPhase.split(",")
+		, obj = {
+			Su : false,
+			Mo : false,
+			Tu : false,
+			We : false,
+			Th : false,
+			Fr : false,
+			Sa : false,
+		};
+
+	for (var i=0, d, r; r=strings[i]; i++) {
+		d = r.split("-");
+		// day range
+		if (d.length === 2) {
+			var start = dayNames[d[0]]
+				, end = dayNames[d[1]];
+
+			for (var i=start; i <= end; i++) {
+				obj[days[i]] = true;
+			}
+		} else {
+			// single day
+			obj[d[0]] = true;
+		}
+	}
+
+	return obj;
+}
+
+function hoursOpenObject(hourPhase) {
+	var split = hourPhase.split('-');
+
+	if (hourPhase == "") {
+		return {
+			allDay : true,
+			startHr : 0,
+			startMin : 0,
+			stopHr : 23,
+			stopMin : 59
+		}
+	} else if (split.length > 1) {
+		var start = ParseHour(split[0])
+			, stop = ParseHour(split[1]);
+
+		return {
+			allDay : false,
+			startHr : start.hr,
+			startMin : start.min,
+			stopHr : stop.hr,
+			stopMin : stop.min
+		};
+	}
+}
+
+function openingDaysString(obj) {
+	var days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
+			, out = ""
+			, current = false
+			, numPushed = 0
+
+		for (var i=0,d; d=days[i]; i++) {
+			if (obj[d]) {
+				// if we're the last day
+				if (i == (days.length - 1)) {
+					if (current == days[i]) {
+						// means no span of days
+						out = (numPushed === 0) ? current : "," + current;
+					} else {
+						current = current + "-" + days[i];
+						out = (numPushed === 0) ? out + current : out + "," + current;
+					}
+				} else if (!current) {
+					current = d;
+				}
+			} else if (current) {
+				if (current == days[i-1]) {
+					// means no span of days
+					out += (numPushed === 0) ? current : "," + current;
+				} else {
+					current = current + "-" + days[i-1];
+					out += (numPushed === 0) ? current : "," + current;
+				}
+
+				numPushed++;
+				current = false;
+			}
+		}
+
+		return out;
+}
+
+function openingHoursString(obj) {
+	if (obj.allDay) {
+		return "";
+	}
+
+	var startMin = (obj.startMin > 10) ? obj.startMin : "0" + obj.startMin
+		, stopMin = (obj.stopMin > 10) ? obj.stopMin : "0" + obj.stopMin
+
+	return obj.startHr + ":" + startMin + "-" + obj.stopHr + ":" + stopMin;
 }
 },{}],2:[function(require,module,exports){
 module.exports = require('./lib/cronizer')
@@ -1960,68 +2098,51 @@ var Clock = require('./Clock')
 var HoursInput = React.createClass({displayName: 'HoursInput',
 	propTypes : {
 		name : React.PropTypes.string,
-		onValueChange : React.PropTypes.func
+		onValueChange : React.PropTypes.func,
+		value : React.PropTypes.string
 	},
 
 	// lifecycle
 	getDefaultProps : function () {
-		return {}
-	},
-	getInitialState : function () {
 		return {
-			Su : false,
-			Mo : false,
-			Tu : false,
-			We : false,
-			Th : false,
-			Fr : false,
-			Sa : false,
-			allDay : true,
-			startHour : 9,
-			startMin : 00,
-			stopHour : 17,
-			stopMin : 0
+			value : "Mo-Fr 9:00-17:00"
 		}
 	},
 
-
-	// methods
-	value : function () {
-		// @todo
-		return "Mo-Fr 9:00-17:00"
-	},
 
 	// event handlers
 	onToggleDay : function (e) {
-		var abr = e.target.getAttribute("ref")
-			, o = {};
+		var abr = e.target.getAttribute('data-rel')
+			, o = Hours.openingObject(this.props.value);
+	
+		o[abr] = !o[abr];
 
-		o[abr] = !this.state[abr];
-		this.setState(o);
-
-		this.onChange();
-	},
-
-	onHourChange : function (e) {
-		
-		this.onChange();
-	},
-
-	onChange : function () {
 		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(this.value(), this.props.name);
+			this.props.onValueChange(Hours.openingObjectToString(o), this.props.name);
 		}
 	},
 
-	// render
-	dayClass : function (abr) {
-		return (this.state[abr]) ? "day selected" : "day";
+	onHourChange : function (e) {
+		var abr = e.target.getAttribute("ref")
+			, o = Hours.openingObject(this.props.value);
+	
+		o[abr] = !o[abr];
+
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(Hours.openingObjectToString(o), this.props.name);
+		}
+		this.onChange();
 	},
-	renderDays : function () {
-		var out = [];
+
+
+	// render
+	renderDays : function (obj) {
+		var out = []
+			, dayClass;
 
 		for (var i=0,day; day=days[i]; i++) {
-			out.push(React.createElement("div", {key: i, ref: day[0], className: this.dayClass(day[0])}, day[1]));
+			dayClass = (obj[day[0]]) ? "day selected" : "day";
+			out.push(React.createElement("div", {key: i, 'data-rel': day[0], onClick: this.onToggleDay, className: dayClass}, day[1]));
 		}
 
 		return (
@@ -2034,14 +2155,16 @@ var HoursInput = React.createClass({displayName: 'HoursInput',
 
 	},
 	render : function () {
+		var obj = Hours.openingObject(this.props.value);
+
 		return (
 			React.createElement("div", {className: "hoursInput"}, 
-				this.renderDays(), 
-				React.createElement(Clock, {name: "start", disabled: this.state.allDay}), 
+				this.renderDays(obj), 
+				React.createElement(Clock, {name: "start", disabled: obj.allDay}), 
 				React.createElement("p", null, "-"), 
-				React.createElement(Clock, {name: "stop", disabled: this.state.allDay}), 
+				React.createElement(Clock, {name: "stop", disabled: obj.allDay}), 
 				React.createElement("div", {className: "check"}, 
-					React.createElement("input", {type: "checkbox", checked: this.state.allDay}), 
+					React.createElement("input", {type: "checkbox", checked: obj.allDay}), 
 					React.createElement("label", null, "all day")
 				)
 			)
@@ -2436,6 +2559,7 @@ var Playground = React.createClass({displayName: 'Playground',
 				DateTimePickerCenter : thirtyDaysAgo,
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
+				HoursInput : "Mo-Sa 9:00-17:00"
 			}
 		}
 	},
@@ -2470,7 +2594,7 @@ var Playground = React.createClass({displayName: 'Playground',
 			component = React.createElement(DatePicker, null)
 			break;
 		case "HoursInput":
-			component = React.createElement(HoursInput, {name: "HoursInput", onValueChange: this.onValueChange})
+			component = React.createElement(HoursInput, {name: "HoursInput", value: this.state.values.HoursInput, onValueChange: this.onValueChange})
 			break;
 		case "Login":
 			component = React.createElement(Login, null)

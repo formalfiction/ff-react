@@ -21,68 +21,51 @@ var Clock = require('./Clock')
 var HoursInput = React.createClass({
 	propTypes : {
 		name : React.PropTypes.string,
-		onValueChange : React.PropTypes.func
+		onValueChange : React.PropTypes.func,
+		value : React.PropTypes.string
 	},
 
 	// lifecycle
 	getDefaultProps : function () {
-		return {}
-	},
-	getInitialState : function () {
 		return {
-			Su : false,
-			Mo : false,
-			Tu : false,
-			We : false,
-			Th : false,
-			Fr : false,
-			Sa : false,
-			allDay : true,
-			startHour : 9,
-			startMin : 00,
-			stopHour : 17,
-			stopMin : 0
+			value : "Mo-Fr 9:00-17:00"
 		}
 	},
 
-
-	// methods
-	value : function () {
-		// @todo
-		return "Mo-Fr 9:00-17:00"
-	},
 
 	// event handlers
 	onToggleDay : function (e) {
-		var abr = e.target.getAttribute("ref")
-			, o = {};
+		var abr = e.target.getAttribute('data-rel')
+			, o = Hours.openingObject(this.props.value);
+	
+		o[abr] = !o[abr];
 
-		o[abr] = !this.state[abr];
-		this.setState(o);
-
-		this.onChange();
-	},
-
-	onHourChange : function (e) {
-		
-		this.onChange();
-	},
-
-	onChange : function () {
 		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(this.value(), this.props.name);
+			this.props.onValueChange(Hours.openingObjectToString(o), this.props.name);
 		}
 	},
 
-	// render
-	dayClass : function (abr) {
-		return (this.state[abr]) ? "day selected" : "day";
+	onHourChange : function (e) {
+		var abr = e.target.getAttribute("ref")
+			, o = Hours.openingObject(this.props.value);
+	
+		o[abr] = !o[abr];
+
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(Hours.openingObjectToString(o), this.props.name);
+		}
+		this.onChange();
 	},
-	renderDays : function () {
-		var out = [];
+
+
+	// render
+	renderDays : function (obj) {
+		var out = []
+			, dayClass;
 
 		for (var i=0,day; day=days[i]; i++) {
-			out.push(<div key={i} ref={day[0]} className={this.dayClass(day[0])}>{day[1]}</div>);
+			dayClass = (obj[day[0]]) ? "day selected" : "day";
+			out.push(<div key={i} data-rel={day[0]} onClick={this.onToggleDay} className={dayClass}>{day[1]}</div>);
 		}
 
 		return (
@@ -95,14 +78,16 @@ var HoursInput = React.createClass({
 
 	},
 	render : function () {
+		var obj = Hours.openingObject(this.props.value);
+
 		return (
 			<div className="hoursInput">
-				{this.renderDays()}
-				<Clock name="start" disabled={this.state.allDay} />
+				{this.renderDays(obj)}
+				<Clock name="start" disabled={obj.allDay} />
 				<p>-</p>
-				<Clock name="stop" disabled={this.state.allDay} />
+				<Clock name="stop" disabled={obj.allDay} />
 				<div className="check">
-					<input type="checkbox" checked={this.state.allDay} />
+					<input type="checkbox" checked={obj.allDay} />
 					<label>all day</label>
 				</div>
 			</div>
