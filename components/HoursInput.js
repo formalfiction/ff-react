@@ -1,9 +1,10 @@
 /** @jsx React.DOM */
 
+// @todo - UNFINISHED
 
 /*
  * Input Hours of Operation
- * 
+ *
  */
 
 var Clock = require('./Clock')
@@ -18,7 +19,7 @@ var Clock = require('./Clock')
 		["Sa","Sat."]
 	];
 
-var HoursInput = React.createClass({displayName: 'HoursInput',
+var HoursInput = React.createClass({displayName: "HoursInput",
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
@@ -65,7 +66,7 @@ var HoursInput = React.createClass({displayName: 'HoursInput',
 
 		for (var i=0,day; day=days[i]; i++) {
 			dayClass = (obj[day[0]]) ? "day selected" : "day";
-			out.push(React.createElement("div", {key: i, 'data-rel': day[0], onClick: this.onToggleDay, className: dayClass}, day[1]));
+			out.push(React.createElement("div", {key: i, "data-rel": day[0], onClick: this.onToggleDay, className: dayClass}, day[1]));
 		}
 
 		return (

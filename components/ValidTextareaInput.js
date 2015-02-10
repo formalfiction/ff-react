@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
+var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,

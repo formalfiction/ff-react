@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 
-var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
+var TouchInput = require('./TouchInput');
+
+var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -9,6 +11,9 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 		className : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
+		// a delay (in ms) before the component will respond.
+		// good for when ui is changing under a ghost click
+		initialInputDelay : React.PropTypes.number,
 		// leave undefined to display no message
 		message : React.PropTypes.string,
 		// placeholder text
@@ -33,6 +38,7 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
+			initialInputDelay : 300,
 		}
 	},
 
@@ -61,7 +67,7 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 
 		return(
 			React.createElement("div", {className: className + " validTextInput field"}, 
-				React.createElement("input", {disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
+				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
 				React.createElement("span", {className: "indicator ss-icon"}, indicator), 
 				React.createElement("span", {className: "message"}, message )
 			)

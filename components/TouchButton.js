@@ -8,28 +8,41 @@
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY;
+var startX, startY, mountTime;
 
-var FastButton = React.createClass({displayName: 'FastButton',
+var TouchButton = React.createClass({displayName: "TouchButton",
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,
 		moveThreshold : React.PropTypes.number,
 		// unified click fn handler will also be called on touchEnd
-		onClick : React.PropTypes.func.isRequired
+		onClick : React.PropTypes.func.isRequired,
+		// a delay (in ms) before the component will respond.
+		// good for when ui is changing under a ghost click
+		initialInputDelay : React.PropTypes.number
 	},
 
 	// lifecycle
 	getDefaultProps : function () {
 		return {
 			text : "button",
-			moveThreshold : 10
+			moveThreshold : 10,
+			initialInputDelay : 300,
 		}
+	},
+	componentDidMount : function () {
+		mountTime = new Date();
 	},
 
 	// Event Handlers
 	onTouchStart : function (e) {
 		e.stopPropagation();
+
+		// check too make sure input is after the specified delay
+		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+			e.preventDefault();
+			return;
+		}
 
 	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
 	  document.body.addEventListener('touchmove', this.onTouchMove, false);
@@ -46,6 +59,13 @@ var FastButton = React.createClass({displayName: 'FastButton',
 	onTouchEnd : function (e) {
 		this.onClick(e);
 	},
+	onInput : function (e) {
+		// check too make sure input is after the specified delay
+		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+			e.preventDefault();
+			e.stopPropagation();
+		}
+	},
 	onReset : function (e) {
 		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
 	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
@@ -58,6 +78,12 @@ var FastButton = React.createClass({displayName: 'FastButton',
 	    clickbuster.preventGhostClick(startX, startY);
 	  }
 
+		// check too make sure input is after the specified delay
+		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+			e.preventDefault();
+			return;
+		}
+
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
@@ -66,9 +92,9 @@ var FastButton = React.createClass({displayName: 'FastButton',
 	// Render
 	render : function () {
 		return (
-			React.createElement("button", {className: this.props.className, onClick: this.onClick, onTouchStart: this.onTouchStart}, this.props.text)
+			React.createElement("button", React.__spread({},  this.props, {onClick: this.onClick, onMouseDown: this.onInput, onTouchStart: this.onTouchStart}), this.props.text)
 		);
 	}
 });
 
-module.exports = FastButton;
+module.exports = TouchButton;

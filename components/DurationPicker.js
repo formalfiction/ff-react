@@ -6,7 +6,7 @@
  * 
  */
 
-var DurationPicker = React.createClass({displayName: 'DurationPicker',
+var DurationPicker = React.createClass({displayName: "DurationPicker",
 	propTypes : {
 		unixTime : React.PropTypes.bool.isRequired,
 		onChange : React.PropTypes.func,

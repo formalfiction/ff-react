@@ -2,7 +2,7 @@
 
 var ListItem = require('./ListItem');
 
-var List = React.createClass({displayName: 'List',
+var List = React.createClass({displayName: "List",
 	render : function () {
 		return (
 			React.createElement("div", {className: "list"}

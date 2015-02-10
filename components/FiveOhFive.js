@@ -2,7 +2,7 @@
 
 /* Basic 505 Error Component */
 
-var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
+var FiveOhFive = React.createClass({displayName: "FiveOhFive",
 	propTypes : {
 		message : React.PropTypes.string,
 		title : React.PropTypes.string,

@@ -96,7 +96,8 @@ var form = {
 		var self = this
 			, validation = this.state.validation || {}
 			, name = e.target.name
-			, val = e.target.value;
+			, val = e.target.value
+			, field;
 
 		// Grab the field
 		for (var i=0; i<this.fields.length; i++) {

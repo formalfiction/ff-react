@@ -12,7 +12,7 @@
 
 var maskMoney = require('../deps/MaskMoney');
 
-var PriceInput = React.createClass({displayName: 'PriceInput',
+var PriceInput = React.createClass({displayName: "PriceInput",
 	propTypes : {
 		// Value for the field
 		value : React.PropTypes.number.isRequired,

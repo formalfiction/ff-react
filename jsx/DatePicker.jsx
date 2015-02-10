@@ -76,7 +76,6 @@ var DatePicker = React.createClass({
 		this.setState({ focused : false });
 	},
 	onChange : function (value) {
-
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);
 		}

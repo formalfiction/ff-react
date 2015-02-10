@@ -9,7 +9,7 @@
  * 
  */
 
-var AutoGrowTextArea = React.createClass({displayName: 'AutoGrowTextArea',
+var AutoGrowTextArea = React.createClass({displayName: "AutoGrowTextArea",
 	propTypes : {
 		// the height before modification
 		defaultHeight : React.PropTypes.number,

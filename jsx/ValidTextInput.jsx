@@ -1,5 +1,7 @@
 /** @jsx React.DOM */
 
+var TouchInput = require('./TouchInput');
+
 var ValidTextInput = React.createClass({
 	propTypes : {
 		// gotta name yo fields
@@ -9,6 +11,9 @@ var ValidTextInput = React.createClass({
 		className : React.PropTypes.string,
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
+		// a delay (in ms) before the component will respond.
+		// good for when ui is changing under a ghost click
+		initialInputDelay : React.PropTypes.number,
 		// leave undefined to display no message
 		message : React.PropTypes.string,
 		// placeholder text
@@ -33,6 +38,7 @@ var ValidTextInput = React.createClass({
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
+			initialInputDelay : 300,
 		}
 	},
 
@@ -61,7 +67,7 @@ var ValidTextInput = React.createClass({
 
 		return(
 			<div className={className + " validTextInput field"}>
-				<input disabled={props.disabled} type="text" name={props.name} onFocus={props.onFocus} onBlur={props.onBlur} onChange={this.onChange} placeholder={props.placeholder} value={props.value} />
+				<TouchInput initialInputDelay={this.props.initialInputDelay} disabled={props.disabled} type="text" name={props.name} onFocus={props.onFocus} onBlur={props.onBlur} onChange={this.onChange} placeholder={props.placeholder} value={props.value} />
 				<span className="indicator ss-icon">{indicator}</span>
 				<span className="message">{message }</span>
 			</div>

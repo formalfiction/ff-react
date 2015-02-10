@@ -24,7 +24,8 @@
 
 var _ = require('underscore')
 
-var ValidTextInput = require('./ValidTextInput');
+var ValidTextInput = require('./ValidTextInput')
+	, TouchTextarea = require('./TouchTextarea');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
@@ -79,7 +80,7 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
-				React.createElement("textarea", {
+				React.createElement(TouchTextarea, {
 					disabled: obj.disabled, 
 					name: obj.name, 
 					placeholder: obj.placeholder, 

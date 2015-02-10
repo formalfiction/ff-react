@@ -5,9 +5,10 @@
  * 
  */
 
-var SignaturePad = require('../deps/SignaturePad');
+var SignaturePad = require('../deps/SignaturePad')
+	, TouchButton = require('./TouchButton');
 
-var Signature = React.createClass({displayName: 'Signature',
+var Signature = React.createClass({displayName: "Signature",
 	// Component Lifecycle methods
 	componentDidMount : function () {
 		this.signaturePad = new SignaturePad(this.refs.canvas.getDOMNode());
@@ -17,11 +18,16 @@ var Signature = React.createClass({displayName: 'Signature',
 		if (this.props.signed) {
 			this.signaturePad.enabled(false);
 		}
-		window.onresize = this.resizeCanvas;
+
+		window.addEventListener('onresize', this.resizeCanvas);
+		window.addEventListener('orientationchange', this.resizeCanvas);
+
+		// call resize to determine initial dimensions
 		this.resizeCanvas();
 	},
 	componentWillUnmount : function () {
-		window.onresize = undefined;
+		window.removeEventListener('onresize', this.resizeCanvas);
+		window.removeEventListener('orientationchange', this.resizeCanvas);
 	},
 	componentDidUpdate : function () {
 		if (this.props.signed) {
@@ -31,9 +37,16 @@ var Signature = React.createClass({displayName: 'Signature',
 	// Methods
 	resizeCanvas : function () {
     var ratio =  window.devicePixelRatio || 1
-    	, canvas = this.refs.canvas.getDOMNode();
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
+    	, canvas = this.refs.canvas.getDOMNode()
+    	, w = canvas.offsetWidth * ratio
+    	, h = canvas.offsetHeight * ratio
+    	, wRatio = (w / h) * ratio;
+
+    // console.log(w, h, wRatio);
+    
+    canvas.width = w
+    canvas.height = h
+
     canvas.getContext("2d").scale(ratio, ratio);
 	},
 	reset : function (e) {
@@ -61,8 +74,8 @@ var Signature = React.createClass({displayName: 'Signature',
 			React.createElement("div", {className: "signature"}, 
 				React.createElement("canvas", {className: "canvas", ref: "canvas"}), 
 				React.createElement("div", {className: "buttons"}, 
-			 		React.createElement("button", {className: "reset", disabled: this.props.signed, onClick: this.reset, onTouchEnd: this.reset}, "reset"), 
-					React.createElement("button", {className: "done", disabled: this.props.signed, onClick: this.done, onTouchEnd: this.done}, "done")
+			 		React.createElement(TouchButton, {className: "reset", disabled: this.props.signed, onClick: this.reset, text: "reset"}), 
+					React.createElement(TouchButton, {className: "done", disabled: this.props.signed, onClick: this.done, text: "done"})
 				)
 			)
 		);

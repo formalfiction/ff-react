@@ -5,6 +5,7 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
+	, DateTimeRangePicker = require('./DateTimeRangePicker')
 	, HoursInput = require('./HoursInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
@@ -20,7 +21,7 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, TimePicker = require('./TimePicker')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
 									"Signature","Signup","TimePicker","DateTimePicker","ValidTextInput", "Slider","SlideShow","Select"];
 
 var thirtyDaysAgo = new Date()
@@ -30,14 +31,15 @@ thirtyDaysAgo.setHours(18);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "HoursInput",
+			component : "DateTimeRangePicker",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
-				HoursInput : "Mo-Sa 9:00-17:00"
+				HoursInput : "Mo-Sa 9:00-17:00",
+				DateTimeRangePicker : [new Date(), new Date()],
 			}
 		}
 	},
@@ -50,7 +52,6 @@ var Playground = React.createClass({
 	onValueChange : function (value, name) {
 		var values = this.state.values
 		values[name] = value;
-		console.log(value);
 		this.setState({ values : values });
 	},
  	render : function () {
@@ -70,6 +71,9 @@ var Playground = React.createClass({
 			break;
 		case "DatePicker":
 			component = <DatePicker />
+			break;
+		case "DateTimeRangePicker":
+			component = <DateTimeRangePicker name="DateTimePicker" value={this.state.values.DateTimeRangePicker} onValueChange={this.onValueChange} />
 			break;
 		case "HoursInput":
 			component = <HoursInput name="HoursInput" value={this.state.values.HoursInput} onValueChange={this.onValueChange} />

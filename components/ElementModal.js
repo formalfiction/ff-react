@@ -4,7 +4,7 @@
 // stateless, by default shows a header above with
 // no title & a close button that triggers onClose prop
 
-var ElementModal = React.createClass({displayName: 'ElementModal',
+var ElementModal = React.createClass({displayName: "ElementModal",
 	propTypes : {
 		element : React.PropTypes.element.isRequired,
 		// supply a close handler func to actually close the

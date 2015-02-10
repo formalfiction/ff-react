@@ -5,7 +5,8 @@
  * 
  */
 
-var SignaturePad = require('../deps/SignaturePad');
+var SignaturePad = require('../deps/SignaturePad')
+	, TouchButton = require('./TouchButton');
 
 var Signature = React.createClass({
 	// Component Lifecycle methods
@@ -17,11 +18,16 @@ var Signature = React.createClass({
 		if (this.props.signed) {
 			this.signaturePad.enabled(false);
 		}
-		window.onresize = this.resizeCanvas;
+
+		window.addEventListener('onresize', this.resizeCanvas);
+		window.addEventListener('orientationchange', this.resizeCanvas);
+
+		// call resize to determine initial dimensions
 		this.resizeCanvas();
 	},
 	componentWillUnmount : function () {
-		window.onresize = undefined;
+		window.removeEventListener('onresize', this.resizeCanvas);
+		window.removeEventListener('orientationchange', this.resizeCanvas);
 	},
 	componentDidUpdate : function () {
 		if (this.props.signed) {
@@ -31,9 +37,16 @@ var Signature = React.createClass({
 	// Methods
 	resizeCanvas : function () {
     var ratio =  window.devicePixelRatio || 1
-    	, canvas = this.refs.canvas.getDOMNode();
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
+    	, canvas = this.refs.canvas.getDOMNode()
+    	, w = canvas.offsetWidth * ratio
+    	, h = canvas.offsetHeight * ratio
+    	, wRatio = (w / h) * ratio;
+
+    // console.log(w, h, wRatio);
+    
+    canvas.width = w
+    canvas.height = h
+
     canvas.getContext("2d").scale(ratio, ratio);
 	},
 	reset : function (e) {
@@ -61,8 +74,8 @@ var Signature = React.createClass({
 			<div className="signature">
 				<canvas className="canvas" ref="canvas"></canvas>
 				<div className="buttons">
-			 		<button className="reset" disabled={this.props.signed} onClick={this.reset} onTouchEnd={this.reset}>reset</button> 
-					<button className="done" disabled={this.props.signed} onClick={this.done} onTouchEnd={this.done}>done</button>
+			 		<TouchButton className="reset" disabled={this.props.signed} onClick={this.reset} text="reset" />
+					<TouchButton className="done" disabled={this.props.signed} onClick={this.done} text="done" />
 				</div>
 			</div>
 		);

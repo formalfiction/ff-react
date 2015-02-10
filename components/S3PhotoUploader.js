@@ -12,7 +12,7 @@
 
 var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
+var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
 	propTypes : {
 		// @todo
 	},

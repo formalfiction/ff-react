@@ -14,7 +14,7 @@ var ReactPropTypes = require('react').PropTypes
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 	, days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
 
-var DatePicker = React.createClass({displayName: 'DatePicker',
+var DatePicker = React.createClass({displayName: "DatePicker",
 	propTypes : {
 		name : React.PropTypes.string.isRequired,
 		// Use either onChange or onValueChange, not both
@@ -76,7 +76,6 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 		this.setState({ focused : false });
 	},
 	onChange : function (value) {
-
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);
 		}

@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
+var ValidSelectInput = React.createClass({displayName: "ValidSelectInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,

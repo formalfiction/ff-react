@@ -8,7 +8,7 @@
 
 var cronizer = require('cronizer');
 
-var CronInput = React.createClass({displayName: 'CronInput',
+var CronInput = React.createClass({displayName: "CronInput",
 	propTypes : {
 		// name this thing.
 		name : React.PropTypes.string.isRequired,

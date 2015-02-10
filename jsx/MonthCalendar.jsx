@@ -7,7 +7,7 @@
  */
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	, days = { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 };
+	, days = { mon : 0 , tue : 1, wed : 2, thu : 3, fri : 4, sat : 5, sun : 6 };
 
 var MonthCalendar = React.createClass({
 	propTypes : {
@@ -59,7 +59,7 @@ var MonthCalendar = React.createClass({
 	// Event Handlers
 	onChange : function (date) {
 		if (typeof this.props.onChange === "function") {
-			this.props.onChange(date.valueOf());
+			this.props.onChange(date);
 		}
 	},
 	onSelectDay : function (e) {
