@@ -1384,6 +1384,7 @@ var ReactPropTypes = require('react').PropTypes
 var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 	, days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
 
+
 var DatePicker = React.createClass({displayName: "DatePicker",
 	propTypes : {
 		name : React.PropTypes.string.isRequired,
@@ -1943,7 +1944,7 @@ module.exports = DateTimePicker;
 },{"../deps/iscroll":56,"./MonthCalendar":29,"./TouchAnchor":42}],17:[function(require,module,exports){
 /** @jsx React.DOM */
 
-/* @stateful
+/* children are @stateful
  * A Picker for choosing a time range on a specific day
  */
 
@@ -1952,10 +1953,11 @@ var DatePicker = require('./DatePicker')
 
 var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	propTypes : {
+		disabled : React.PropTypes.bool,
 		className : React.PropTypes.string,
 		// name of the field
 		name : React.PropTypes.string.isRequired,
-		// Should be a tuple of two date objects, start time first,
+		// a tuple of two date objects, start time first,
 		// stop time second. defaults to [new Date(), new Date()]
 		value : React.PropTypes.array.isRequired,
 		// onChange handler in the form (value, name)
@@ -1967,13 +1969,7 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 			className : "dateTimeRangePicker",
 			name : "DateTimeRangePicker",
 			value : [new Date(), new Date()],
-		}
-	},
-	getInitialState : function () {
-		return {
-			focusDate : false,
-			focusStartTime : false,
-			focusStopTime : false
+			disabled : false
 		}
 	},
 
@@ -2009,9 +2005,9 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	render : function () { 
 		return (
 			React.createElement("div", {className: this.props.className}, 
-				React.createElement(DatePicker, {className: "date", name: "date", value: this.props.value[0], onValueChange: this.onDatePickerValueChange}), 
-				React.createElement(TimeWheelPicker, {className: "start", name: "start", value: this.props.value[0], onValueChange: this.onTimeChange}), 
-				React.createElement(TimeWheelPicker, {className: "stop", name: "stop", value: this.props.value[1], onValueChange: this.onTimeChange})
+				React.createElement(DatePicker, {className: "date", name: "date", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onDatePickerValueChange}), 
+				React.createElement(TimeWheelPicker, {className: "start", name: "start", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onTimeChange}), 
+				React.createElement(TimeWheelPicker, {className: "stop", name: "stop", value: this.props.value[1], disabled: this.props.disabled, onValueChange: this.onTimeChange})
 			)
 		);
 	}
@@ -2484,7 +2480,7 @@ module.exports = Message;
  */
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	, days = { mon : 0 , tue : 1, wed : 2, thu : 3, fri : 4, sat : 5, sun : 6 };
+	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
 var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 	propTypes : {
@@ -2551,7 +2547,6 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 
 		this.onChange(d);
 		this.setState({ value : d });
-		return false;
 	},
 	onPrevMonth : function (e) {
 		var d = this.state.value;
@@ -2579,7 +2574,11 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 	// Render
 	render : function () {
 		var value = this.state.value
-			, startDay = value.toString().split(' ')[0].toLowerCase()
+			, firstDay = new Date(this.state.value);
+
+		firstDay.setDate(1)
+
+		var startDay = firstDay.toString().split(' ')[0].toLowerCase()
 			, offset = days[startDay]
 			, weeks = []
 			, week, wd, pos, c, date;
@@ -2592,7 +2591,7 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 				wd = new Date(this.state.value);
 				// determine grid position with i = x + (y * width)
 				pos = d + ( w * 7 );
-				wd.setDate(pos - offset);
+				wd.setDate(pos - offset + 1);
 				date = wd.getDate();
 				c = (wd.getMonth() === value.getMonth()) ? "current" : "";
 
@@ -2620,7 +2619,7 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 				React.createElement("table", {className: "dates"}, 
 					React.createElement("thead", null, 
 						React.createElement("tr", null, 
-							React.createElement("th", null, "M"), React.createElement("th", null, "T"), React.createElement("th", null, "W"), React.createElement("th", null, "T"), React.createElement("th", null, "F"), React.createElement("th", null, "S"), React.createElement("th", null, "S")
+							React.createElement("th", null, "S"), React.createElement("th", null, "M"), React.createElement("th", null, "T"), React.createElement("th", null, "W"), React.createElement("th", null, "T"), React.createElement("th", null, "F"), React.createElement("th", null, "S")
 						)
 					), 
 					weeks

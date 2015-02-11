@@ -7,7 +7,7 @@
  */
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	, days = { mon : 0 , tue : 1, wed : 2, thu : 3, fri : 4, sat : 5, sun : 6 };
+	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
 var MonthCalendar = React.createClass({
 	propTypes : {
@@ -74,7 +74,6 @@ var MonthCalendar = React.createClass({
 
 		this.onChange(d);
 		this.setState({ value : d });
-		return false;
 	},
 	onPrevMonth : function (e) {
 		var d = this.state.value;
@@ -102,7 +101,11 @@ var MonthCalendar = React.createClass({
 	// Render
 	render : function () {
 		var value = this.state.value
-			, startDay = value.toString().split(' ')[0].toLowerCase()
+			, firstDay = new Date(this.state.value);
+
+		firstDay.setDate(1)
+
+		var startDay = firstDay.toString().split(' ')[0].toLowerCase()
 			, offset = days[startDay]
 			, weeks = []
 			, week, wd, pos, c, date;
@@ -115,7 +118,7 @@ var MonthCalendar = React.createClass({
 				wd = new Date(this.state.value);
 				// determine grid position with i = x + (y * width)
 				pos = d + ( w * 7 );
-				wd.setDate(pos - offset);
+				wd.setDate(pos - offset + 1);
 				date = wd.getDate();
 				c = (wd.getMonth() === value.getMonth()) ? "current" : "";
 
@@ -143,7 +146,7 @@ var MonthCalendar = React.createClass({
 				<table className="dates">
 					<thead>
 						<tr>
-							<th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th><th>S</th>
+							<th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th>
 						</tr>
 					</thead>
 					{weeks}

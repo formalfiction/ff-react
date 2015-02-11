@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-/* @stateful
+/* children are @stateful
  * A Picker for choosing a time range on a specific day
  */
 
@@ -9,10 +9,11 @@ var DatePicker = require('./DatePicker')
 
 var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	propTypes : {
+		disabled : React.PropTypes.bool,
 		className : React.PropTypes.string,
 		// name of the field
 		name : React.PropTypes.string.isRequired,
-		// Should be a tuple of two date objects, start time first,
+		// a tuple of two date objects, start time first,
 		// stop time second. defaults to [new Date(), new Date()]
 		value : React.PropTypes.array.isRequired,
 		// onChange handler in the form (value, name)
@@ -24,13 +25,7 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 			className : "dateTimeRangePicker",
 			name : "DateTimeRangePicker",
 			value : [new Date(), new Date()],
-		}
-	},
-	getInitialState : function () {
-		return {
-			focusDate : false,
-			focusStartTime : false,
-			focusStopTime : false
+			disabled : false
 		}
 	},
 
@@ -66,9 +61,9 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	render : function () { 
 		return (
 			React.createElement("div", {className: this.props.className}, 
-				React.createElement(DatePicker, {className: "date", name: "date", value: this.props.value[0], onValueChange: this.onDatePickerValueChange}), 
-				React.createElement(TimeWheelPicker, {className: "start", name: "start", value: this.props.value[0], onValueChange: this.onTimeChange}), 
-				React.createElement(TimeWheelPicker, {className: "stop", name: "stop", value: this.props.value[1], onValueChange: this.onTimeChange})
+				React.createElement(DatePicker, {className: "date", name: "date", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onDatePickerValueChange}), 
+				React.createElement(TimeWheelPicker, {className: "start", name: "start", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onTimeChange}), 
+				React.createElement(TimeWheelPicker, {className: "stop", name: "stop", value: this.props.value[1], disabled: this.props.disabled, onValueChange: this.onTimeChange})
 			)
 		);
 	}
