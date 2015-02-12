@@ -7,8 +7,10 @@
  * being displayed
  */
 
+var TouchButton = require('./TouchButton');
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
+
 
 var MonthCalendar = React.createClass({
 	propTypes : {
@@ -133,8 +135,8 @@ var MonthCalendar = React.createClass({
 		return (
 			<div className="calendar cal" onMouseDown={this.props.onMouseDown} onTouchEnd={this.props.onTouchEnd}>
 				<div className="header">
-					<a className="backButton ss-icon" onClick={this.onPrevMonth} onTouchEnd={this.onPrevMonth}>previous</a>
-					<a className="nextButton ss-icon" onClick={this.onNextMonth} onTouchEnd={this.onNextMonth}>next</a>
+					<TouchButton className="backButton ss-icon" onClick={this.onPrevMonth} text="previous" />
+					<TouchButton className="nextButton ss-icon" onClick={this.onNextMonth} text="next" />
 					<h5 className="month">{this.monthString(this.state.displayMonth)}</h5>
 					<p className="year">{this.state.displayMonth.getFullYear()}</p>
 					<hr />

@@ -2472,8 +2472,10 @@ module.exports = Message;
  * being displayed
  */
 
+var TouchButton = require('./TouchButton');
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
+
 
 var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 	propTypes : {
@@ -2598,8 +2600,8 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 		return (
 			React.createElement("div", {className: "calendar cal", onMouseDown: this.props.onMouseDown, onTouchEnd: this.props.onTouchEnd}, 
 				React.createElement("div", {className: "header"}, 
-					React.createElement("a", {className: "backButton ss-icon", onClick: this.onPrevMonth, onTouchEnd: this.onPrevMonth}, "previous"), 
-					React.createElement("a", {className: "nextButton ss-icon", onClick: this.onNextMonth, onTouchEnd: this.onNextMonth}, "next"), 
+					React.createElement(TouchButton, {className: "backButton ss-icon", onClick: this.onPrevMonth, text: "previous"}), 
+					React.createElement(TouchButton, {className: "nextButton ss-icon", onClick: this.onNextMonth, text: "next"}), 
 					React.createElement("h5", {className: "month"}, this.monthString(this.state.displayMonth)), 
 					React.createElement("p", {className: "year"}, this.state.displayMonth.getFullYear()), 
 					React.createElement("hr", null)
@@ -2618,7 +2620,7 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 });
 
 module.exports = MonthCalendar;
-},{}],30:[function(require,module,exports){
+},{"./TouchButton":43}],30:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var AutoGrowTextarea = require('./AutoGrowTextarea')
