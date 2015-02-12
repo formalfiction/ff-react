@@ -17,6 +17,7 @@ var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 
 var DatePicker = React.createClass({
 	propTypes : {
+		className : React.PropTypes.string,
 		name : React.PropTypes.string.isRequired,
 		// Use either onChange or onValueChange, not both
 		// raw change handler
@@ -28,16 +29,17 @@ var DatePicker = React.createClass({
 	},
 
 	// Lifecycle
-	getInitialState : function () {
-		return {
-			focused : false
-		}
-	},
 	getDefaultProps : function () {
 		var value = new Date()
 				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
 		return {
+			className : "datePicker",
 			value : value
+		}
+	},
+	getInitialState : function () {
+		return {
+			focused : false
 		}
 	},
 
@@ -102,7 +104,7 @@ var DatePicker = React.createClass({
 		}
 
 		return (
-			<div className="datePicker">
+			<div className={this.props.className}>
 				<input readOnly ref="field" type="text" onClick={this.onFocus} onTouchEnd={this.onFocus} onFocus={this.onFocus} onBlur={this.onBlur} value={stringValue} onChange={this.onInputChange} />
 				{calendar}
 			</div>

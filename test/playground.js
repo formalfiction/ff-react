@@ -1387,6 +1387,7 @@ var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 
 var DatePicker = React.createClass({displayName: "DatePicker",
 	propTypes : {
+		className : React.PropTypes.string,
 		name : React.PropTypes.string.isRequired,
 		// Use either onChange or onValueChange, not both
 		// raw change handler
@@ -1398,16 +1399,17 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	},
 
 	// Lifecycle
-	getInitialState : function () {
-		return {
-			focused : false
-		}
-	},
 	getDefaultProps : function () {
 		var value = new Date()
 				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
 		return {
+			className : "datePicker",
 			value : value
+		}
+	},
+	getInitialState : function () {
+		return {
+			focused : false
 		}
 	},
 
@@ -1472,7 +1474,7 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 		}
 
 		return (
-			React.createElement("div", {className: "datePicker"}, 
+			React.createElement("div", {className: this.props.className}, 
 				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
 				calendar
 			)
@@ -1995,9 +1997,9 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	render : function () { 
 		return (
 			React.createElement("div", {className: this.props.className}, 
-				React.createElement(DatePicker, {className: "date", name: "date", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onDatePickerValueChange}), 
-				React.createElement(TimeWheelPicker, {className: "start", name: "start", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onTimeChange}), 
-				React.createElement(TimeWheelPicker, {className: "stop", name: "stop", value: this.props.value[1], disabled: this.props.disabled, onValueChange: this.onTimeChange})
+				React.createElement(DatePicker, {className: "date datePicker", name: "date", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onDatePickerValueChange}), 
+				React.createElement(TimeWheelPicker, {className: "start timeWheelPicker", name: "start", value: this.props.value[0], disabled: this.props.disabled, onValueChange: this.onTimeChange}), 
+				React.createElement(TimeWheelPicker, {className: "stop timeWheelPicker", name: "stop", value: this.props.value[1], disabled: this.props.disabled, onValueChange: this.onTimeChange})
 			)
 		);
 	}
@@ -3836,6 +3838,7 @@ var hours = [1,2,3,4,5,6,7,8,9,10,11,12]
 
 var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	propTypes : {
+		className : React.PropTypes.string,
 		// name of the field
 		name : React.PropTypes.string.isRequired,
 		// onChange handler in the form (value, name)
@@ -3847,6 +3850,7 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	// Component Lifecycle
 	getDefaultProps : function () {
 		return {
+			className : "timeWheelPicker",
 			centerDate : new Date(),
 			value : new Date(),
 		}
@@ -3958,7 +3962,7 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 		}
 
 		return (
-			React.createElement("div", {className: "timeWheelPicker"}, 
+			React.createElement("div", {className: this.props.className}, 
 				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
 				picker
 			)

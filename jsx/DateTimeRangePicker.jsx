@@ -61,9 +61,9 @@ var DateTimeRangePicker = React.createClass({
 	render : function () { 
 		return (
 			<div className={this.props.className}>
-				<DatePicker className="date" name="date" value={this.props.value[0]} disabled={this.props.disabled} onValueChange={this.onDatePickerValueChange} />
-				<TimeWheelPicker className="start" name="start" value={this.props.value[0]} disabled={this.props.disabled} onValueChange={this.onTimeChange} />
-				<TimeWheelPicker className="stop" name="stop" value={this.props.value[1]} disabled={this.props.disabled} onValueChange={this.onTimeChange} />
+				<DatePicker className="date datePicker" name="date" value={this.props.value[0]} disabled={this.props.disabled} onValueChange={this.onDatePickerValueChange} />
+				<TimeWheelPicker className="start timeWheelPicker" name="start" value={this.props.value[0]} disabled={this.props.disabled} onValueChange={this.onTimeChange} />
+				<TimeWheelPicker className="stop timeWheelPicker" name="stop" value={this.props.value[1]} disabled={this.props.disabled} onValueChange={this.onTimeChange} />
 			</div>
 		);
 	}

@@ -45,6 +45,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-shell');
 
-	grunt.registerTask('develop', ['shell:build-jsx','stylus:playground','browserify:playground', 'watch']);
+	grunt.registerTask('build', ['shell:build-jsx','stylus:playground','browserify:playground']);
+	grunt.registerTask('develop', ['build', 'watch']);
 	grunt.registerTask('server', 'shell:server');
 }

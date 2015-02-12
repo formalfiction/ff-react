@@ -18,6 +18,7 @@ var hours = [1,2,3,4,5,6,7,8,9,10,11,12]
 
 var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	propTypes : {
+		className : React.PropTypes.string,
 		// name of the field
 		name : React.PropTypes.string.isRequired,
 		// onChange handler in the form (value, name)
@@ -29,6 +30,7 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	// Component Lifecycle
 	getDefaultProps : function () {
 		return {
+			className : "timeWheelPicker",
 			centerDate : new Date(),
 			value : new Date(),
 		}
@@ -140,7 +142,7 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 		}
 
 		return (
-			React.createElement("div", {className: "timeWheelPicker"}, 
+			React.createElement("div", {className: this.props.className}, 
 				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
 				picker
 			)
