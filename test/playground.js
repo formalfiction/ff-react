@@ -1371,10 +1371,10 @@ module.exports = CronInput;
 /** @jsx React.DOM */
 /*
  * @stateful
- * @jQuery
  * 
  * DateInput form field. 
  * It uses a child MonthCalendar component to handle display & selection
+ * Uses state to track weather or not the field is focused.
  * 
  */
 
@@ -1397,7 +1397,7 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 		value : React.PropTypes.object,
 	},
 
-	// Component lifecycle methods
+	// Lifecycle
 	getInitialState : function () {
 		return {
 			focused : false
@@ -1418,26 +1418,20 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	focus : function () {
 		this.setState({ focused : true });
 	},
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
-			} else {
-				value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	stringValue : function (value) {
-		if (!value) { return ""; }
-		date = this.dateValue(value);
+	stringValue : function (date) {
+		if (!date) { return ""; }
 		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
 	},
+	// trigger change with a new value
+	change : function (value) {
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(e);
+		}
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(value, this.props.name);
+		}
+	},
+
 
 	// Event Handlers
 	onFocus : function (e) {
@@ -1446,19 +1440,11 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	onBlur : function (e) {
 		this.setState({ focused : false });
 	},
-	onChange : function (value) {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange(e);
-		}
-		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(value, this.props.name);
-		}
-	},
 	onInputChange : function (e) {
-		this.onChange(e.target.value);
+		this.change(e.target.value);
 	},
-	onCalendarChange : function (val) {
-		this.onChange(val);
+	onCalendarChange : function (date) {
+		this.change(date);
 		// Once the User has picked a value, close the calendar
 		this.setState({ focused : false });
 	},
@@ -1466,7 +1452,6 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	onCalendarMouseDown : function (e) {
 		e.preventDefault();
 		$(this.refs["field"].getDOMNode()).focus();
-		return false;
 	},
 	onCalendarTouchEnd : function (e) {
 		e.stopPropagation();
@@ -1479,14 +1464,19 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = React.createElement(MonthCalendar, {value: this.props.value, onMouseDown: this.onCalendarMouseDown, onTouchEnd: this.onCalendarTouchEnd, onChange: this.onCalendarChange})
+			calendar = React.createElement(MonthCalendar, {
+									value: this.props.value, 
+									onMouseDown: this.onCalendarMouseDown, 
+									onTouchEnd: this.onCalendarTouchEnd, 
+									onChange: this.onCalendarChange})
 		}
+
 		return (
 			React.createElement("div", {className: "datePicker"}, 
-				React.createElement("input", {ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
+				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
 				calendar
 			)
-		)
+		);
 	}
 });
 
@@ -1978,11 +1968,11 @@ var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 		// Only do stuff if we have a change handler
 		if (typeof this.props.onValueChange === "function") {
 			this.props.value[0].setYear(date.getFullYear());
-			this.props.value[0].setDate(date.getMonth());
+			this.props.value[0].setMonth(date.getMonth());
 			this.props.value[0].setDate(date.getDate());
 
 			this.props.value[1].setYear(date.getFullYear());
-			this.props.value[1].setDate(date.getMonth());
+			this.props.value[1].setMonth(date.getMonth());
 			this.props.value[1].setDate(date.getDate());
 
 			this.props.onValueChange(this.props.value, this.props.name);
@@ -2476,7 +2466,8 @@ module.exports = Message;
 /* @stateful
  * 
  * Table-Based Month Calendar intended for use as
- * small day-picker
+ * small day-picker. Uses state to change the month
+ * being displayed
  */
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -2484,125 +2475,120 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 
 var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 	propTypes : {
+		name : React.PropTypes.string,
+		// we accept onMouseDown & onTouchEnd Handlers
+		// for use in conjunction with an input field
+		// to cancel events that would blur the field.
 		onMouseDown : React.PropTypes.func,
 		onTouchEnd : React.PropTypes.func,
 		// @todo - make this a date object
 		value : React.PropTypes.object.isRequired,
+		onChange : React.PropTypes.func,
+		// onChange handler in the form (value, name)
+		onValueChange : React.PropTypes.func
 	},
-
-	// Component lifecycle methods
-	getInitialState : function () {
+	// Lifecycle
+	getDefaultProps : function () {
 		return {
-			value : this.dateValue(this.props.value)
-		};
+			name : "calendar",
+			value : new Date()
+		}
+	},
+	getInitialState : function () {
+		// This looks like the "don't transfer props" anti-pattern,
+		// but I promise it's... not. We need to pull the month into
+		// state to manipulate the month we're displaying, and we need
+		// the initial month to derive from the current value.
+		var displayMonth = new Date(this.props.value)
+		displayMonth.setDate(1);
+
+		return {
+			// display month should always be the first
+			// day of the month currently being displayed
+			displayMonth : displayMonth
+		}
 	},
 
 	// Methods
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(value)
-			} else {
-				value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	_monthString : function (d) {
+	monthString : function (d) {
 		return months[d.getMonth()];
 	},
-	_yearString : function (d) {
-		return d.getFullYear().toString();
-	},
-	_isCurrentMonth : function (week, day) {
-		var date = day + (week * 7)
-			, lastDay = new Date(this.state.value.getFullYear(), this.state.value.getDate(), 0).getDate();
-		return (date > this.state.offset && date < lastDay);
-	},
-	_isCurrentDate : function (week, day) {
-		var date = day + (week * 7)
-		return (this.state.value.getDate() === date );
+	isValue : function (date) {
+		var v = this.props.value;
+		return (
+			v.getFullYear() === date.getFullYear()
+			&& v.getMonth() === date.getMonth() 
+			&& v.getDate() === date.getDate()
+		);
 	},
 
 	// Event Handlers
-	onChange : function (date) {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange(date);
-		}
-	},
 	onSelectDay : function (e) {
 		e.preventDefault();
-		var el = $(e.target)
-			, day = el.data('day')
-			, month = el.data('month')
-			, d = this.state.value;
-
-		d.setMonth(month);
-		d.setDate(day);
-
-		this.onChange(d);
-		this.setState({ value : d });
+		var value = +e.target.getAttribute("data-value")
+			, d = new Date(value);
+			
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(d);
+		} else if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(d, this.props.name);
+		}
 	},
 	onPrevMonth : function (e) {
-		var d = this.state.value;
+		var d = this.state.displayMonth;
 		if (d.getMonth() > 0) {
 			d.setMonth(d.getMonth() - 1);
 		} else {
-			d.setFullYear(d.getFullYear() - 1);
+			d.setYear(d.getFullYear() - 1);
 			d.setMonth(11);
 		}
 		
-		this.setState({ value : d });
+		this.setState({ displayMonth : d });
 	},
 	onNextMonth : function (e) {
-		var d = this.state.value;
+		var d = this.state.displayMonth;
 		if (d.getMonth() < 11) {
 			d.setMonth(d.getMonth() + 1);
 		} else {
-			d.setFullYear(d.getFullYear() + 1);
+			d.setYear(d.getFullYear() + 1);
 			d.setMonth(0);
 		}
 
-		this.setState({ value : d });
+		this.setState({ displayMonth : d });
 	},
 
 	// Render
 	render : function () {
-		var value = this.state.value
-			, firstDay = new Date(this.state.value);
-
-		firstDay.setDate(1)
-
-		var startDay = firstDay.toString().split(' ')[0].toLowerCase()
+		var value = this.props.value
+			, startDay = this.state.displayMonth.toString().split(' ')[0].toLowerCase()
 			, offset = days[startDay]
 			, weeks = []
-			, week, wd, pos, c, date;
+			, week, wd, pos, c;
 
 		// Generate Table of Dates
 		for (var w=0; w < 6; w++) {
 			week = [];
 			for (var d=0; d < 7; d++) {
 				// copy the date for manipulation
-				wd = new Date(this.state.value);
+				wd = new Date(this.state.displayMonth);
 				// determine grid position with i = x + (y * width)
 				pos = d + ( w * 7 );
 				wd.setDate(pos - offset + 1);
-				date = wd.getDate();
-				c = (wd.getMonth() === value.getMonth()) ? "current" : "";
+
+				c = (wd.getMonth() === this.state.displayMonth.getMonth()) ? "current" : "";
+				if (this.isValue(wd)) {
+					c += " selected";
+				}
 
 				// Add buttons in as <a> tags to ensure click / touch events
 				// are picked up
 				week.push(React.createElement("td", {
 										onClick: this.onSelectDay, 
 										onTouchEnd: this.onSelectDay, 
-										className: c, key:  d + (w * 7), 
-										"data-month": wd.getMonth(), 
-										"data-day": date}, date));
+										className: c, 
+										key:  d + (w * 7), 
+										"data-value": wd.valueOf()
+										}, wd.getDate()));
 			}
 			weeks.push(React.createElement("tr", {key: w}, week));
 		}
@@ -2612,8 +2598,8 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 				React.createElement("div", {className: "header"}, 
 					React.createElement("a", {className: "backButton ss-icon", onClick: this.onPrevMonth, onTouchEnd: this.onPrevMonth}, "previous"), 
 					React.createElement("a", {className: "nextButton ss-icon", onClick: this.onNextMonth, onTouchEnd: this.onNextMonth}, "next"), 
-					React.createElement("h5", {className: "month"}, this._monthString(value)), 
-					React.createElement("p", {className: "year"}, this._yearString(value)), 
+					React.createElement("h5", {className: "month"}, this.monthString(this.state.displayMonth)), 
+					React.createElement("p", {className: "year"}, this.state.displayMonth.getFullYear()), 
 					React.createElement("hr", null)
 				), 
 				React.createElement("table", {className: "dates"}, 

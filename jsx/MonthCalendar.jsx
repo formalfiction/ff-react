@@ -3,7 +3,8 @@
 /* @stateful
  * 
  * Table-Based Month Calendar intended for use as
- * small day-picker
+ * small day-picker. Uses state to change the month
+ * being displayed
  */
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -11,125 +12,120 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 
 var MonthCalendar = React.createClass({
 	propTypes : {
+		name : React.PropTypes.string,
+		// we accept onMouseDown & onTouchEnd Handlers
+		// for use in conjunction with an input field
+		// to cancel events that would blur the field.
 		onMouseDown : React.PropTypes.func,
 		onTouchEnd : React.PropTypes.func,
 		// @todo - make this a date object
 		value : React.PropTypes.object.isRequired,
+		onChange : React.PropTypes.func,
+		// onChange handler in the form (value, name)
+		onValueChange : React.PropTypes.func
 	},
-
-	// Component lifecycle methods
-	getInitialState : function () {
+	// Lifecycle
+	getDefaultProps : function () {
 		return {
-			value : this.dateValue(this.props.value)
-		};
+			name : "calendar",
+			value : new Date()
+		}
+	},
+	getInitialState : function () {
+		// This looks like the "don't transfer props" anti-pattern,
+		// but I promise it's... not. We need to pull the month into
+		// state to manipulate the month we're displaying, and we need
+		// the initial month to derive from the current value.
+		var displayMonth = new Date(this.props.value)
+		displayMonth.setDate(1);
+
+		return {
+			// display month should always be the first
+			// day of the month currently being displayed
+			displayMonth : displayMonth
+		}
 	},
 
 	// Methods
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(value)
-			} else {
-				value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	_monthString : function (d) {
+	monthString : function (d) {
 		return months[d.getMonth()];
 	},
-	_yearString : function (d) {
-		return d.getFullYear().toString();
-	},
-	_isCurrentMonth : function (week, day) {
-		var date = day + (week * 7)
-			, lastDay = new Date(this.state.value.getFullYear(), this.state.value.getDate(), 0).getDate();
-		return (date > this.state.offset && date < lastDay);
-	},
-	_isCurrentDate : function (week, day) {
-		var date = day + (week * 7)
-		return (this.state.value.getDate() === date );
+	isValue : function (date) {
+		var v = this.props.value;
+		return (
+			v.getFullYear() === date.getFullYear()
+			&& v.getMonth() === date.getMonth() 
+			&& v.getDate() === date.getDate()
+		);
 	},
 
 	// Event Handlers
-	onChange : function (date) {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange(date);
-		}
-	},
 	onSelectDay : function (e) {
 		e.preventDefault();
-		var el = $(e.target)
-			, day = el.data('day')
-			, month = el.data('month')
-			, d = this.state.value;
-
-		d.setMonth(month);
-		d.setDate(day);
-
-		this.onChange(d);
-		this.setState({ value : d });
+		var value = +e.target.getAttribute("data-value")
+			, d = new Date(value);
+			
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(d);
+		} else if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(d, this.props.name);
+		}
 	},
 	onPrevMonth : function (e) {
-		var d = this.state.value;
+		var d = this.state.displayMonth;
 		if (d.getMonth() > 0) {
 			d.setMonth(d.getMonth() - 1);
 		} else {
-			d.setFullYear(d.getFullYear() - 1);
+			d.setYear(d.getFullYear() - 1);
 			d.setMonth(11);
 		}
 		
-		this.setState({ value : d });
+		this.setState({ displayMonth : d });
 	},
 	onNextMonth : function (e) {
-		var d = this.state.value;
+		var d = this.state.displayMonth;
 		if (d.getMonth() < 11) {
 			d.setMonth(d.getMonth() + 1);
 		} else {
-			d.setFullYear(d.getFullYear() + 1);
+			d.setYear(d.getFullYear() + 1);
 			d.setMonth(0);
 		}
 
-		this.setState({ value : d });
+		this.setState({ displayMonth : d });
 	},
 
 	// Render
 	render : function () {
-		var value = this.state.value
-			, firstDay = new Date(this.state.value);
-
-		firstDay.setDate(1)
-
-		var startDay = firstDay.toString().split(' ')[0].toLowerCase()
+		var value = this.props.value
+			, startDay = this.state.displayMonth.toString().split(' ')[0].toLowerCase()
 			, offset = days[startDay]
 			, weeks = []
-			, week, wd, pos, c, date;
+			, week, wd, pos, c;
 
 		// Generate Table of Dates
 		for (var w=0; w < 6; w++) {
 			week = [];
 			for (var d=0; d < 7; d++) {
 				// copy the date for manipulation
-				wd = new Date(this.state.value);
+				wd = new Date(this.state.displayMonth);
 				// determine grid position with i = x + (y * width)
 				pos = d + ( w * 7 );
 				wd.setDate(pos - offset + 1);
-				date = wd.getDate();
-				c = (wd.getMonth() === value.getMonth()) ? "current" : "";
+
+				c = (wd.getMonth() === this.state.displayMonth.getMonth()) ? "current" : "";
+				if (this.isValue(wd)) {
+					c += " selected";
+				}
 
 				// Add buttons in as <a> tags to ensure click / touch events
 				// are picked up
 				week.push(<td
 										onClick={this.onSelectDay}
 										onTouchEnd={this.onSelectDay}
-										className={c} key={ d + (w * 7) }
-										data-month={wd.getMonth()} 
-										data-day={date}>{date}</td>);
+										className={c} 
+										key={ d + (w * 7) }
+										data-value={wd.valueOf()}
+										>{wd.getDate()}</td>);
 			}
 			weeks.push(<tr key={w}>{week}</tr>);
 		}
@@ -139,8 +135,8 @@ var MonthCalendar = React.createClass({
 				<div className="header">
 					<a className="backButton ss-icon" onClick={this.onPrevMonth} onTouchEnd={this.onPrevMonth}>previous</a>
 					<a className="nextButton ss-icon" onClick={this.onNextMonth} onTouchEnd={this.onNextMonth}>next</a>
-					<h5 className="month">{this._monthString(value)}</h5>
-					<p className="year">{this._yearString(value)}</p>
+					<h5 className="month">{this.monthString(this.state.displayMonth)}</h5>
+					<p className="year">{this.state.displayMonth.getFullYear()}</p>
 					<hr />
 				</div>
 				<table className="dates">

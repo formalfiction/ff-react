@@ -157,9 +157,6 @@
 .calendar table.dates {
   width: 100%;
 }
-.calendar table.dates .notCurrent {
-  color: rgba(120,120,120,0.5);
-}
 .calendar table.dates td {
   text-align: center;
   min-width: 28px;
@@ -168,6 +165,9 @@
 }
 .calendar table.dates td.current {
   color: #3c3c3c;
+}
+.calendar table.dates td.selected {
+  color: #c80000;
 }
 .priceInput {
   max-width: 120px;

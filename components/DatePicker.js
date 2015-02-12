@@ -1,10 +1,10 @@
 /** @jsx React.DOM */
 /*
  * @stateful
- * @jQuery
  * 
  * DateInput form field. 
  * It uses a child MonthCalendar component to handle display & selection
+ * Uses state to track weather or not the field is focused.
  * 
  */
 
@@ -27,7 +27,7 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 		value : React.PropTypes.object,
 	},
 
-	// Component lifecycle methods
+	// Lifecycle
 	getInitialState : function () {
 		return {
 			focused : false
@@ -48,26 +48,20 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	focus : function () {
 		this.setState({ focused : true });
 	},
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
-			} else {
-				value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	stringValue : function (value) {
-		if (!value) { return ""; }
-		date = this.dateValue(value);
+	stringValue : function (date) {
+		if (!date) { return ""; }
 		return months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
 	},
+	// trigger change with a new value
+	change : function (value) {
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(e);
+		}
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(value, this.props.name);
+		}
+	},
+
 
 	// Event Handlers
 	onFocus : function (e) {
@@ -76,19 +70,11 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	onBlur : function (e) {
 		this.setState({ focused : false });
 	},
-	onChange : function (value) {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange(e);
-		}
-		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(value, this.props.name);
-		}
-	},
 	onInputChange : function (e) {
-		this.onChange(e.target.value);
+		this.change(e.target.value);
 	},
-	onCalendarChange : function (val) {
-		this.onChange(val);
+	onCalendarChange : function (date) {
+		this.change(date);
 		// Once the User has picked a value, close the calendar
 		this.setState({ focused : false });
 	},
@@ -96,7 +82,6 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 	onCalendarMouseDown : function (e) {
 		e.preventDefault();
 		$(this.refs["field"].getDOMNode()).focus();
-		return false;
 	},
 	onCalendarTouchEnd : function (e) {
 		e.stopPropagation();
@@ -109,14 +94,19 @@ var DatePicker = React.createClass({displayName: "DatePicker",
 			, stringValue = this.stringValue(value);
 
 		if (this.state.focused) { 
-			calendar = React.createElement(MonthCalendar, {value: this.props.value, onMouseDown: this.onCalendarMouseDown, onTouchEnd: this.onCalendarTouchEnd, onChange: this.onCalendarChange})
+			calendar = React.createElement(MonthCalendar, {
+									value: this.props.value, 
+									onMouseDown: this.onCalendarMouseDown, 
+									onTouchEnd: this.onCalendarTouchEnd, 
+									onChange: this.onCalendarChange})
 		}
+
 		return (
 			React.createElement("div", {className: "datePicker"}, 
-				React.createElement("input", {ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
+				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange}), 
 				calendar
 			)
-		)
+		);
 	}
 });
 

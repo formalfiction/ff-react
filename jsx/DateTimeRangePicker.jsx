@@ -34,11 +34,11 @@ var DateTimeRangePicker = React.createClass({
 		// Only do stuff if we have a change handler
 		if (typeof this.props.onValueChange === "function") {
 			this.props.value[0].setYear(date.getFullYear());
-			this.props.value[0].setDate(date.getMonth());
+			this.props.value[0].setMonth(date.getMonth());
 			this.props.value[0].setDate(date.getDate());
 
 			this.props.value[1].setYear(date.getFullYear());
-			this.props.value[1].setDate(date.getMonth());
+			this.props.value[1].setMonth(date.getMonth());
 			this.props.value[1].setDate(date.getDate());
 
 			this.props.onValueChange(this.props.value, this.props.name);
