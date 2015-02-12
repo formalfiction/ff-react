@@ -7,7 +7,7 @@
  * being displayed
  */
 
-var TouchButton = require('./TouchButton');
+var TouchAnchor = require('./TouchAnchor');
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
@@ -135,8 +135,8 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 		return (
 			React.createElement("div", {className: "calendar cal", onMouseDown: this.props.onMouseDown, onTouchEnd: this.props.onTouchEnd}, 
 				React.createElement("div", {className: "header"}, 
-					React.createElement(TouchButton, {className: "backButton ss-icon", onClick: this.onPrevMonth, text: "previous"}), 
-					React.createElement(TouchButton, {className: "nextButton ss-icon", onClick: this.onNextMonth, text: "next"}), 
+					React.createElement(TouchAnchor, {className: "backButton ss-icon", onClick: this.onPrevMonth, text: "previous"}), 
+					React.createElement(TouchAnchor, {className: "nextButton ss-icon", onClick: this.onNextMonth, text: "next"}), 
 					React.createElement("h5", {className: "month"}, this.monthString(this.state.displayMonth)), 
 					React.createElement("p", {className: "year"}, this.state.displayMonth.getFullYear()), 
 					React.createElement("hr", null)
