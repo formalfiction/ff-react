@@ -128,11 +128,8 @@ var DispatcherProto = {
   handleServerAction : function(action) {
     var self = this;
 
-    if (!action.url) { console.log('server actions require a url param'); }
-    if (!action.requestType) { console.log('server actions require a type param'); }
-    
-    // console.log(action.url);
-    // console.log(action.data);
+    if (!action.url) { console.warn('server actions require a url param'); }
+    if (!action.requestType) { console.warn('server actions require a type param'); }
 
     $.ajax({
       dataType : "json",
@@ -141,6 +138,8 @@ var DispatcherProto = {
       data : JSON.stringify(action.data)
     }).done(function (response){
       action.response = response.data;
+      action.error = response.meta.error;
+      action.pagination = response.pagination;
       self.dispatch({
         source : "SERVER_ACTION",
         action : action,

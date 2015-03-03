@@ -43,7 +43,6 @@ var TimeWheelPicker = React.createClass({
 		return {
 			focused : false,
 			value : d,
-			showCalendar : false,
 		}
 	},
 
@@ -167,8 +166,6 @@ var WheelPicker = React.createClass({
 		segments : React.PropTypes.array.isRequired,
 		// should be a js date object
 		value : React.PropTypes.object.isRequired,
-		// should we show the button to toggle the month calendar?
-		showCalendarOption : React.PropTypes.bool,
 	},
 
 	// Component Lifecycle
@@ -178,7 +175,6 @@ var WheelPicker = React.createClass({
 			itemsShowing : 5,
 			killTouch : false,
 			value : new Date(),
-			showCalendarOption : true
 		}
 	},
 	componentDidMount : function () {

@@ -19,6 +19,18 @@ var time = {
 		return t.length ? t[0] : "Unknown";
 	},
 
+	shortDateString : function (date) {
+		return this.months[date.getMonth()] + " " + date.getDate
+	},
+
+	// returns a string representation of the number of hours 
+	// between two dates, fixed to 2 decimal places
+	hourDuration : function (startDate, endDate) {
+		var diff = endDate.valueOf() - startDate.valueOf()
+			, hours = diff / (1000 * 60 * 60);
+		return hours.toFixed(2);
+	},
+
 	midnightToday : function () {
 		var now = new Date()
 		return new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0);
@@ -57,6 +69,8 @@ var time = {
 		return this.months[date.getMonth()]  + " " + date.getDate() + " " + hours + ":" + mins + " " + phase;
 	},
 
+	// returns a time string.
+	// eg. 9:00pm
 	timeString : function (date) {
 		date = this.validDate(date)
 		if (!date) { return ""; }

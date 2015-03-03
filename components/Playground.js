@@ -19,19 +19,23 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, SlideShow = require('./SlideShow')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
+	, TimeSpanInput = require('./TimeSpanInput')
 	, ValidTextInput = require('./ValidTextInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Signature","Signup","TimePicker","DateTimePicker","ValidTextInput", "Slider","SlideShow","Select"];
+var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
 thirtyDaysAgo.setHours(18);
 
+var foFive = new Date();
+// foFive.setMinutes(25);
+
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "DateTimeRangePicker",
+			component : "TimeSpanInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -40,6 +44,7 @@ var Playground = React.createClass({displayName: "Playground",
 				Select : 0,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
+				TimeSpanInput : [new Date(), new Date()]
 			}
 		}
 	},
@@ -50,6 +55,7 @@ var Playground = React.createClass({displayName: "Playground",
 		});
 	},
 	onValueChange : function (value, name) {
+		console.log(value, name);
 		var values = this.state.values
 		values[name] = value;
 		this.setState({ values : values });
@@ -104,6 +110,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "TimePicker":
 			component = React.createElement(TimePicker, null)
+			break;
+		case "TimeSpanInput":
+			component = React.createElement(TimeSpanInput, {name: "TimeSpanInput", value: this.state.values.TimeSpanInput, onValueChange: this.onValueChange})
 			break;
 		case "TagInput":
 			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})

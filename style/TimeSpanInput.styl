@@ -1,0 +1,37 @@
+.timeSpanInput
+	width 100%
+	height 280px // 40px * 7
+	overflow hidden
+	position relative
+	.picker
+		height 100%
+		width 45%
+		position absolute
+		overflow hidden
+		ul
+			list-style none
+			padding 0
+			li
+				text-align center
+				height 40px
+				opacity 0.45
+			li.selected
+				opacity 1.0
+	.end.picker
+		left 50%
+	.divider
+		width 5%
+		height 5%
+		padding 0
+		margin 0
+		position absolute
+		text-align center
+		top 45%
+		left 45%
+	&:after
+		content " "
+		clear both
+		display block
+		height 0
+		width 100%
+		

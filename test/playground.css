@@ -366,6 +366,50 @@
   left: 0;
   z-index: 2;
 }
+.timeSpanInput {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  position: relative;
+}
+.timeSpanInput .picker {
+  height: 100%;
+  width: 45%;
+  position: absolute;
+  overflow: hidden;
+}
+.timeSpanInput .picker ul {
+  list-style: none;
+  padding: 0;
+}
+.timeSpanInput .picker ul li {
+  text-align: center;
+  height: 40px;
+  opacity: 0.45;
+}
+.timeSpanInput .picker ul li.selected {
+  opacity: 1;
+}
+.timeSpanInput .end.picker {
+  left: 50%;
+}
+.timeSpanInput .divider {
+  width: 5%;
+  height: 5%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  top: 45%;
+  left: 45%;
+}
+.timeSpanInput:after {
+  content: " ";
+  clear: both;
+  display: block;
+  height: 0;
+  width: 100%;
+}
 .timeWheelPicker {
   margin: 0 auto;
   width: 320px;

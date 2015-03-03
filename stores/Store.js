@@ -6,8 +6,8 @@ var CHANGE_EVENT = 'change'
   , MESSAGE_EVENT = 'message';
 
 var storeProto = {
-  emitChange: function() {
-    this.emit(CHANGE_EVENT);
+  emitChange: function(data) {
+    this.emit(CHANGE_EVENT, data);
   },
   /**
    * @param {function} callback
