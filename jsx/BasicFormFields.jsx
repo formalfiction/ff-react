@@ -63,41 +63,40 @@ function handleField (obj, i, fields) {
 	if (obj.type === "hidden") {
 		fields.push(<input type="hidden" name={obj.name} value={value} />)
 	} else if (obj.type === "text") {
-		fields.push(
-			<div className="field" key={i}>
-				<ValidTextInput
+		fields.push(<ValidTextInput
+					key={i}
 					name={obj.name}
 					value={value}
 					label={obj.label}
+					className={obj.className}
 					placeholder={obj.placeholder}
 					disabled={obj.disabled}
 					showValidation={showValidation}
 					onChange={self._onFieldChange}
 					onBlur={self._onFieldBlur}
 					message ={validation[obj.name + "ErrMsg"]}
-					valid={validation[obj.name + "Valid"]} />
-			</div>);
+					valid={validation[obj.name + "Valid"]} />);
 	} else if (obj.type === "textarea") {
 		fields.push(
-			<div className="field" key={i}>
-				<ValidTextareaInput 
+				<ValidTextareaInput
+					key={i}
 					name={obj.name}
 					value={value}
 					label={obj.label}
+					className={obj.className}
 					placeholder={obj.placeholder}
 					disabled={obj.disabled}
 					showValidation={showValidation}
 					onChange={self._onFieldChange}
 					onBlur={self._onFieldBlur}
 					message={validation[obj.name + "ErrMsg"]}
-					valid={validation[obj.name + "Valid"]} />
-			</div>);
+					valid={validation[obj.name + "Valid"]} />);
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
 		fields.push(<div className="fieldSet" key={i}>
 			<hr />
-			<h3>{obj['name']}</h3>
+			<h3 className="span10">{obj['name']}</h3>
 			{subFields}
 		</div>);
 	}

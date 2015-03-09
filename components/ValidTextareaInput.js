@@ -59,7 +59,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 
 	// Render
 	render : function () {
-		var validClass, label, message, icon;
+		var validClass = "", label, message, icon;
 
 		if (this.props.label) {
 			label = React.createElement("label", null, this.props.label)

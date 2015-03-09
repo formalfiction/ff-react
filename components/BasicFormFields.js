@@ -63,41 +63,40 @@ function handleField (obj, i, fields) {
 	if (obj.type === "hidden") {
 		fields.push(React.createElement("input", {type: "hidden", name: obj.name, value: value}))
 	} else if (obj.type === "text") {
-		fields.push(
-			React.createElement("div", {className: "field", key: i}, 
-				React.createElement(ValidTextInput, {
+		fields.push(React.createElement(ValidTextInput, {
+					key: i, 
 					name: obj.name, 
 					value: value, 
 					label: obj.label, 
+					className: obj.className, 
 					placeholder: obj.placeholder, 
 					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]})
-			));
+					valid: validation[obj.name + "Valid"]}));
 	} else if (obj.type === "textarea") {
 		fields.push(
-			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextareaInput, {
+					key: i, 
 					name: obj.name, 
 					value: value, 
 					label: obj.label, 
+					className: obj.className, 
 					placeholder: obj.placeholder, 
 					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]})
-			));
+					valid: validation[obj.name + "Valid"]}));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
 		fields.push(React.createElement("div", {className: "fieldSet", key: i}, 
 			React.createElement("hr", null), 
-			React.createElement("h3", null, obj['name']), 
+			React.createElement("h3", {className: "span10"}, obj['name']), 
 			subFields
 		));
 	}

@@ -62,7 +62,7 @@ var ValidTextInput = React.createClass({
 
 	// Render
 	render : function () {
-		var validClass, label, message, icon;
+		var validClass = "", label, message, icon;
 
 		if (this.props.label) {
 			label = <label>{this.props.label}</label>
@@ -77,7 +77,7 @@ var ValidTextInput = React.createClass({
 		}
 
 		return(
-			<div className={validClass + this.props.className}>
+			<div {...this.props} className={validClass + this.props.className}>
 				{label}
 				<TouchInput initialInputDelay={this.props.initialInputDelay} disabled={this.props.disabled} type="text" name={this.props.name} onFocus={this.props.onFocus} onBlur={this.props.onBlur} onChange={this.onChange} placeholder={this.props.placeholder} value={this.props.value} />
 				{icon}

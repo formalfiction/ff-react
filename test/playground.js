@@ -1048,41 +1048,40 @@ function handleField (obj, i, fields) {
 	if (obj.type === "hidden") {
 		fields.push(React.createElement("input", {type: "hidden", name: obj.name, value: value}))
 	} else if (obj.type === "text") {
-		fields.push(
-			React.createElement("div", {className: "field", key: i}, 
-				React.createElement(ValidTextInput, {
+		fields.push(React.createElement(ValidTextInput, {
+					key: i, 
 					name: obj.name, 
 					value: value, 
 					label: obj.label, 
+					className: obj.className, 
 					placeholder: obj.placeholder, 
 					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]})
-			));
+					valid: validation[obj.name + "Valid"]}));
 	} else if (obj.type === "textarea") {
 		fields.push(
-			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextareaInput, {
+					key: i, 
 					name: obj.name, 
 					value: value, 
 					label: obj.label, 
+					className: obj.className, 
 					placeholder: obj.placeholder, 
 					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]})
-			));
+					valid: validation[obj.name + "Valid"]}));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
 		fields.push(React.createElement("div", {className: "fieldSet", key: i}, 
 			React.createElement("hr", null), 
-			React.createElement("h3", null, obj['name']), 
+			React.createElement("h3", {className: "span10"}, obj['name']), 
 			subFields
 		));
 	}
@@ -4879,8 +4878,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 			name : "textarea",
 			initialInputDelay : 300,
 			autoGrow : true,
-			defaultHeight : 25,
-			offset : 4,
+			defaultHeight : 30,
 		}
 	},
 	getInitialState : function () {
@@ -5084,7 +5082,7 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 
 	// Render
 	render : function () {
-		var validClass, label, message, icon;
+		var validClass = "", label, message, icon;
 
 		if (this.props.label) {
 			label = React.createElement("label", null, this.props.label)
@@ -5099,7 +5097,7 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 		}
 
 		return(
-			React.createElement("div", {className: validClass + this.props.className}, 
+			React.createElement("div", React.__spread({},  this.props, {className: validClass + this.props.className}), 
 				label, 
 				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, type: "text", name: this.props.name, onFocus: this.props.onFocus, onBlur: this.props.onBlur, onChange: this.onChange, placeholder: this.props.placeholder, value: this.props.value}), 
 				icon, 
@@ -5172,7 +5170,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 
 	// Render
 	render : function () {
-		var validClass, label, message, icon;
+		var validClass = "", label, message, icon;
 
 		if (this.props.label) {
 			label = React.createElement("label", null, this.props.label)
@@ -30117,7 +30115,7 @@ var time = {
 	},
 
 	shortDateString : function (date) {
-		return this.months[date.getMonth()] + " " + date.getDate
+		return this.months[date.getMonth()] + " " + date.getDate()
 	},
 
 	// returns a string representation of the number of hours 

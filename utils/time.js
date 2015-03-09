@@ -20,7 +20,7 @@ var time = {
 	},
 
 	shortDateString : function (date) {
-		return this.months[date.getMonth()] + " " + date.getDate
+		return this.months[date.getMonth()] + " " + date.getDate()
 	},
 
 	// returns a string representation of the number of hours 
