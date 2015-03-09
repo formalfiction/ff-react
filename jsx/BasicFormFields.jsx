@@ -25,7 +25,7 @@
 var _ = require('underscore')
 
 var ValidTextInput = require('./ValidTextInput')
-	, TouchTextarea = require('./TouchTextarea');
+	, ValidTextareaInput = require('./ValidTextareaInput');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
@@ -80,15 +80,15 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			<div className="field" key={i}>
-				<TouchTextarea 
+				<ValidTextareaInput 
 					disabled={obj.disabled}
 					name={obj.name}
 					placeholder={obj.placeholder}
 					value={value} 
 					onChange={self._onFieldChange}
-					onBlur={self._onFieldBlur} />
-				<span>{validation[obj.name + "ErrMsg"]}</span>
-				<span>{(validation[obj.name + "Valid"] === false) ? "Invalid" : "" }</span>
+					onBlur={self._onFieldBlur}
+					message={validation[obj.name + "ErrMsg"]}
+					valid={validation[obj.name + "Valid"]} />
 			</div>);
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];

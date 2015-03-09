@@ -20,10 +20,11 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
-	, ValidTextInput = require('./ValidTextInput');
+	, ValidTextInput = require('./ValidTextInput')
+	, ValidTextareaInput = require('./ValidTextareaInput');
 
 var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -44,7 +45,8 @@ var Playground = React.createClass({
 				Select : 0,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
-				TimeSpanInput : [new Date(), new Date()]
+				TimeSpanInput : [new Date(), new Date()],
+				ValidTextareaInput : "huh?"
 			}
 		}
 	},
@@ -146,6 +148,9 @@ var Playground = React.createClass({
 				[5,"prunes"]
 			];
 			component = <Select name="Select" value={this.state.values.Select} options={opts} onValueChange={this.onValueChange} />
+			break;
+		case "ValidTextareaInput":
+			component = <ValidTextareaInput value={this.state.values.ValidTextareaInput} name="ValidTextareaInput" onValueChange={this.onValueChange} />
 			break;
  		}
 		return (

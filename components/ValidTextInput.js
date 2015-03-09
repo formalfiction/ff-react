@@ -14,7 +14,10 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
 		initialInputDelay : React.PropTypes.number,
-		// leave undefined to display no message
+		// if specificed, will place a label above the input field
+		label : React.PropTypes.string,
+		// validation message. leave undefined to display no message
+		// only appears on invalid
 		message : React.PropTypes.string,
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
@@ -29,16 +32,21 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 		onValueChange : React.PropTypes.func,
 		// master switch for showing / hiding validation
 		showValidation : React.PropTypes.bool,
+		// flag for controlling display of a √ or x icon along with validation
+		// defaults to false (not-showing)
+		showValidationIcon : React.PropTypes.bool
 	},
 
 	// Component lifecycle methods
 	getDefaultProps : function () {
 		return {
+			className : "validTextInput field",
 			name : "",
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
 			initialInputDelay : 300,
+			showValidationIcon : false
 		}
 	},
 
@@ -54,22 +62,26 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 
 	// Render
 	render : function () {
-		var props = this.props
-			, indicator
-			, message
-			, className = props.className || "";
+		var validClass, label, message, icon;
 
-		if (props.showValidation) {
-			indicator = (props.valid) ? "checked" : "close";
-			message = (props.valid) ? "" : props.message
-			className = (props.valid) ? "valid" : "invalid"
+		if (this.props.label) {
+			label = React.createElement("label", null, this.props.label)
+		}
+
+		if (this.props.showValidation) {
+			if (this.props.showValidationIcon) {
+				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
+			}
+			message = (this.props.valid) ? "" : props.message
+			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 
 		return(
-			React.createElement("div", {className: className + " validTextInput field"}, 
-				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
-				React.createElement("span", {className: "indicator ss-icon"}, indicator), 
-				React.createElement("span", {className: "message"}, message )
+			React.createElement("div", {className: validClass + this.props.className}, 
+				label, 
+				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, type: "text", name: this.props.name, onFocus: this.props.onFocus, onBlur: this.props.onBlur, onChange: this.onChange, placeholder: this.props.placeholder, value: this.props.value}), 
+				icon, 
+				React.createElement("span", {className: "message"}, message)
 			)
 		);
 	}

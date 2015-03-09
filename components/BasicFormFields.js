@@ -25,7 +25,7 @@
 var _ = require('underscore')
 
 var ValidTextInput = require('./ValidTextInput')
-	, TouchTextarea = require('./TouchTextarea');
+	, ValidTextareaInput = require('./ValidTextareaInput');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
@@ -80,15 +80,15 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
-				React.createElement(TouchTextarea, {
+				React.createElement(ValidTextareaInput, {
 					disabled: obj.disabled, 
 					name: obj.name, 
 					placeholder: obj.placeholder, 
 					value: value, 
 					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur}), 
-				React.createElement("span", null, validation[obj.name + "ErrMsg"]), 
-				React.createElement("span", null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "")
+					onBlur: self._onFieldBlur, 
+					message: validation[obj.name + "ErrMsg"], 
+					valid: validation[obj.name + "Valid"]})
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];

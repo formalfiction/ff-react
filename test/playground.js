@@ -935,11 +935,6 @@ var AutoGrowTextArea = React.createClass({displayName: "AutoGrowTextArea",
 			offset : 4,
 		}
 	},
-	getInitialState : function () {
-		return {
-			height : this.props.defaultHeight
-		}
-	},
 
 	// Event Handlers
 	onChange : function (e) {
@@ -961,12 +956,12 @@ var AutoGrowTextArea = React.createClass({displayName: "AutoGrowTextArea",
 	// Render
 	style : function () {
 		return {
-			height : this.state.height
+			height : this.state.height || this.props.defaultHeight
 		}
 	},
 	render : function () {
 		return (
-			this.transferPropsTo(React.createElement("textarea", {className: "autogrow", style: this.style(), onChange: this.onChange}))
+			React.createElement("textarea", React.__spread({},  this.props, {className: "autogrow", style: this.style(), onChange: this.onChange}))
 		);
 	}
 });
@@ -1015,7 +1010,7 @@ module.exports = BasicForm;
 var _ = require('underscore')
 
 var ValidTextInput = require('./ValidTextInput')
-	, TouchTextarea = require('./TouchTextarea');
+	, ValidTextareaInput = require('./ValidTextareaInput');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
@@ -1070,15 +1065,15 @@ function handleField (obj, i, fields) {
 	} else if (obj.type === "textarea") {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
-				React.createElement(TouchTextarea, {
+				React.createElement(ValidTextareaInput, {
 					disabled: obj.disabled, 
 					name: obj.name, 
 					placeholder: obj.placeholder, 
 					value: value, 
 					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur}), 
-				React.createElement("span", null, validation[obj.name + "ErrMsg"]), 
-				React.createElement("span", null, (validation[obj.name + "Valid"] === false) ? "Invalid" : "")
+					onBlur: self._onFieldBlur, 
+					message: validation[obj.name + "ErrMsg"], 
+					valid: validation[obj.name + "Valid"]})
 			));
 	} else if (obj.type === "fieldSet") {
 		var subFields = [];
@@ -1092,7 +1087,7 @@ function handleField (obj, i, fields) {
 }
 
 module.exports = BasicFormFields;
-},{"./TouchTextarea":47,"./ValidTextInput":49,"underscore":203}],12:[function(require,module,exports){
+},{"./ValidTextInput":49,"./ValidTextareaInput":50,"underscore":203}],12:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Clock is used for selecting time values in 15-minute
@@ -2643,10 +2638,11 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
-	, ValidTextInput = require('./ValidTextInput');
+	, ValidTextInput = require('./ValidTextInput')
+	, ValidTextareaInput = require('./ValidTextareaInput');
 
 var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -2667,7 +2663,8 @@ var Playground = React.createClass({displayName: "Playground",
 				Select : 0,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
-				TimeSpanInput : [new Date(), new Date()]
+				TimeSpanInput : [new Date(), new Date()],
+				ValidTextareaInput : "huh?"
 			}
 		}
 	},
@@ -2770,6 +2767,9 @@ var Playground = React.createClass({displayName: "Playground",
 			];
 			component = React.createElement(Select, {name: "Select", value: this.state.values.Select, options: opts, onValueChange: this.onValueChange})
 			break;
+		case "ValidTextareaInput":
+			component = React.createElement(ValidTextareaInput, {value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
+			break;
  		}
 		return (
 			React.createElement("div", {className: "components playground"}, 
@@ -2794,7 +2794,7 @@ var Playground = React.createClass({displayName: "Playground",
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AutoGrowTextarea":9,"./Clock":12,"./CronInput":14,"./DatePicker":15,"./DateTimePicker":16,"./DateTimeRangePicker":17,"./HoursInput":22,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":38,"./TimePicker":40,"./TimeSpanInput":41,"./ValidTextInput":49}],31:[function(require,module,exports){
+},{"./AutoGrowTextarea":9,"./Clock":12,"./CronInput":14,"./DatePicker":15,"./DateTimePicker":16,"./DateTimeRangePicker":17,"./HoursInput":22,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":38,"./TimePicker":40,"./TimeSpanInput":41,"./ValidTextInput":49,"./ValidTextareaInput":50}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -4715,15 +4715,36 @@ var mountTime;
 
 var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	propTypes : {
+		// you should probably name yo fields
+		name : React.PropTypes.string.isRequired,
+		// value of the field
+		value : React.PropTypes.string.isRequired,
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number
+		initialInputDelay : React.PropTypes.number,
+		// if true, the textarea will automatically grow
+		// to match the height of the text it contains
+		autoGrow : React.PropTypes.bool,
+		// Use either onChange, or onValueChange. Not both.
+		// Raw change event
+		onChange : React.PropTypes.func,
+		// change handler in the form (value, name)
+		onValueChange : React.PropTypes.func,
 	},
 
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
-			initialInputDelay : 300
+			name : "textarea",
+			initialInputDelay : 300,
+			autoGrow : true,
+			height : 25,
+			offset : 0,
+		}
+	},
+	getInitialState : function () {
+		return {
+			height : 0
 		}
 	},
 	componentDidMount : function () {
@@ -4731,6 +4752,20 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	},
 
 	// Event Handlers
+	onChange : function (e) {
+		var value = e.target.value
+			, newHeight = this.getDOMNode().scrollHeight - this.props.offset;
+
+		if (this.props.autoGrow && newHeight != this.state.height) {
+			this.setState({ height : newHeight });
+		}
+
+		if (typeof this.props.onChange === "function") {
+			this.props.onChange(e);
+		} else if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(value, this.props.name);
+		}
+	},
 	onMouseDown : function (e) {
 
 		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
@@ -4744,9 +4779,16 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		}
 	},
 
+	// Render
+	style : function () {
+		return {
+			height : (this.state.height || this.props.defaultHeight)
+		}
+	},
+
 	render : function () {
 		return (
-			React.createElement("textarea", React.__spread({},  this.props, {onMouseDown: this.onMouseDown}))
+			React.createElement("textarea", React.__spread({},  this.props, {style: this.style(), onChange: this.onChange, onMouseDown: this.onMouseDown}))
 		);
 	}
 });
@@ -4845,7 +4887,10 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
 		initialInputDelay : React.PropTypes.number,
-		// leave undefined to display no message
+		// if specificed, will place a label above the input field
+		label : React.PropTypes.string,
+		// validation message. leave undefined to display no message
+		// only appears on invalid
 		message : React.PropTypes.string,
 		// placeholder text
 		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
@@ -4860,16 +4905,21 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 		onValueChange : React.PropTypes.func,
 		// master switch for showing / hiding validation
 		showValidation : React.PropTypes.bool,
+		// flag for controlling display of a √ or x icon along with validation
+		// defaults to false (not-showing)
+		showValidationIcon : React.PropTypes.bool
 	},
 
 	// Component lifecycle methods
 	getDefaultProps : function () {
 		return {
+			className : "validTextInput field",
 			name : "",
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
 			initialInputDelay : 300,
+			showValidationIcon : false
 		}
 	},
 
@@ -4885,22 +4935,26 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 
 	// Render
 	render : function () {
-		var props = this.props
-			, indicator
-			, message
-			, className = props.className || "";
+		var validClass, label, message, icon;
 
-		if (props.showValidation) {
-			indicator = (props.valid) ? "checked" : "close";
-			message = (props.valid) ? "" : props.message
-			className = (props.valid) ? "valid" : "invalid"
+		if (this.props.label) {
+			label = React.createElement("label", null, this.props.label)
+		}
+
+		if (this.props.showValidation) {
+			if (this.props.showValidationIcon) {
+				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
+			}
+			message = (this.props.valid) ? "" : props.message
+			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 
 		return(
-			React.createElement("div", {className: className + " validTextInput field"}, 
-				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: props.disabled, type: "text", name: props.name, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange, placeholder: props.placeholder, value: props.value}), 
-				React.createElement("span", {className: "indicator ss-icon"}, indicator), 
-				React.createElement("span", {className: "message"}, message )
+			React.createElement("div", {className: validClass + this.props.className}, 
+				label, 
+				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, type: "text", name: this.props.name, onFocus: this.props.onFocus, onBlur: this.props.onBlur, onChange: this.onChange, placeholder: this.props.placeholder, value: this.props.value}), 
+				icon, 
+				React.createElement("span", {className: "message"}, message)
 			)
 		);
 	}
@@ -4910,12 +4964,19 @@ module.exports = ValidTextInput;
 },{"./TouchInput":45}],50:[function(require,module,exports){
 /** @jsx React.DOM */
 
+var TouchTextarea = require('./TouchTextarea')
+
 var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
 		// field value
 		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
+		// a delay (in ms) before the component will respond.
+		// good for when ui is changing under a ghost click
+		initialInputDelay : React.PropTypes.number,
+		// Textarea's autogrow property
+		autoGrow : React.PropTypes.bool,
 		// use either onChange or onValueChange. Not both.
 		// std onChange event
 		onChange : React.PropTypes.func,
@@ -4930,7 +4991,12 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
 		// className will set on the containing div
-		className : React.PropTypes.string
+		className : React.PropTypes.string,
+		// explicit control over weather or not to display validation
+		showValidation : React.PropTypes.bool,
+		// flag for controlling display of a √ or x icon along with validation
+		// defaults to false (not-showing)
+		showValidationIcon : React.PropTypes.bool
 	},
 
 	// Component lifecycle methods
@@ -4940,6 +5006,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
+			showValidationIcon : false
 		}
 	},
 
@@ -4955,22 +5022,33 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 
 	// Render
 	render : function () {
-		var props = this.props
-			, label;
+		var validClass, label, message, icon;
+
+		if (this.props.label) {
+			label = React.createElement("label", null, this.props.label)
+		}
+
+		if (this.props.showValidation) {
+			if (this.props.showValidationIcon) {
+				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
+			}
+			message = (this.props.valid) ? "" : props.message
+			validClass = (this.props.valid) ? "valid " : "invalid "
+		}
 
 		return(
-			React.createElement("div", {className: props.className + " validTextArea field"}, 
+			React.createElement("div", {className: this.props.className + " validTextArea field"}, 
 				label, 
-				React.createElement("textarea", {disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onChange: this.onChange}), 
-				React.createElement("span", {className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
-				React.createElement("span", {className: "message"}, props.valid ? props.message : "")
+				React.createElement(TouchTextarea, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, name: this.props.name, placeholder: this.props.placeholder, value: this.props.value, onChange: this.onChange, text: this.props.value}), 
+				icon, 
+				React.createElement("span", {className: "message"}, message)
 			)
 		);
 	}
 });
 
 module.exports = ValidTextareaInput;
-},{}],51:[function(require,module,exports){
+},{"./TouchTextarea":47}],51:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
@@ -29567,18 +29645,8 @@ var time = {
 	},
 
 	timeRangeString : function (start,stop) {
-		start = this.validDate(start)
-		stop = this.validDate(stop)
 		if (!start || !stop) { return ""; }
-
-		var mins = date.getMinutes()
-			, phase = (date.getHours() < 12) ? "am" : "pm"
-			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
-		
-		if (mins === 0) { mins = "00"; }
-		if (hours == 0) { hours = "12"; }
-
-		return hours + ":" + mins + " " + phase;
+		return time.timeString(start) + " - " + time.timeString(stop);
 	},
 
 

@@ -1,11 +1,18 @@
 /** @jsx React.DOM */
 
+var TouchTextarea = require('./TouchTextarea')
+
 var ValidTextareaInput = React.createClass({
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
 		// field value
 		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
+		// a delay (in ms) before the component will respond.
+		// good for when ui is changing under a ghost click
+		initialInputDelay : React.PropTypes.number,
+		// Textarea's autogrow property
+		autoGrow : React.PropTypes.bool,
 		// use either onChange or onValueChange. Not both.
 		// std onChange event
 		onChange : React.PropTypes.func,
@@ -20,7 +27,12 @@ var ValidTextareaInput = React.createClass({
 		// enable / disable the field
 		disabled : React.PropTypes.bool,
 		// className will set on the containing div
-		className : React.PropTypes.string
+		className : React.PropTypes.string,
+		// explicit control over weather or not to display validation
+		showValidation : React.PropTypes.bool,
+		// flag for controlling display of a √ or x icon along with validation
+		// defaults to false (not-showing)
+		showValidationIcon : React.PropTypes.bool
 	},
 
 	// Component lifecycle methods
@@ -30,6 +42,7 @@ var ValidTextareaInput = React.createClass({
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
+			showValidationIcon : false
 		}
 	},
 
@@ -45,15 +58,26 @@ var ValidTextareaInput = React.createClass({
 
 	// Render
 	render : function () {
-		var props = this.props
-			, label;
+		var validClass, label, message, icon;
+
+		if (this.props.label) {
+			label = <label>{this.props.label}</label>
+		}
+
+		if (this.props.showValidation) {
+			if (this.props.showValidationIcon) {
+				icon = <span className="validation icon ss-icon">{this.props.valid ? "checked" : "close" }</span>
+			}
+			message = (this.props.valid) ? "" : props.message
+			validClass = (this.props.valid) ? "valid " : "invalid "
+		}
 
 		return(
-			<div className={props.className + " validTextArea field"}>
+			<div className={this.props.className + " validTextArea field"}>
 				{label}
-				<textarea disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onChange={this.onChange}></textarea>
-				<span className="indicator ss-icon">{props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") }</span>
-				<span className="message">{props.valid ? props.message : "" }</span>
+				<TouchTextarea initialInputDelay={this.props.initialInputDelay} disabled={this.props.disabled} name={this.props.name} placeholder={this.props.placeholder} value={this.props.value} onChange={this.onChange} text={this.props.value} />
+				{icon}
+				<span className="message">{message}</span>
 			</div>
 		);
 	}

@@ -32,11 +32,6 @@ var AutoGrowTextArea = React.createClass({
 			offset : 4,
 		}
 	},
-	getInitialState : function () {
-		return {
-			height : this.props.defaultHeight
-		}
-	},
 
 	// Event Handlers
 	onChange : function (e) {
@@ -58,12 +53,12 @@ var AutoGrowTextArea = React.createClass({
 	// Render
 	style : function () {
 		return {
-			height : this.state.height
+			height : this.state.height || this.props.defaultHeight
 		}
 	},
 	render : function () {
 		return (
-			this.transferPropsTo(<textarea className="autogrow" style={this.style()} onChange={this.onChange} />)
+			<textarea {...this.props} className="autogrow" style={this.style()} onChange={this.onChange} />
 		);
 	}
 });

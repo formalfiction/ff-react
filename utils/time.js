@@ -86,18 +86,8 @@ var time = {
 	},
 
 	timeRangeString : function (start,stop) {
-		start = this.validDate(start)
-		stop = this.validDate(stop)
 		if (!start || !stop) { return ""; }
-
-		var mins = date.getMinutes()
-			, phase = (date.getHours() < 12) ? "am" : "pm"
-			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
-		
-		if (mins === 0) { mins = "00"; }
-		if (hours == 0) { hours = "12"; }
-
-		return hours + ":" + mins + " " + phase;
+		return time.timeString(start) + " - " + time.timeString(stop);
 	},
 
 
