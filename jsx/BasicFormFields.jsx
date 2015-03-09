@@ -66,14 +66,14 @@ function handleField (obj, i, fields) {
 		fields.push(
 			<div className="field" key={i}>
 				<ValidTextInput
-					label={obj.label}
 					name={obj.name}
-					disabled={obj.disabled}
 					value={value}
+					label={obj.label}
+					placeholder={obj.placeholder}
+					disabled={obj.disabled}
 					showValidation={showValidation}
 					onChange={self._onFieldChange}
 					onBlur={self._onFieldBlur}
-					placeholder={obj.placeholder}
 					message ={validation[obj.name + "ErrMsg"]}
 					valid={validation[obj.name + "Valid"]} />
 			</div>);
@@ -81,10 +81,12 @@ function handleField (obj, i, fields) {
 		fields.push(
 			<div className="field" key={i}>
 				<ValidTextareaInput 
-					disabled={obj.disabled}
 					name={obj.name}
+					value={value}
+					label={obj.label}
 					placeholder={obj.placeholder}
-					value={value} 
+					disabled={obj.disabled}
+					showValidation={showValidation}
 					onChange={self._onFieldChange}
 					onBlur={self._onFieldBlur}
 					message={validation[obj.name + "ErrMsg"]}

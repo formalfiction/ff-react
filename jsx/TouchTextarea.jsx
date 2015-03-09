@@ -4,6 +4,8 @@ var mountTime;
 
 var TouchTextarea = React.createClass({
 	propTypes : {
+		// default height for the field
+		defaultHeight : React.PropTypes.number,
 		// you should probably name yo fields
 		name : React.PropTypes.string.isRequired,
 		// value of the field
@@ -27,8 +29,8 @@ var TouchTextarea = React.createClass({
 			name : "textarea",
 			initialInputDelay : 300,
 			autoGrow : true,
-			height : 25,
-			offset : 0,
+			defaultHeight : 25,
+			offset : 4,
 		}
 	},
 	getInitialState : function () {
@@ -43,10 +45,18 @@ var TouchTextarea = React.createClass({
 	// Event Handlers
 	onChange : function (e) {
 		var value = e.target.value
-			, newHeight = this.getDOMNode().scrollHeight - this.props.offset;
+			, el = this.getDOMNode();
 
-		if (this.props.autoGrow && newHeight != this.state.height) {
-			this.setState({ height : newHeight });
+		if (this.props.autoGrow) {
+			// set the height to 1px before rendering
+			el.setAttribute('style', "height : 1px");
+			var newHeight = el.scrollHeight;
+
+			if (newHeight != this.state.height) {
+				this.setState({ height : newHeight });
+			}
+
+			el.setAttribute('style', "height : " + this.state.height + "px");
 		}
 
 		if (typeof this.props.onChange === "function") {
@@ -77,7 +87,7 @@ var TouchTextarea = React.createClass({
 
 	render : function () {
 		return (
-			<textarea {...this.props} style={this.style()} onChange={this.onChange} onMouseDown={this.onMouseDown} />
+			<textarea {...this.props} style={this.style()} onChange={this.onChange} onMouseDown={this.onMouseDown} value={this.props.value} />
 		);
 	}
 });

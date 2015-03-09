@@ -150,7 +150,7 @@ var Playground = React.createClass({displayName: "Playground",
 			component = React.createElement(Select, {name: "Select", value: this.state.values.Select, options: opts, onValueChange: this.onValueChange})
 			break;
 		case "ValidTextareaInput":
-			component = React.createElement(ValidTextareaInput, {value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
+			component = React.createElement(ValidTextareaInput, {id: "ValidTextArea", label: "Text Area Input", value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
 			break;
  		}
 		return (

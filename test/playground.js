@@ -1051,14 +1051,14 @@ function handleField (obj, i, fields) {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextInput, {
-					label: obj.label, 
 					name: obj.name, 
-					disabled: obj.disabled, 
 					value: value, 
+					label: obj.label, 
+					placeholder: obj.placeholder, 
+					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
-					placeholder: obj.placeholder, 
 					message: validation[obj.name + "ErrMsg"], 
 					valid: validation[obj.name + "Valid"]})
 			));
@@ -1066,10 +1066,12 @@ function handleField (obj, i, fields) {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextareaInput, {
-					disabled: obj.disabled, 
 					name: obj.name, 
-					placeholder: obj.placeholder, 
 					value: value, 
+					label: obj.label, 
+					placeholder: obj.placeholder, 
+					disabled: obj.disabled, 
+					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
@@ -2768,7 +2770,7 @@ var Playground = React.createClass({displayName: "Playground",
 			component = React.createElement(Select, {name: "Select", value: this.state.values.Select, options: opts, onValueChange: this.onValueChange})
 			break;
 		case "ValidTextareaInput":
-			component = React.createElement(ValidTextareaInput, {value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
+			component = React.createElement(ValidTextareaInput, {id: "ValidTextArea", label: "Text Area Input", value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
 			break;
  		}
 		return (
@@ -4715,6 +4717,8 @@ var mountTime;
 
 var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	propTypes : {
+		// default height for the field
+		defaultHeight : React.PropTypes.number,
 		// you should probably name yo fields
 		name : React.PropTypes.string.isRequired,
 		// value of the field
@@ -4738,8 +4742,8 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 			name : "textarea",
 			initialInputDelay : 300,
 			autoGrow : true,
-			height : 25,
-			offset : 0,
+			defaultHeight : 25,
+			offset : 4,
 		}
 	},
 	getInitialState : function () {
@@ -4754,10 +4758,18 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	// Event Handlers
 	onChange : function (e) {
 		var value = e.target.value
-			, newHeight = this.getDOMNode().scrollHeight - this.props.offset;
+			, el = this.getDOMNode();
 
-		if (this.props.autoGrow && newHeight != this.state.height) {
-			this.setState({ height : newHeight });
+		if (this.props.autoGrow) {
+			// set the height to 1px before rendering
+			el.setAttribute('style', "height : 1px");
+			var newHeight = el.scrollHeight;
+
+			if (newHeight != this.state.height) {
+				this.setState({ height : newHeight });
+			}
+
+			el.setAttribute('style', "height : " + this.state.height + "px");
 		}
 
 		if (typeof this.props.onChange === "function") {
@@ -4788,7 +4800,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 
 	render : function () {
 		return (
-			React.createElement("textarea", React.__spread({},  this.props, {style: this.style(), onChange: this.onChange, onMouseDown: this.onMouseDown}))
+			React.createElement("textarea", React.__spread({},  this.props, {style: this.style(), onChange: this.onChange, onMouseDown: this.onMouseDown, value: this.props.value}))
 		);
 	}
 });
@@ -5004,6 +5016,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 		return {
 			name : "",
 			placeholder : "",
+			className : " validTextArea field",
 			valid : undefined,
 			message : undefined,
 			showValidationIcon : false
@@ -5037,9 +5050,9 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 		}
 
 		return(
-			React.createElement("div", {className: this.props.className + " validTextArea field"}, 
+			React.createElement("div", React.__spread({},  this.props, {className: validClass + this.props.className}), 
 				label, 
-				React.createElement(TouchTextarea, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, name: this.props.name, placeholder: this.props.placeholder, value: this.props.value, onChange: this.onChange, text: this.props.value}), 
+				React.createElement(TouchTextarea, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, name: this.props.name, placeholder: this.props.placeholder, value: this.props.value, onChange: this.onChange}), 
 				icon, 
 				React.createElement("span", {className: "message"}, message)
 			)

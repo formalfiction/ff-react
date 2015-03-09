@@ -40,6 +40,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 		return {
 			name : "",
 			placeholder : "",
+			className : " validTextArea field",
 			valid : undefined,
 			message : undefined,
 			showValidationIcon : false
@@ -73,9 +74,9 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 		}
 
 		return(
-			React.createElement("div", {className: this.props.className + " validTextArea field"}, 
+			React.createElement("div", React.__spread({},  this.props, {className: validClass + this.props.className}), 
 				label, 
-				React.createElement(TouchTextarea, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, name: this.props.name, placeholder: this.props.placeholder, value: this.props.value, onChange: this.onChange, text: this.props.value}), 
+				React.createElement(TouchTextarea, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, name: this.props.name, placeholder: this.props.placeholder, value: this.props.value, onChange: this.onChange}), 
 				icon, 
 				React.createElement("span", {className: "message"}, message)
 			)

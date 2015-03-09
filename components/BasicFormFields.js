@@ -66,14 +66,14 @@ function handleField (obj, i, fields) {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextInput, {
-					label: obj.label, 
 					name: obj.name, 
-					disabled: obj.disabled, 
 					value: value, 
+					label: obj.label, 
+					placeholder: obj.placeholder, 
+					disabled: obj.disabled, 
 					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
-					placeholder: obj.placeholder, 
 					message: validation[obj.name + "ErrMsg"], 
 					valid: validation[obj.name + "Valid"]})
 			));
@@ -81,10 +81,12 @@ function handleField (obj, i, fields) {
 		fields.push(
 			React.createElement("div", {className: "field", key: i}, 
 				React.createElement(ValidTextareaInput, {
-					disabled: obj.disabled, 
 					name: obj.name, 
-					placeholder: obj.placeholder, 
 					value: value, 
+					label: obj.label, 
+					placeholder: obj.placeholder, 
+					disabled: obj.disabled, 
+					showValidation: showValidation, 
 					onChange: self._onFieldChange, 
 					onBlur: self._onFieldBlur, 
 					message: validation[obj.name + "ErrMsg"], 
