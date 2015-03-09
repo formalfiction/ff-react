@@ -1,42 +1,22 @@
-var Store = require('./store');
+var Store = require("ff-react/stores/Store")
+	, DeviceConstants = require("../constants/DeviceConstants");
 
-
-function onResize() {
-
-}
-
-function onOrientationChange() {
-
-}
 
 var DeviceStore = Store({
-	addListeners : function () {
-		window.addEventListener("resize", onResize);
-		window.addEventListener("orientationchange", onResize);
+	onScroll : function (fn) {
+		this.on(DeviceConstants.DEVICE_SCROLL, fn);
 	},
-	removeListeners : function () {
-		window.removeEventListener("resize", DeviceStore.onResize);
+	offScroll : function (fn) {
+		this.removeListener(DeviceConstants.DEVICE_SCROLL, fn);
 	},
-
-	// subscribe to all events
-	onChange : function () {
-		
-	},
-
-	name : function () {
-
-	},
-	type : function () {
-
-	},
-	size : function () {
-
-	},
-	orientation : function () {
-		
+	emitScroll : function (e) {
+		this.emit(DeviceConstants.DEVICE_SCROLL, e);
 	}
 });
 
+window.addEventListener("scroll", function (e){
+	DeviceStore.emitScroll(e);
+});
 
 
 

@@ -4,6 +4,8 @@
  * Generic Conrim Action Dialogue
  */
 
+var TouchButton = require('./TouchButton');
+
 var ConfirmDialogue = React.createClass({
 	propTypes : {
 		confirmButtonTitle : React.PropTypes.string,
@@ -33,8 +35,8 @@ var ConfirmDialogue = React.createClass({
 				<h2>{this.props.title}</h2>
 				<p>{this.props.message}</p>
 				<div className="buttons">
-					<button onClick={this.props.onCancel} onTouchEnd={this.props.onCancel}>{this.props.cancelButtonTitle}</button>
-					<button onClick={this.props.onConfirm} onTouchEnd={this.props.onConfirm}>{this.props.confirmButtonTitle}</button>
+					<TouchButton onClick={this.props.onCancel} text={this.props.cancelButtonTitle} />
+					<TouchButton onClick={this.props.onConfirm} text={this.props.confirmButtonTitle} />
 				</div>
 			</div>
 		);
