@@ -4124,6 +4124,14 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 			value.setSeconds(0);
 			value.setMilliseconds(0);
 
+			// re-set the date to avoid modifying day values
+			// can arise when too many hours are added to the
+			// new value
+			// @todo - make sure that doesn't happen.
+			value.setYear(self.props.value.getFullYear())
+			value.setMonth(self.props.value.getMonth())
+			value.setDate(self.props.value.getDate())
+
 			if (self.silent) {
 				self.silent = false;
 				return;
@@ -4200,7 +4208,6 @@ module.exports = TimeSpanInput;
 /** @jsx React.DOM */
 
 /* @stateful
- * @jQuery
  *
  * Wheelie Time Picker
  * 
@@ -4803,7 +4810,11 @@ module.exports = TouchInput;
 /** @jsx React.DOM */
 
 
+// *******
+// *******
 // @todo - UNFINISHED
+// *******
+// *******
 
 var mountTime;
 
@@ -5092,7 +5103,7 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 			if (this.props.showValidationIcon) {
 				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
 			}
-			message = (this.props.valid) ? "" : props.message
+			message = (this.props.valid) ? "" : this.props.message
 			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 
@@ -5150,6 +5161,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 	getDefaultProps : function () {
 		return {
 			name : "",
+			value : "",
 			placeholder : "",
 			className : " validTextArea field",
 			valid : undefined,
@@ -5180,7 +5192,7 @@ var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 			if (this.props.showValidationIcon) {
 				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
 			}
-			message = (this.props.valid) ? "" : props.message
+			message = (this.props.valid) ? "" : this.props.message
 			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 
@@ -30166,9 +30178,10 @@ var time = {
 
 	// returns a time string.
 	// eg. 9:00pm
-	timeString : function (date) {
+	timeString : function (date, showPhase) {
 		date = this.validDate(date)
 		if (!date) { return ""; }
+		if (showPhase === undefined) { showPhase = true; }
 
 		var mins = date.getMinutes()
 			, phase = (date.getHours() < 12) ? "am" : "pm"
@@ -30177,12 +30190,12 @@ var time = {
 		if (mins === 0) { mins = "00"; }
 		if (hours == 0) { hours = "12"; }
 
-		return hours + ":" + mins + " " + phase;
+		return showPhase ? hours + ":" + mins + phase : hours + ":" + mins;
 	},
 
-	timeRangeString : function (start,stop) {
+	timeRangeString : function (start,stop,showPhase) {
 		if (!start || !stop) { return ""; }
-		return time.timeString(start) + " - " + time.timeString(stop);
+		return time.timeString(start, showPhase) + " - " + time.timeString(stop, showPhase);
 	},
 
 

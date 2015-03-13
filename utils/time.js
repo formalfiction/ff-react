@@ -71,9 +71,10 @@ var time = {
 
 	// returns a time string.
 	// eg. 9:00pm
-	timeString : function (date) {
+	timeString : function (date, showPhase) {
 		date = this.validDate(date)
 		if (!date) { return ""; }
+		if (showPhase === undefined) { showPhase = true; }
 
 		var mins = date.getMinutes()
 			, phase = (date.getHours() < 12) ? "am" : "pm"
@@ -82,12 +83,12 @@ var time = {
 		if (mins === 0) { mins = "00"; }
 		if (hours == 0) { hours = "12"; }
 
-		return hours + ":" + mins + " " + phase;
+		return showPhase ? hours + ":" + mins + phase : hours + ":" + mins;
 	},
 
-	timeRangeString : function (start,stop) {
+	timeRangeString : function (start,stop,showPhase) {
 		if (!start || !stop) { return ""; }
-		return time.timeString(start) + " - " + time.timeString(stop);
+		return time.timeString(start, showPhase) + " - " + time.timeString(stop, showPhase);
 	},
 
 

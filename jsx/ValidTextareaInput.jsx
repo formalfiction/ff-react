@@ -39,6 +39,7 @@ var ValidTextareaInput = React.createClass({
 	getDefaultProps : function () {
 		return {
 			name : "",
+			value : "",
 			placeholder : "",
 			className : " validTextArea field",
 			valid : undefined,
@@ -69,7 +70,7 @@ var ValidTextareaInput = React.createClass({
 			if (this.props.showValidationIcon) {
 				icon = <span className="validation icon ss-icon">{this.props.valid ? "checked" : "close" }</span>
 			}
-			message = (this.props.valid) ? "" : props.message
+			message = (this.props.valid) ? "" : this.props.message
 			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 

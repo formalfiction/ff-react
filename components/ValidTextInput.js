@@ -72,7 +72,7 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 			if (this.props.showValidationIcon) {
 				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
 			}
-			message = (this.props.valid) ? "" : props.message
+			message = (this.props.valid) ? "" : this.props.message
 			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 

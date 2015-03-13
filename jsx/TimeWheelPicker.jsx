@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 
 /* @stateful
- * @jQuery
  *
  * Wheelie Time Picker
  * 

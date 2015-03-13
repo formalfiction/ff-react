@@ -132,7 +132,7 @@ var form = {
 		// first check for passed in "onCancel" prop
 		if (typeof this.props.onCancel === "function") {
 			this.props.onCancel();
-		// if not, check for local "onSave" method
+		// if not, check for local "onCancel" method
 		} else if (typeof this.onCancel === "function") {
 			this.onCancel();
 		}

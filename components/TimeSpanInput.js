@@ -155,6 +155,14 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 			value.setSeconds(0);
 			value.setMilliseconds(0);
 
+			// re-set the date to avoid modifying day values
+			// can arise when too many hours are added to the
+			// new value
+			// @todo - make sure that doesn't happen.
+			value.setYear(self.props.value.getFullYear())
+			value.setMonth(self.props.value.getMonth())
+			value.setDate(self.props.value.getDate())
+
 			if (self.silent) {
 				self.silent = false;
 				return;
