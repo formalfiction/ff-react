@@ -39,13 +39,12 @@ var TouchTextarea = React.createClass({
 	},
 	componentDidMount : function () {
 		mountTime = new Date();
+		this.setHeight();
 	},
 
-	// Event Handlers
-	onChange : function (e) {
-		var value = e.target.value
-			, el = this.getDOMNode();
-
+	// Methods
+	setHeight : function () {
+		var el = this.getDOMNode();
 		if (this.props.autoGrow) {
 			// set the height to 1px before rendering
 			el.setAttribute('style', "height : 1px");
@@ -57,6 +56,13 @@ var TouchTextarea = React.createClass({
 
 			el.setAttribute('style', "height : " + this.state.height + "px");
 		}
+	},
+
+	// Event Handlers
+	onChange : function (e) {
+		var value = e.target.value;
+		
+		this.setHeight();
 
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);

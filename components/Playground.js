@@ -1,7 +1,6 @@
 /** @jsx React.DOM */
 
-var AutoGrowTextarea = require('./AutoGrowTextarea')
-	, CronInput = require('./CronInput')
+var CronInput = require('./CronInput')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
@@ -23,7 +22,7 @@ var AutoGrowTextarea = require('./AutoGrowTextarea')
 	, ValidTextInput = require('./ValidTextInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
-var components = ["TagInput","AutoGrowTextarea","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+var components = ["TagInput","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
 									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
@@ -46,7 +45,7 @@ var Playground = React.createClass({displayName: "Playground",
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
-				ValidTextareaInput : "huh?"
+				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd."
 			}
 		}
 	},
@@ -71,9 +70,6 @@ var Playground = React.createClass({displayName: "Playground",
  		});
 
  		switch (this.state.component) {
- 		case "AutoGrowTextarea":
- 			component = React.createElement(AutoGrowTextarea, {placeholder: "text"})
- 			break;
 		case "Clock":
 			component = React.createElement(Clock, null)
 			break;

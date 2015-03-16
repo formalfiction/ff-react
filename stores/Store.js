@@ -1,5 +1,5 @@
 var EventEmitter = require('events').EventEmitter
-  , underscore = require('underscore')
+  , _ = require('underscore')
 
 var CHANGE_EVENT = 'change'
   , ERROR_EVENT = 'error'
