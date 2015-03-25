@@ -20,6 +20,7 @@ var time = {
 	},
 
 	shortDateString : function (date) {
+		if (Object.prototype.toString.call(date) !== "[object Date]") { return ""; }
 		return this.months[date.getMonth()] + " " + date.getDate()
 	},
 
