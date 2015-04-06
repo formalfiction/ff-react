@@ -27,12 +27,8 @@ var _ = require('underscore');
 var _callbacks = [];
 var _promises = [];
 
-
-var Dispatcher = function(attrs) {
-  return _.extend({}, attrs, DispatcherProto)
-};
-
-var DispatcherProto = {
+var Dispatcher = function() {};
+Dispatcher.prototype = _.extend(Dispatcher.prototype, {
   /**
    * Register a Store's callback so that it may be invoked by an action.
    * @param {function} callback The callback to be registered.
@@ -104,7 +100,11 @@ var DispatcherProto = {
    * StoreB, a circular dependency will occur, but no error will be thrown.
    * A more robust Dispatcher would issue a warning in this scenario.
    */
-  waitFor: function(/*array*/ promiseIndexes, /*function*/ callback) {
+  /**
+   * @param {array} promiseIndexes
+   * @param {function} callback
+   */
+  waitFor: function(promiseIndexes, callback) {
     var selectedPromises = promiseIndexes.map(function(index) {
       return _promises[index];
     });
@@ -153,6 +153,6 @@ var DispatcherProto = {
     });
 
   }
-};
+});
 
 module.exports = Dispatcher;

@@ -7,17 +7,6 @@ var time = {
 	isDate : function (value) { 
 		return (Object.prototype.toString.call(value) === "[object Date]");
 	},
-	isObject : function (value) {
-		return (Object.prototype.toString.call(value) === "[object Object]");
-	},
-	isArray : function (value) {
-		return (Object.prototype.toString.call(value) === "[object Array]");
-	},
-
-	type : function (value) {
-		var t = /[A-Z]\w+/g.exec(Object.prototype.toString.call(value));
-		return t.length ? t[0] : "Unknown";
-	},
 
 	shortDateString : function (date) {
 		if (Object.prototype.toString.call(date) !== "[object Date]") { return ""; }
@@ -43,7 +32,7 @@ var time = {
 			if ( (typeof value === "number" && value != NaN) ||
 					 (typeof value === "string")
 				 ) {
-				value = new Date(value)
+				value = new Date(value);
 			} else {
 				return false;
 			}
@@ -53,7 +42,7 @@ var time = {
 	},
 
 	daysDiff : function (start, end) {
-		return Math.round((date - startDate) / (1000*60*60*24))
+		return Math.round((end - start) / (1000*60*60*24))
 	},
 
 	dateTimeString : function (date) {

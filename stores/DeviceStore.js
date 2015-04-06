@@ -1,8 +1,7 @@
-var Store = require("ff-react/stores/Store")
+var Store = require("./Store")
 	, DeviceConstants = require("../constants/DeviceConstants");
 
-
-var DeviceStore = Store({
+var DeviceStore = Store.extend({
 	onScroll : function (fn) {
 		this.on(DeviceConstants.DEVICE_SCROLL, fn);
 	},
@@ -20,4 +19,5 @@ window.addEventListener("scroll", function (e){
 
 
 
-module.exports = DeviceStore;
+// export a singleton
+module.exports = new DeviceStore();
