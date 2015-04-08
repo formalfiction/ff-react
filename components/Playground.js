@@ -45,7 +45,7 @@ var Playground = React.createClass({displayName: "Playground",
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
-				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd."
+				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
 			}
 		}
 	},

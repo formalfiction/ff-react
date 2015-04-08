@@ -47,13 +47,20 @@ function idMatcher (id) {
 
 var StandardStore = Store.extend({
 	// @private
-	// internal models array.
-	_models : [],
+	constructor : function () {
+		this._models = [];
+		return this;
+	},
+
+	// @private
+	// internal models array. will be defined on construction
+	_models : undefined,
 
 	// @private
 	// @param {string} id - the id or client id (cid) of the object being retrieved
-	// private method because it returns a reference to the object in the store. 
+	// private method because it returns a direct reference to the object in the store. 
 	_one : function (id) {
+		if (!id) { return false; }
 		return _.find(this._models, idMatcher(id));
 	},
 	
@@ -61,7 +68,8 @@ var StandardStore = Store.extend({
 	// public method returns a clone of the object
 	// to prevent unintended modification of the stored model
 	one : function (id) {
-		return _.clone(this._one(id));
+		if (!id) { return undefined; }
+		return this._one(id)
 	},
 
 	// get all models in this store
@@ -69,11 +77,11 @@ var StandardStore = Store.extend({
 	// unintended modification
 	// @return {array} - copy of all models
 	all : function () {
-		return _.clone(this._models);
+		return this._models
 	},
 
 	// check to see weather a model is valid. call
-	// syncronoously for simple true / false, or provide a
+	// syncronously for simple true / false, or provide a
 	// callback for error reporting.
 	// Feel free to override this method, keeping it's format.
 	// @param model {object} - the model to validate
@@ -81,26 +89,7 @@ var StandardStore = Store.extend({
 	// @return true if valid, error if not
 	valid : function (model, cb) {
 		var errors = [];
-
-		// all models must be objects
-		if (!_.isObject(model)) { 
-			errors.push("model must be an object");
-			if (_.isFunction(cb)) {
-				cb(errors);
-			}
-			return false;
-		}
-
-		// must have either an id or cid property
-		if (!model.id && !model.cid) { 
-			errors.push("model must have an id or cid property");
-		}
-
-		if (_.isFunction(cb)) {
-			cb(errors);
-		}
-
-		return (errors.length === 0);
+		return this.isModelObject(model, cb);
 	},
 
 	// add a model to the store
@@ -141,12 +130,44 @@ var StandardStore = Store.extend({
 	// @param model {object|string|number} - either the model object to be removed OR
 	// 																			 just it's id / cid
 	remove : function (model) {
+		if (!model) { return false; }
 		// support passing in just the id
 		if (_.isString(model) || _.isNumber(model)) {
 			model = { id : model };
 		}
 		return remove(this._models, idMatcher(model.id || model.cid || ''));
 	},
+
+	// helper func to see if something is a model object.
+	// call syncronously for simple true / false, or provide a
+	// callback for error reporting.
+	// Feel free to override this method, keeping it's format.
+	// @param model {object} - the model to validate
+	// @param cb {function} - optional callback for errors
+	// @return true if valid, error if not
+	isModelObject : function (model,cb) {
+		var errors = [];
+
+		// all models must be objects
+		if (!_.isObject(model)) { 
+			errors.push("model must be an object");
+			if (_.isFunction(cb)) {
+				cb(errors);
+			}
+			return false;
+		}
+
+		// must have either an id or cid property
+		if (!model.id && !model.cid) { 
+			errors.push("model must have an id or cid property");
+		}
+
+		if (_.isFunction(cb)) {
+			cb(errors);
+		}
+
+		return (errors.length === 0);
+	}
 });
 
 module.exports = StandardStore;

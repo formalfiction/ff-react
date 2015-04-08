@@ -41,6 +41,9 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		mountTime = new Date();
 		this.setHeight();
 	},
+	componentDidUpdate : function () {
+		this.setHeight();
+	},
 
 	// Methods
 	setHeight : function () {
@@ -48,7 +51,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		if (this.props.autoGrow) {
 			// set the height to 1px before rendering
 			el.setAttribute('style', "height : 1px");
-			var newHeight = el.scrollHeight;
+			var newHeight = el.scrollHeight + 1;
 
 			if (newHeight != this.state.height) {
 				this.setState({ height : newHeight });

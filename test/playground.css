@@ -1,0 +1,514 @@
+.clock {
+  margin: 0 5px;
+  background: #fff;
+}
+.clock .segment {
+  float: left;
+  margin: 0 5px;
+}
+.clock .segment h5 {
+  line-height: 1em;
+  margin: 0;
+}
+.clock .separator {
+  margin: 25px 5px;
+}
+.cronInput {
+  margin: 0;
+}
+.datePicker {
+  position: relative;
+}
+.datePicker .calendar {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 2;
+}
+.dateTimePicker {
+  margin: 0 auto;
+  width: 320px;
+  position: relative;
+}
+.dateTimePicker .picker {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #fff;
+  height: 200px;
+  width: 320px;
+  box-shadow: 0 0 4px #888;
+}
+.dateTimePicker .picker::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+.dateTimePicker .picker .segment {
+  color: #999;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+/* Prevent native touch events on Windows */
+  -ms-touch-action: none;
+/* Prevent the callout on tap-hold and text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+/* Prevent text resize on orientation change, useful for web-apps */
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none;
+}
+.dateTimePicker .picker .segment ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  position: absolute;
+/* Prevent elements to be highlighted on tap */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+/* Put the scroller into the HW Compositing layer right from the start */
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.dateTimePicker .picker .segment ul li {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45em;
+}
+.dateTimePicker .picker .segment ul li.selected {
+  color: #000;
+}
+.dateTimePicker .picker .day {
+  width: 50%;
+  margin-left: 5%;
+}
+.dateTimePicker .picker .hour,
+.dateTimePicker .picker .minute,
+.dateTimePicker .picker .phase {
+  width: 15%;
+}
+.hoursInput {
+  width: 100%;
+}
+.hoursInput .days {
+  float: left;
+}
+.hoursInput .days .day {
+  float: left;
+  border: 1px solid #888;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  padding-top: 12px;
+}
+.hoursInput .days .day.selected {
+  background: #999;
+}
+.modal {
+  z-index: 3;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  position: absolute;
+  min-width: 300px;
+  max-width: 600px;
+  min-height: 400px;
+  max-height: 700px;
+  overflow-y: auto;
+  position: fixed;
+  background: backgroundColor;
+  border-radius: 2px;
+  padding: 10px;
+}
+.calendar {
+  width: 300px;
+  background: #fff;
+}
+.calendar .header {
+  background: transparent;
+  box-shadow: none;
+}
+.calendar .header .backButton {
+  float: left;
+}
+.calendar .header .month {
+  text-align: center;
+}
+.calendar .header .year {
+  text-align: center;
+}
+.calendar .header .nextButton {
+  float: right;
+}
+.calendar table.dates {
+  width: 100%;
+}
+.calendar table.dates td {
+  text-align: center;
+  min-width: 28px;
+  min-height: 28px;
+  color: #b4b4b4;
+}
+.calendar table.dates td.current {
+  color: #3c3c3c;
+}
+.calendar table.dates td.selected {
+  color: #c80000;
+}
+.priceInput {
+  max-width: 120px;
+}
+.resultsTextInput {
+  margin: 0;
+}
+.resultsTextInput .selected {
+  font-weight: bold;
+}
+.s3PhotoUpload {
+  width: 200px;
+}
+.s3PhotoUpload .photo {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: #808080;
+  border-radius: 4px;
+  margin: 10px;
+  overflow: hidden;
+}
+.s3PhotoUpload .photo img.preview {
+  width: 100%;
+}
+.s3PhotoUpload .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 15px;
+  border-radius: 0 0 4px 4px;
+}
+.s3PhotoUpload .progress .bar {
+  height: 15px;
+  background: #f00;
+}
+.s3PhotoUpload .delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.select {
+  position: relative;
+  width: 100%;
+  border: 1px solid #808080;
+  padding: 2px 6px;
+}
+.select .options {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 0 3px rgba(0,0,0,0.25);
+  padding: 1%;
+  margin-top: 10px;
+}
+.select .options ul {
+  list-style: none;
+  padding-left: 0;
+}
+.select .options ul li {
+  display: block;
+  min-height: 35px;
+}
+.select .options.hidden {
+  display: none;
+}
+.signature {
+  margin: 15px 0;
+}
+.signature .canvas {
+  width: 100%;
+  height: 190px;
+  background: #fff;
+  border-radius: 2px;
+}
+.signature .buttons {
+  display: block;
+  margin: 10px 0;
+}
+.signature .reset,
+.signature .done {
+  max-width: 140px;
+}
+.signature .done {
+  float: right;
+}
+.slider {
+  position: relative;
+  width: 100%;
+}
+.slider .track {
+  border-radius: 3px;
+  background: #787878;
+  box-shadow: 0 0 3px rgba(0,0,0,0.25);
+  margin-top: 15px;
+  width: 100%;
+}
+.slider .highlight {
+  background: #c80000;
+}
+.slider .handle {
+  position: absolute;
+  border-radius: 100%;
+  background: #a0a0a0;
+  box-shadow: 0 0 3px rgba(0,0,0,0.25);
+  width: 35px;
+  height: 35px;
+  top: 0;
+}
+.slideShow {
+  width: 400px;
+  height: 300px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+.slideShow .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.slideShow .stage .slide img {
+  width: 100%;
+}
+.slideShow .button {
+  position: absolute;
+  top: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 100%;
+  background: #666;
+}
+.slideShow .previous.button {
+  left: 1%;
+}
+.slideShow .next.button {
+  right: 1%;
+}
+.slideShow .indicators {
+  position: absolute;
+  left: 0;
+  bottom: 2%;
+  width: 100%;
+  height: 14px;
+  text-align: center;
+}
+.slideShow .indicators .indicator {
+  border-radius: 100%;
+  border: 1px solid #fff;
+  width: 10px;
+  height: 10px;
+  background: rgba(0,0,0,0.3);
+  margin: 2px 5px;
+  display: inline-block;
+}
+.slideShow .indicators .current.indicator {
+  background: #fff;
+}
+.tags {
+  padding: 6px;
+}
+.tags .tag {
+  background: #888;
+  color: #fff;
+  margin: 2px 5px;
+  border-radius: 2px;
+  padding: 6px 0 6px 6px;
+}
+.tags .tag .removeTag {
+  margin: 0 0 0 5px;
+  background: #777;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0 2px 2px 0;
+  padding: 6px;
+}
+.tags .tag.selected {
+  background: #444;
+}
+.tags .input {
+  min-width: 30px;
+  margin: 2px 5px;
+}
+.timePicker {
+  position: relative;
+}
+.timePicker .clock {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  z-index: 2;
+}
+.timeSpanInput {
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  position: relative;
+}
+.timeSpanInput .picker {
+  height: 100%;
+  width: 45%;
+  position: absolute;
+  overflow: hidden;
+}
+.timeSpanInput .picker ul {
+  list-style: none;
+  padding: 0;
+}
+.timeSpanInput .picker ul li {
+  text-align: center;
+  height: 40px;
+  opacity: 0.45;
+}
+.timeSpanInput .picker ul li.selected {
+  opacity: 1;
+}
+.timeSpanInput .end.picker {
+  left: 50%;
+}
+.timeSpanInput .divider {
+  width: 5%;
+  height: 5%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  top: 45%;
+  left: 45%;
+}
+.timeSpanInput:after {
+  content: " ";
+  clear: both;
+  display: block;
+  height: 0;
+  width: 100%;
+}
+.timeWheelPicker {
+  margin: 0 auto;
+  width: 320px;
+  position: relative;
+}
+.timeWheelPicker .picker {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #fff;
+  height: 200px;
+  width: 320px;
+  box-shadow: 0 0 4px #888;
+}
+.timeWheelPicker .picker::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+.timeWheelPicker .picker .segment {
+  color: #999;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+  float: left;
+/* Prevent native touch events on Windows */
+  -ms-touch-action: none;
+/* Prevent the callout on tap-hold and text selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+/* Prevent text resize on orientation change, useful for web-apps */
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none;
+}
+.timeWheelPicker .picker .segment ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  position: absolute;
+/* Prevent elements to be highlighted on tap */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+/* Put the scroller into the HW Compositing layer right from the start */
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  transform: translateZ(0);
+}
+.timeWheelPicker .picker .segment ul li {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 0 0 25px;
+  font-size: 20px;
+  line-height: 1.45em;
+}
+.timeWheelPicker .picker .segment ul li.selected {
+  color: #000;
+}
+.timeWheelPicker .picker .hour,
+.timeWheelPicker .picker .minute,
+.timeWheelPicker .picker .phase {
+  width: 33%;
+}
+.timeWheelPicker .picker .hour ul li {
+  text-align: right;
+}
+.playground,
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.playground header,
+body header {
+  margin-bottom: 10px;
+  background: #b44414;
+  color: #fff;
+  margin: 0;
+  padding-bottom: 20px;
+  font-family: 'Helvetica' sans-serif;
+}
+.playground header select,
+body header select {
+  float: right;
+}
+.playground .component,
+body .component,
+.playground header .content,
+body header .content {
+  width: 96%;
+  max-width: 960px;
+  padding: 10px 2%;
+  margin: 0 auto;
+}

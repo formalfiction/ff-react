@@ -13,6 +13,9 @@ var DeviceStore = Store.extend({
 	}
 });
 
+// Turn DeviceStore into a singleton
+DeviceStore = new DeviceStore();
+
 window.addEventListener("scroll", function (e){
 	DeviceStore.emitScroll(e);
 });
@@ -20,4 +23,4 @@ window.addEventListener("scroll", function (e){
 
 
 // export a singleton
-module.exports = new DeviceStore();
+module.exports = DeviceStore

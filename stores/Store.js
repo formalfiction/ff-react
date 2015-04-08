@@ -6,7 +6,7 @@ var CHANGE_EVENT = 'change'
   , ERROR_EVENT = 'error'
   , MESSAGE_EVENT = 'message';
 
-function Store () {} 
+function Store () {}
 
 _.extend(Store.prototype, EventEmitter.prototype, {
   // empty constructor func

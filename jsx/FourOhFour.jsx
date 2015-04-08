@@ -12,7 +12,7 @@ var FourOhFour = React.createClass({
 	getDefaultProps : function () {
 		return {
 			title : "Not Found",
-			message : "We Couldn&#39;t find what you were looking for."
+			message : "We Couldn't find what you were looking for."
 		}
 	},
 

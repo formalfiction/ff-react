@@ -17,6 +17,19 @@ describe('Store', function () {
 			store = new Store({});
 			tu.assertType(store, 'object');
 		});
+
+		it('extend', function (){
+			tu.assertType(store.extend, 'function');
+			var SubStore = Store.extend({
+				addedMethod : function () {
+					return "I'm new!";
+				}
+			});
+			tu.assertType(SubStore.extend, 'function');
+
+			var subStore = new SubStore();
+			tu.assertType(subStore.addedMethod, 'function');
+		});
 	});
 
 	describe('events', function(){
