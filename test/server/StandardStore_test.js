@@ -14,7 +14,7 @@ var models = [
 describe('StandardStore', function(){
 
 	describe('setters', function () {
-		describe('valid', function () {
+		it('valid', function () {
 			tu.assertType(store.valid, 'function');
 			var cases = [
 				["", false],
@@ -39,7 +39,7 @@ describe('StandardStore', function(){
 				}
 			});
 		});
-		describe('add', function () {
+		it('add', function () {
 			var modelsArray = [models[2],models[3]]
 			var cases = [
 				[{}, function(m){ return (m === false) }],
@@ -51,7 +51,7 @@ describe('StandardStore', function(){
 
 			tu.runCases(store.add, cases, store);
 		});
-		describe('update', function () {
+		it('update', function () {
 			models[0].goal = "win world series";
 			models[1].goal = "build lego castle";
 			models[2].goal = "meet martha stewart";
@@ -67,7 +67,7 @@ describe('StandardStore', function(){
 
 			tu.runCases(store.update, cases, store);
 		});
-		describe('remove', function(){
+		it('remove', function(){
 			var cases = [
 				[undefined, false],
 				[{}, false],
@@ -84,7 +84,7 @@ describe('StandardStore', function(){
 	});
 
 	describe('getters', function () {
-		describe('one', function () {
+		it('one', function () {
 			var cases = [
 				[undefined, undefined],
 				["", undefined],
@@ -95,11 +95,38 @@ describe('StandardStore', function(){
 
 			tu.runCases(store.one, cases, store);
 		});
-		describe('all', function () {
+		it('all', function () {
 			tu.assertType(store.all, 'function');
 			var all = store.all();
 			assert.equal(Object.prototype.toString.call(all), "[object Array]");
 			assert.equal(all.length, models.length);
+		});
+	});
+
+	describe('utils', function(){
+		it('isModelObject', function(){
+			var cases = [
+				[false, false],
+				[true, false],
+				[{}, false],
+				[{ id : "" }, false],
+				[{ id : "a" }, true]
+			];
+
+			tu.runCases(store.isModelObject, cases, store);
+		});
+		it('idObject', function(){
+			var cases = [
+				[false, undefined],
+				[true, undefined],
+				[0, { id : 0 }],
+				["a", { id : "a" }],
+				[{}, undefined],
+				[{ id : "b"}, { id : "b" }],
+				[{ id : "c", otherProp : false}, { id : "c", otherProp : false}]
+			];
+
+			tu.runCases(store.idObject, cases, store);
 		});
 	});
 

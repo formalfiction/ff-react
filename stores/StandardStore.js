@@ -143,30 +143,29 @@ var StandardStore = Store.extend({
 	// callback for error reporting.
 	// Feel free to override this method, keeping it's format.
 	// @param model {object} - the model to validate
-	// @param cb {function} - optional callback for errors
-	// @return true if valid, error if not
-	isModelObject : function (model,cb) {
-		var errors = [];
-
+	// @return {boolean} - weather it's a model object or not
+	isModelObject : function (model) {
 		// all models must be objects
 		if (!_.isObject(model)) { 
-			errors.push("model must be an object");
-			if (_.isFunction(cb)) {
-				cb(errors);
-			}
 			return false;
 		}
 
 		// must have either an id or cid property
 		if (!model.id && !model.cid) { 
-			errors.push("model must have an id or cid property");
+			return false;
 		}
 
-		if (_.isFunction(cb)) {
-			cb(errors);
-		}
+		return true;
+	},
 
-		return (errors.length === 0);
+	// tries to format obj as an "id object"
+	// @param arg {object|string|number}
+	// @return {object|undefined} in the form { id : [arg] }
+	//														undefined if the conversion cannot be made
+	idObject : function (obj) {
+		if (this.isModelObject(obj)) { return obj; }
+		if (_.isString(obj) || _.isNumber(obj)) { return { id : obj}; }
+		return undefined;
 	}
 });
 
