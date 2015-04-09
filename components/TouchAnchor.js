@@ -6,7 +6,7 @@
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY, mountTime;
+var startX, startY;
 
 var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	propTypes : {
@@ -28,7 +28,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
@@ -36,7 +36,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -58,7 +58,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	},
 	onInput : function (e) {
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -76,7 +76,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	  }
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}

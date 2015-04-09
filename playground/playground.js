@@ -2120,7 +2120,7 @@ var FourOhFour = React.createClass({displayName: "FourOhFour",
 	getDefaultProps : function () {
 		return {
 			title : "Not Found",
-			message : "We Couldn&#39;t find what you were looking for."
+			message : "We Couldn't find what you were looking for."
 		}
 	},
 
@@ -2680,6 +2680,7 @@ var CronInput = require('./CronInput')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
+	, TouchButton = require('./TouchButton')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
@@ -2687,7 +2688,7 @@ var CronInput = require('./CronInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
 var components = ["TagInput","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -2709,7 +2710,7 @@ var Playground = React.createClass({displayName: "Playground",
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
-				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd."
+				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
 			}
 		}
 	},
@@ -2770,14 +2771,17 @@ var Playground = React.createClass({displayName: "Playground",
 		case "Signup":
 			component = React.createElement(Signup, null)
 			break;
+		case "TagInput":
+			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			break;
 		case "TimePicker":
 			component = React.createElement(TimePicker, null)
 			break;
 		case "TimeSpanInput":
 			component = React.createElement(TimeSpanInput, {name: "TimeSpanInput", value: this.state.values.TimeSpanInput, onValueChange: this.onValueChange})
 			break;
-		case "TagInput":
-			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+		case "TouchButton":
+			component = React.createElement(TouchButton, {name: "TouchButton", text: "Button"})
 			break;
 		case "DateTimePicker":
 			component = React.createElement(DateTimePicker, {name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})
@@ -2836,7 +2840,7 @@ var Playground = React.createClass({displayName: "Playground",
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./Clock":10,"./CronInput":12,"./DatePicker":13,"./DateTimePicker":14,"./DateTimeRangePicker":15,"./HoursInput":21,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":39,"./TimePicker":41,"./TimeSpanInput":42,"./ValidTextInput":50,"./ValidTextareaInput":51}],31:[function(require,module,exports){
+},{"./Clock":10,"./CronInput":12,"./DatePicker":13,"./DateTimePicker":14,"./DateTimeRangePicker":15,"./HoursInput":21,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":39,"./TimePicker":41,"./TimeSpanInput":42,"./TouchButton":45,"./ValidTextInput":50,"./ValidTextareaInput":51}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -4487,7 +4491,7 @@ module.exports = TimeWheelPicker;
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY, mountTime;
+var startX, startY;
 
 var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	propTypes : {
@@ -4509,7 +4513,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
@@ -4517,7 +4521,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -4539,7 +4543,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	},
 	onInput : function (e) {
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -4557,7 +4561,7 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	  }
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -4587,7 +4591,7 @@ module.exports = TouchAnchor;
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY, mountTime;
+var startX, startY;
 
 var TouchButton = React.createClass({displayName: "TouchButton",
 	propTypes : {
@@ -4610,7 +4614,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
@@ -4618,7 +4622,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -4640,7 +4644,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 	},
 	onInput : function (e) {
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -4658,7 +4662,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 	  }
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -4680,8 +4684,6 @@ module.exports = TouchButton;
 },{"../utils/clickbuster":209}],46:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var mountTime;
-
 var TouchInput = React.createClass({displayName: "TouchInput",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
@@ -4701,13 +4703,13 @@ var TouchInput = React.createClass({displayName: "TouchInput",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -4743,8 +4745,6 @@ module.exports = TouchInput;
 // *******
 // *******
 
-var mountTime;
-
 var TouchSelect = React.createClass({displayName: "TouchSelect",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
@@ -4759,13 +4759,13 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -4786,8 +4786,6 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 module.exports = TouchSelect;
 },{}],48:[function(require,module,exports){
 /** @jsx React.DOM */
-
-var mountTime;
 
 var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	propTypes : {
@@ -4825,7 +4823,10 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
+		this.setHeight();
+	},
+	componentDidUpdate : function () {
 		this.setHeight();
 	},
 
@@ -4835,7 +4836,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		if (this.props.autoGrow) {
 			// set the height to 1px before rendering
 			el.setAttribute('style', "height : 1px");
-			var newHeight = el.scrollHeight;
+			var newHeight = el.scrollHeight + 1;
 
 			if (newHeight != this.state.height) {
 				this.setState({ height : newHeight });
@@ -4859,7 +4860,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	},
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -29935,11 +29936,10 @@ module.exports = require('./lib/React');
 }.call(this));
 
 },{}],207:[function(require,module,exports){
-var Store = require("ff-react/stores/Store")
+var Store = require("./Store")
 	, DeviceConstants = require("../constants/DeviceConstants");
 
-
-var DeviceStore = Store({
+var DeviceStore = Store.extend({
 	onScroll : function (fn) {
 		this.on(DeviceConstants.DEVICE_SCROLL, fn);
 	},
@@ -29951,61 +29951,125 @@ var DeviceStore = Store({
 	}
 });
 
+// Turn DeviceStore into a singleton
+DeviceStore = new DeviceStore();
+
 window.addEventListener("scroll", function (e){
 	DeviceStore.emitScroll(e);
 });
 
 
 
-module.exports = DeviceStore;
-},{"../constants/DeviceConstants":53,"ff-react/stores/Store":208}],208:[function(require,module,exports){
+// export a singleton
+module.exports = DeviceStore
+},{"../constants/DeviceConstants":53,"./Store":208}],208:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter
   , _ = require('underscore')
 
+// big, universal contants for store events
 var CHANGE_EVENT = 'change'
   , ERROR_EVENT = 'error'
   , MESSAGE_EVENT = 'message';
 
-var storeProto = {
+function Store () {}
+
+_.extend(Store.prototype, EventEmitter.prototype, {
+  // empty constructor func
+  constructor : function () {},
+
   emitChange: function(data) {
-    this.emit(CHANGE_EVENT, data);
+    return this.emit(CHANGE_EVENT, data);
   },
   /**
    * @param {function} callback
+   * @return {int} number of current listeners
    */
   onChange: function(callback) {
     this.on(CHANGE_EVENT, callback);
+    return this.listeners(CHANGE_EVENT).length;
   },
   /**
    * @param {function} callback
+   * @return {int} number of change event listeners
    */
   offChange: function(callback) {
     this.removeListener(CHANGE_EVENT, callback);
+    return this.listeners(CHANGE_EVENT).length;
   },
 
   emitError : function (err) {
-    this.emit(ERROR_EVENT, err);
+    return this.emit(ERROR_EVENT, err);
   },
+  /**
+   * @param {function} callback
+   * @return {int} number of change event listeners
+   */
   onError : function (callback) {
     this.on(ERROR_EVENT, callback);
+    return this.listeners(ERROR_EVENT).length;
   },
+  /**
+   * @param {function} callback
+   * @return {int} number of change event listeners
+   */
   offError : function (callback) {
     this.removeListener(ERROR_EVENT, callback);
+    return this.listeners(ERROR_EVENT).length;
   },
   
   emitMessage : function (msg) {
-    this.emit(MESSAGE_EVENT, msg);
+    return this.emit(MESSAGE_EVENT, msg);
   },
+  /**
+   * @param {function} callback
+   * @return {int} number of change event listeners
+   */
   onMessage : function (callback) {
     this.on(MESSAGE_EVENT, callback);
+    return this.listeners(MESSAGE_EVENT).length;
   },
+  /**
+   * @param {function} callback
+   * @return {int} number of change event listeners
+   */
   offMessage : function (callback) {
     this.removeListener(MESSAGE_EVENT, callback);
-  },
-}
+    return this.listeners(MESSAGE_EVENT).length;
+  }
+});
 
-function Store (obj) {
-	return _.extend({}, storeProto, EventEmitter.prototype, obj);
+// straight up ripoff of the Backbone.js extend method
+Store.extend = function extend (protoProps, staticProps) {
+  var parent = this;
+  var child;
+
+  // The constructor function for the new subclass is either defined by you
+  // (the "constructor" property in your `extend` definition), or defaulted
+  // by us to simply call the parent's constructor.
+  if (protoProps && _.has(protoProps, 'constructor')) {
+    child = protoProps.constructor;
+  } else {
+    child = function(){ return parent.apply(this, arguments); };
+  }
+
+  // Add static properties to the constructor function, if supplied.
+  _.extend(child, parent, staticProps);
+
+  // Set the prototype chain to inherit from `parent`, without calling
+  // `parent`'s constructor function.
+  var Surrogate = function(){ this.constructor = child; };
+  Surrogate.prototype = parent.prototype;
+  child.prototype = new Surrogate;
+
+  // Add prototype properties (instance properties) to the subclass,
+  // if supplied.
+  if (protoProps) _.extend(child.prototype, protoProps);
+
+  // Set a convenience property in case the parent's prototype is needed
+  // later.
+  child.__super__ = parent.prototype;
+
+  return child;
 }
 
 
@@ -30047,19 +30111,9 @@ var time = {
 	isDate : function (value) { 
 		return (Object.prototype.toString.call(value) === "[object Date]");
 	},
-	isObject : function (value) {
-		return (Object.prototype.toString.call(value) === "[object Object]");
-	},
-	isArray : function (value) {
-		return (Object.prototype.toString.call(value) === "[object Array]");
-	},
-
-	type : function (value) {
-		var t = /[A-Z]\w+/g.exec(Object.prototype.toString.call(value));
-		return t.length ? t[0] : "Unknown";
-	},
 
 	shortDateString : function (date) {
+		if (Object.prototype.toString.call(date) !== "[object Date]") { return ""; }
 		return this.months[date.getMonth()] + " " + date.getDate()
 	},
 
@@ -30082,7 +30136,7 @@ var time = {
 			if ( (typeof value === "number" && value != NaN) ||
 					 (typeof value === "string")
 				 ) {
-				value = new Date(value)
+				value = new Date(value);
 			} else {
 				return false;
 			}
@@ -30092,7 +30146,7 @@ var time = {
 	},
 
 	daysDiff : function (start, end) {
-		return Math.round((date - startDate) / (1000*60*60*24))
+		return Math.round((end - start) / (1000*60*60*24))
 	},
 
 	dateTimeString : function (date) {

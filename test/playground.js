@@ -2680,6 +2680,7 @@ var CronInput = require('./CronInput')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
+	, TouchButton = require('./TouchButton')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
@@ -2687,7 +2688,7 @@ var CronInput = require('./CronInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
 var components = ["TagInput","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -2770,14 +2771,17 @@ var Playground = React.createClass({displayName: "Playground",
 		case "Signup":
 			component = React.createElement(Signup, null)
 			break;
+		case "TagInput":
+			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			break;
 		case "TimePicker":
 			component = React.createElement(TimePicker, null)
 			break;
 		case "TimeSpanInput":
 			component = React.createElement(TimeSpanInput, {name: "TimeSpanInput", value: this.state.values.TimeSpanInput, onValueChange: this.onValueChange})
 			break;
-		case "TagInput":
-			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+		case "TouchButton":
+			component = React.createElement(TouchButton, {name: "TouchButton", text: "Button"})
 			break;
 		case "DateTimePicker":
 			component = React.createElement(DateTimePicker, {name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})
@@ -2817,7 +2821,7 @@ var Playground = React.createClass({displayName: "Playground",
 			React.createElement("div", {className: "components playground"}, 
 				React.createElement("header", null, 
 					React.createElement("div", {className: "content"}, 
-						React.createElement("h1", null, "Component Playground"), 
+						React.createElement("h1", null, "Component !!! Playground"), 
 						React.createElement("select", {value: this.state.component, onChange: this.pickComponent}, 
 							options
 						), 
@@ -2836,7 +2840,7 @@ var Playground = React.createClass({displayName: "Playground",
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./Clock":10,"./CronInput":12,"./DatePicker":13,"./DateTimePicker":14,"./DateTimeRangePicker":15,"./HoursInput":21,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":39,"./TimePicker":41,"./TimeSpanInput":42,"./ValidTextInput":50,"./ValidTextareaInput":51}],31:[function(require,module,exports){
+},{"./Clock":10,"./CronInput":12,"./DatePicker":13,"./DateTimePicker":14,"./DateTimeRangePicker":15,"./HoursInput":21,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":39,"./TimePicker":41,"./TimeSpanInput":42,"./TouchButton":45,"./ValidTextInput":50,"./ValidTextareaInput":51}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -4587,7 +4591,7 @@ module.exports = TouchAnchor;
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY, mountTime;
+var startX, startY;
 
 var TouchButton = React.createClass({displayName: "TouchButton",
 	propTypes : {
@@ -4610,7 +4614,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
@@ -4618,7 +4622,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -4680,8 +4684,6 @@ module.exports = TouchButton;
 },{"../utils/clickbuster":209}],46:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var mountTime;
-
 var TouchInput = React.createClass({displayName: "TouchInput",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
@@ -4701,13 +4703,13 @@ var TouchInput = React.createClass({displayName: "TouchInput",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -4743,8 +4745,6 @@ module.exports = TouchInput;
 // *******
 // *******
 
-var mountTime;
-
 var TouchSelect = React.createClass({displayName: "TouchSelect",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
@@ -4759,13 +4759,13 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;
@@ -4786,8 +4786,6 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 module.exports = TouchSelect;
 },{}],48:[function(require,module,exports){
 /** @jsx React.DOM */
-
-var mountTime;
 
 var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	propTypes : {
@@ -4825,7 +4823,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 		this.setHeight();
 	},
 	componentDidUpdate : function () {
@@ -4862,7 +4860,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	},
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;

@@ -16,6 +16,7 @@ var CronInput = require('./CronInput')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
+	, TouchButton = require('./TouchButton')
 	, TagInput = require('./TagInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
@@ -23,7 +24,7 @@ var CronInput = require('./CronInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
 var components = ["TagInput","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput","ValidTextInput","ValidTextareaInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -106,14 +107,17 @@ var Playground = React.createClass({
 		case "Signup":
 			component = <Signup />
 			break;
+		case "TagInput":
+			component = <TagInput name="TagInput" value={this.state.values.TagInput} onValueChange={this.onValueChange} />
+			break;
 		case "TimePicker":
 			component = <TimePicker />
 			break;
 		case "TimeSpanInput":
 			component = <TimeSpanInput name="TimeSpanInput" value={this.state.values.TimeSpanInput} onValueChange={this.onValueChange} />
 			break;
-		case "TagInput":
-			component = <TagInput name="TagInput" value={this.state.values.TagInput} onValueChange={this.onValueChange} />
+		case "TouchButton":
+			component = <TouchButton name="TouchButton" text="Button" />
 			break;
 		case "DateTimePicker":
 			component = <DateTimePicker name="DateTimePicker" value={this.state.values.DateTimePicker} centerDate={this.state.values.DateTimePickerCenter} onValueChange={this.onValueChange} />

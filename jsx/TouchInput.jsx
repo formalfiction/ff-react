@@ -1,7 +1,5 @@
 /** @jsx React.DOM */
 
-var mountTime;
-
 var TouchInput = React.createClass({
 	propTypes : {
 		// a delay (in ms) before the component will respond.
@@ -21,13 +19,13 @@ var TouchInput = React.createClass({
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;

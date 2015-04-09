@@ -1,7 +1,5 @@
 /** @jsx React.DOM */
 
-var mountTime;
-
 var TouchTextarea = React.createClass({
 	propTypes : {
 		// default height for the field
@@ -38,7 +36,7 @@ var TouchTextarea = React.createClass({
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 		this.setHeight();
 	},
 	componentDidUpdate : function () {
@@ -75,7 +73,7 @@ var TouchTextarea = React.createClass({
 	},
 	onMouseDown : function (e) {
 
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 			return;

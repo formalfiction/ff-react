@@ -8,7 +8,7 @@
 
 var clickbuster = require('../utils/clickbuster');
 
-var startX, startY, mountTime;
+var startX, startY;
 
 var TouchButton = React.createClass({displayName: "TouchButton",
 	propTypes : {
@@ -31,7 +31,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		}
 	},
 	componentDidMount : function () {
-		mountTime = new Date();
+		this.mountTime = new Date().valueOf();
 	},
 
 	// Event Handlers
@@ -39,7 +39,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}
@@ -61,7 +61,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 	},
 	onInput : function (e) {
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
@@ -79,7 +79,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 	  }
 
 		// check too make sure input is after the specified delay
-		if (new Date().valueOf() < (mountTime.valueOf() + this.props.initialInputDelay)) {
+		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			return;
 		}

@@ -17,7 +17,7 @@ module.exports = function (grunt) {
 		browserify : {
 			playground : {
 				files : {
-					'./test/playground.js' : ['./components/**/*.js']
+					'./playground/playground.js' : ['./components/**/*.js']
 				}
 			}
 		},
