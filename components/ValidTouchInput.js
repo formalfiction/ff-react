@@ -48,7 +48,7 @@ var ValidTouchInput = React.createClass({displayName: "ValidTouchInput",
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
-			initialInputDelay : 300,
+			initialInputDelay : 500,
 			showValidationIcon : false,
 			type : "text"
 		}

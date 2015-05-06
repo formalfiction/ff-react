@@ -45,7 +45,7 @@ var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 			placeholder : "",
 			valid : undefined,
 			message : undefined,
-			initialInputDelay : 300,
+			initialInputDelay : 500,
 			showValidationIcon : false
 		}
 	},

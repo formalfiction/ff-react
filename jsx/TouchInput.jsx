@@ -14,11 +14,11 @@ var TouchInput = React.createClass({
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
-			initialInputDelay : 300,
+			initialInputDelay : 500,
 			name : "touchInput"
 		}
 	},
-	componentDidMount : function () {
+	componentWillMount : function () {
 		this.mountTime = new Date().valueOf();
 	},
 

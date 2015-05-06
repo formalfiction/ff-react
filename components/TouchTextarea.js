@@ -25,7 +25,7 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	getDefaultProps : function () {
 		return {
 			name : "textarea",
-			initialInputDelay : 300,
+			initialInputDelay : 500,
 			autoGrow : true,
 			defaultHeight : 30,
 		}

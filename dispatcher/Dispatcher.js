@@ -126,16 +126,23 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
   parseServerResponse : function (r) { return r; },
   parseServerError : function (r) { return r; },
   handleServerAction : function(action) {
-    var self = this;
+    var self = this
+      , data = action.data;
 
     if (!action.url) { console.warn('server actions require a url param'); }
-    if (!action.requestType) { console.warn('server actions require a type param'); }
-
+    if (!action.requestType) { console.warn('server actions require a type param, defaulting to GET request'); }
+    
+    if (action.requestType != "GET") {
+      data = JSON.stringify(data);
+    }
+    
     $.ajax({
       dataType : "json",
+      cache : false,
+      async : true,
       url : action.url,
       type : action.requestType,
-      data : JSON.stringify(action.data)
+      data : data
     }).done(function (response){
       action.response = response.data;
       action.error = response.meta.error;
@@ -145,13 +152,14 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
         action : action,
       });
     }).error(function (response){
-      action.error = response.meta.error;
+      if (response.meta) {
+        action.error = response.meta.error;
+      }
       self.dispatch({
         source : "SERVER_ACTION",
         action : action
       });
     });
-
   }
 });
 

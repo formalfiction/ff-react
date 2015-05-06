@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
-var DeviceStore = require("../stores/DeviceStore");
+var DeviceStore = require("../stores/DeviceStore")
+	, _ = require('underscore');
 
 var Spinner = require('./Spinner');
 
@@ -26,7 +27,7 @@ var List = React.createClass({displayName: "List",
 			data : [],
 		}
 	},
-	componentWillMount : function () {
+	componentDidMount : function () {
 		DeviceStore.onScroll(this.onScroll);
 	},
 	componentWillUnmount : function () {
@@ -35,8 +36,16 @@ var List = React.createClass({displayName: "List",
 
 	// Event Handlers
 	onScroll : function (e) {
-		if (window.scrollY > ((window.innerHeight / 4) * 3) && typeof this.props.onLoadMore === "function") {
-			this.props.onLoadMore();
+		if (typeof this.props.onLoadMore == "function" && !this.props.loading) {
+			var body = document.body
+				, html = document.documentElement
+				, height = Math.max( body.scrollHeight, body.offsetHeight, 
+														 html.clientHeight, html.scrollHeight, html.offsetHeight );
+
+			// only call onLoadMore if we're in the bottom 85% of the page and scrolling down
+			if ((window.scrollY + window.innerHeight) > (height * 0.85) && e.lastScrollY < window.scrollY) {
+				this.props.onLoadMore();
+			}
 		}
 	},
 

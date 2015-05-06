@@ -56,7 +56,8 @@ var StandardStore = Store.extend({
 	// internal models array. will be defined on construction
 	_models : undefined,
 
-	// @private
+	// @private - internal "one" method that returns a reference to the stored
+	// model object
 	// @param {string} id - the id or client id (cid) of the object being retrieved
 	// private method because it returns a direct reference to the object in the store. 
 	_one : function (id) {
@@ -64,12 +65,13 @@ var StandardStore = Store.extend({
 		return _.find(this._models, idMatcher(id));
 	},
 	
-	// @param {string} id - the id or client id (cid) of the object being retrieved
 	// public method returns a clone of the object
 	// to prevent unintended modification of the stored model
+	// @param {string} id - the id or client id (cid) of the object being retrieved
+	// @return {object|undefined} - the model object, or undefined if not found
 	one : function (id) {
 		if (!id) { return undefined; }
-		return this._one(id)
+		return _.clone(this._one(id));
 	},
 
 	// get all models in this store
@@ -77,7 +79,7 @@ var StandardStore = Store.extend({
 	// unintended modification
 	// @return {array} - copy of all models
 	all : function () {
-		return this._models
+		return _.clone(this._models)
 	},
 
 	// check to see weather a model is valid. call

@@ -27,7 +27,7 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		return {
 			text : "button",
 			moveThreshold : 10,
-			initialInputDelay : 300,
+			initialInputDelay : 500,
 		}
 	},
 	componentDidMount : function () {
