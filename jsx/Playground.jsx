@@ -36,7 +36,7 @@ var foFive = new Date();
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "TimeSpanInput",
+			component : "Signature",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,

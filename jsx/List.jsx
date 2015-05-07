@@ -36,7 +36,7 @@ var List = React.createClass({
 
 	// Event Handlers
 	onScroll : function (e) {
-		if (typeof this.props.onLoadMore == "function" && !this.props.loading) {
+		if (typeof this.props.onLoadMore == "function" && !this.props.loading && this.isMounted()) {
 			var body = document.body
 				, html = document.documentElement
 				, height = Math.max( body.scrollHeight, body.offsetHeight, 

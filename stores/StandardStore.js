@@ -165,6 +165,7 @@ var StandardStore = Store.extend({
 	// @return {object|undefined} in the form { id : [arg] }
 	//														undefined if the conversion cannot be made
 	idObject : function (obj) {
+		if (!obj) { return undefined; }
 		if (this.isModelObject(obj)) { return obj; }
 		if (_.isString(obj) || _.isNumber(obj)) { return { id : obj}; }
 		return undefined;

@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/formalfiction/ff-react",
   "dependencies": {
-    "react": "^0.11.2",
+    "react": "0.13.2",
     "underscore": "^1.7.0"
   },
   "devDependencies": {

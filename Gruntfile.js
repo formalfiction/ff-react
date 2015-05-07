@@ -33,7 +33,8 @@ module.exports = function (grunt) {
 			playground : {
 				options : { compress : false },
 				files : {
-					'./test/playground.css' : './style/playground.styl'
+					'./test/playground.css' : './style/playground.styl',
+					'./playground/playground.css' : './style/playground.styl'
 				}
 			}
 		},
