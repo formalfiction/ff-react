@@ -1,11 +1,13 @@
 /** @jsx React.DOM */
 
+
+// @stateful
 var TouchInput = React.createClass({displayName: 'TouchInput',
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
 		initialInputDelay : React.PropTypes.number,
-		// gotta nam yo fields
+		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
 		onChange : React.PropTypes.func,
 		onValueChange : React.PropTypes.func,
@@ -14,12 +16,26 @@ var TouchInput = React.createClass({displayName: 'TouchInput',
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
-			initialInputDelay : 500,
+			initialInputDelay : 450,
 			name : "touchInput"
 		}
 	},
+	getInitialState : function () {
+		return {
+			readOnly : true
+		}
+	},
 	componentDidMount : function () {
+		var self = this;
 		this.mountTime = new Date().valueOf();
+		
+		// here we set the field to readonly for the duration
+		// of the initialInputDelay time. This prevents ghost
+		// clicks from focusing the field (which would activate
+		// the keyboard on touch devices)
+		setTimeout(function () {
+			self.setState({ readOnly : this.props.readOnly || false });
+		}, this.props.initialInputDelay);
 	},
 
 	// Event Handlers
@@ -45,7 +61,7 @@ var TouchInput = React.createClass({displayName: 'TouchInput',
 
 	render : function () {
 		return (
-			React.createElement("input", React.__spread({},  this.props, {onChange: this.onChange, onMouseDown: this.onMouseDown}))
+			React.createElement("input", React.__spread({},  this.props, {readOnly: this.state.readOnly, onChange: this.onChange, onMouseDown: this.onMouseDown}))
 		);
 	}
 });
