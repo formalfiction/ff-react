@@ -7,7 +7,7 @@
 // *******
 // *******
 
-var TouchSelect = React.createClass({displayName: "TouchSelect",
+var TouchSelect = React.createClass({displayName: 'TouchSelect',
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
@@ -17,7 +17,7 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
-			initialInputDelay : 350
+			initialInputDelay : 500
 		}
 	},
 	componentDidMount : function () {

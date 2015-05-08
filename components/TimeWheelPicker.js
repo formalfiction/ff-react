@@ -15,7 +15,7 @@ var hours = [1,2,3,4,5,6,7,8,9,10,11,12]
 	, minutes = [0,15,30,45];
 
 
-var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
+var TimeWheelPicker = React.createClass({displayName: 'TimeWheelPicker',
 	propTypes : {
 		className : React.PropTypes.string,
 		// name of the field
@@ -152,7 +152,7 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 /* @private
  * WheelPicker
  */
-var WheelPicker = React.createClass({displayName: "WheelPicker",
+var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	propTypes : {
 		killTouch : React.PropTypes.bool.isRequired,
 		name : React.PropTypes.string.isRequired,
@@ -269,7 +269,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 
 	// Render Methods
 	hour : function (value, hour) {
-		return React.createElement("li", {"data-value": value, key: hour}, hour)
+		return React.createElement("li", {'data-value': value, key: hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -279,7 +279,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.createElement("li", {"data-value": value, key: key}, value)
+		return React.createElement("li", {'data-value': value, key: key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -310,7 +310,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 
 		return (
 			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
-				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -319,7 +319,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -328,12 +328,12 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
-						React.createElement("li", {"data-value": 0}, "am"), 
-						React.createElement("li", {"data-value": 1}, "pm"), 
+						React.createElement("li", {'data-value': 0}, "am"), 
+						React.createElement("li", {'data-value': 1}, "pm"), 
 						React.createElement("li", null), 
 						React.createElement("li", null)
 					)

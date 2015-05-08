@@ -12,7 +12,7 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
 
-var MonthCalendar = React.createClass({displayName: "MonthCalendar",
+var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 	propTypes : {
 		name : React.PropTypes.string,
 		// we accept onMouseDown & onTouchEnd Handlers
@@ -126,7 +126,7 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 										onTouchEnd: this.onSelectDay, 
 										className: c, 
 										key:  d + (w * 7), 
-										"data-value": wd.valueOf()
+										'data-value': wd.valueOf()
 										}, wd.getDate()));
 			}
 			weeks.push(React.createElement("tr", {key: w}, week));

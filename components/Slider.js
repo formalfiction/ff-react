@@ -2,7 +2,7 @@
 
 var startX, startY;
 
-var Slider = React.createClass({displayName: "Slider",
+var Slider = React.createClass({displayName: 'Slider',
 	propTypes: {
 	  min: React.PropTypes.number,
 	  max: React.PropTypes.number,

@@ -2,7 +2,7 @@
 
 
 // A placeholder Item
-var Item = React.createElement({
+var Item = React.createClass({
 	render : function () {
 		return (
 			<div className="item">

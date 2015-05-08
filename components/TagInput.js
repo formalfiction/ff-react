@@ -6,7 +6,7 @@
 
 var KeyCodes = require("../constants/KeyCodes");
 
-var TagInput = React.createClass({displayName: "TagInput",
+var TagInput = React.createClass({displayName: 'TagInput',
 	propTypes : {
 		// be sure to include "tags" in your prop if you want
 		// consistent styling
@@ -105,7 +105,7 @@ var TagInput = React.createClass({displayName: "TagInput",
 			}
 			tags.push(React.createElement("span", {key: i, className: "tag"}, 
 									t, 
-									React.createElement("span", {"data-key": i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
+									React.createElement("span", {'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
 								));
 		});
 

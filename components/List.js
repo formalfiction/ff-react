@@ -5,7 +5,7 @@ var DeviceStore = require("../stores/DeviceStore")
 
 var Spinner = require('./Spinner');
 
-var List = React.createClass({displayName: "List",
+var List = React.createClass({displayName: 'List',
 	propTypes : {
 		className : React.PropTypes.string,
 		data : React.PropTypes.array.isRequired,

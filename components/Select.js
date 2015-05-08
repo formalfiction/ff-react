@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var Select = React.createClass({displayName: "Select",
+var Select = React.createClass({displayName: 'Select',
 	propTypes : {
 		// Name of the select field
 		name : React.PropTypes.string.isRequired,
@@ -101,7 +101,7 @@ var Select = React.createClass({displayName: "Select",
 
 		for (var i=0,opt; opt=this.props.options[i]; i++) {
 			opt = this.formatOption(opt);
-			options.push(React.createElement("li", {key: i, "data-value": opt[0], onClick: this.onSelectOption}, opt[1]))
+			options.push(React.createElement("li", {key: i, 'data-value': opt[0], onClick: this.onSelectOption}, opt[1]))
 		}
 
 		return (

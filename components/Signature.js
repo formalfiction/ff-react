@@ -10,7 +10,7 @@ var DeviceStore = require('../stores/DeviceStore')
 var SignaturePad = require('../deps/SignaturePad')
 	, TouchButton = require('./TouchButton');
 
-var Signature = React.createClass({displayName: "Signature",
+var Signature = React.createClass({displayName: 'Signature',
 	propTypes : {
 		// optional dataURI to populate signature with
 		data : React.PropTypes.string,

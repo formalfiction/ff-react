@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-var TouchTextarea = React.createClass({displayName: "TouchTextarea",
+var TouchTextarea = React.createClass({displayName: 'TouchTextarea',
 	propTypes : {
 		// default height for the field
 		defaultHeight : React.PropTypes.number,

@@ -2,7 +2,7 @@
 
 /* Standard Not-Found Component with a go-back button. */
 
-var FourOhFour = React.createClass({displayName: "FourOhFour",
+var FourOhFour = React.createClass({displayName: 'FourOhFour',
 	propTypes : {
 		message : React.PropTypes.string,
 		title : React.PropTypes.string

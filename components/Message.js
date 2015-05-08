@@ -2,7 +2,7 @@
 
 /* Message Box Compnent */
 
-var Message = React.createClass({displayName: "Message",
+var Message = React.createClass({displayName: 'Message',
 	propTypes : {
 		message : React.PropTypes.string.isRequired,
 	},

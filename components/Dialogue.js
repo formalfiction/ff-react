@@ -6,7 +6,7 @@
 
 var TouchButton = require('./TouchButton');
 
-var Dialogue = React.createClass({displayName: "Dialogue",
+var Dialogue = React.createClass({displayName: 'Dialogue',
 	propTypes : {
 		acceptButtonTitle : React.PropTypes.string,
 		// Accept Handler

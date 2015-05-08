@@ -11,7 +11,7 @@ var hours = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 	, minutes = ["00","15","30","45"]
 	, phase = ["am","pm"];
 
-var Clock = React.createClass({displayName: "Clock",
+var Clock = React.createClass({displayName: 'Clock',
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,

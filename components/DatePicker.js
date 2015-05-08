@@ -15,7 +15,7 @@ var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 	, days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
 
 
-var DatePicker = React.createClass({displayName: "DatePicker",
+var DatePicker = React.createClass({displayName: 'DatePicker',
 	propTypes : {
 		className : React.PropTypes.string,
 		name : React.PropTypes.string.isRequired,

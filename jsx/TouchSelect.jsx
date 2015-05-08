@@ -17,7 +17,7 @@ var TouchSelect = React.createClass({
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
-			initialInputDelay : 350
+			initialInputDelay : 500
 		}
 	},
 	componentDidMount : function () {
