@@ -4,7 +4,7 @@
  * SlideShow is your classic, one-up slider
  */
 
-var SlideShow = React.createClass({displayName: 'SlideShow',
+var SlideShow = React.createClass({displayName: "SlideShow",
 	propTypes : {
 		loop : React.PropTypes.bool,
 		onSlideEnd : React.PropTypes.func,
@@ -111,7 +111,7 @@ var SlideShow = React.createClass({displayName: 'SlideShow',
 		
 		this.props.slides.forEach(function(slide, i){
 			var c = (i === self.state.slide) ? "current indicator" : "indicator";
-			indicators.push(React.createElement("span", {key: i, 'data-slide': i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
+			indicators.push(React.createElement("span", {key: i, "data-slide": i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
 		});
 
 		return (

@@ -2,7 +2,7 @@
 
 
 // @stateful
-var TouchInput = React.createClass({displayName: 'TouchInput',
+var TouchInput = React.createClass({displayName: "TouchInput",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
@@ -34,7 +34,7 @@ var TouchInput = React.createClass({displayName: 'TouchInput',
 		// clicks from focusing the field (which would activate
 		// the keyboard on touch devices)
 		setTimeout(function () {
-			self.setState({ readOnly : this.props.readOnly || false });
+			self.setState({ readOnly : self.props.readOnly || false });
 		}, this.props.initialInputDelay);
 	},
 

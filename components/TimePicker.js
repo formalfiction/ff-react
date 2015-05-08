@@ -7,7 +7,7 @@
 
 var Clock = require('./Clock');
 
-var TimePicker = React.createClass({displayName: 'TimePicker',
+var TimePicker = React.createClass({displayName: "TimePicker",
 	propTypes : {
 		// @todo
 	},

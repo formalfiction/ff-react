@@ -2,7 +2,16 @@
 var days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
 	, dayNames = { "Su" : 0,"Mo" : 1,"Tu" : 2,"We" : 3,"Th" : 4,"Fr" : 5,"Sa" : 6 }
  	, jsDaysOfWeek = { "Sun" : 0, "Mon" : 1, "Tue" : 2, "Wed" : 3, "Thu" : 4, "Fri" : 5, "Sat" : 6 }
- 	, jsDayNums = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+ 	, jsDayNums = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+ 	, longDayNames = {  "Su" : "Sunday",
+											"Mo" : "Monday",
+											"Tu" : "Tuesday",
+											"We" : "Wednesday",
+											"Th" : "Thursday",
+											"Fr" : "Friday",
+											"Sa" : "Saturday"
+										}
+
 
 var Hours;
 
@@ -60,12 +69,12 @@ module.exports = Hours = {
 
 		var split = opening.split(" ");
 		if (!containsDay(date, split[0])) {
-			return false
+			return false;
 		}
 
 		if (split.length === 2) {
 			if (!containsHour(date, split[1])) {
-				return false
+				return false;
 			}
 		}
 
@@ -145,6 +154,41 @@ module.exports = Hours = {
 
 		return results;
 	},
+
+	// Takes hours & breaks it out into an array of
+	// objects that describe the opening
+	hoursObject : function (hours) {
+
+	},
+	// Takes an opening string & breaks it out into an
+	// object that describes the opening
+	openingObject : function (opening) {
+		var split = opening.split(" ")
+			, days = daysOpenObject(split[0]);
+
+		// deal with hours
+		if (split.length === 2) {
+			hours = hoursOpenObject(split[1]);
+			days.allDay = hours.allDay;
+			days.startHr = hours.startHr;
+			days.startMin = hours.startMin;
+			days.stopHr = hours.stopHr;
+			days.stopMin = hours.stopMin;
+		} else {
+			days.allDay = true;
+			days.startHr = 0;
+			days.startMin = 0;
+			days.stopHr = 23;
+			days.stopMin = 59;
+		}
+
+		return days;
+	},
+	openingObjectToString : function (obj) {
+		var days = openingDaysString(obj)
+			, hours = openingHoursString(obj);
+		return (days + " " + hours).trim();
+	}
 }; 
 
 function containsDay(date, dayPhase) {
@@ -261,16 +305,6 @@ function SpanDays(span) {
 
 
 // String Conversion
-var longDayNames = {
-	"Su" : "Sunday",
-	"Mo" : "Monday",
-	"Tu" : "Tuesday",
-	"We" : "Wednesday",
-	"Th" : "Thursday",
-	"Fr" : "Friday",
-	"Sa" : "Saturday"
-}
-
 function openingToString (opening) {
 	var split = opening.split(" ")
 		, days = split[0]
@@ -366,10 +400,510 @@ function earliestOpening (opening, date) {
 	}
 
 }
+
+function daysOpenObject(dayPhase) {
+	var strings = dayPhase.split(",")
+		, obj = {
+			Su : false,
+			Mo : false,
+			Tu : false,
+			We : false,
+			Th : false,
+			Fr : false,
+			Sa : false,
+		};
+
+	for (var i=0, d, r; r=strings[i]; i++) {
+		d = r.split("-");
+		// day range
+		if (d.length === 2) {
+			var start = dayNames[d[0]]
+				, end = dayNames[d[1]];
+
+			for (var i=start; i <= end; i++) {
+				obj[days[i]] = true;
+			}
+		} else {
+			// single day
+			obj[d[0]] = true;
+		}
+	}
+
+	return obj;
+}
+
+function hoursOpenObject(hourPhase) {
+	var split = hourPhase.split('-');
+
+	if (hourPhase == "") {
+		return {
+			allDay : true,
+			startHr : 0,
+			startMin : 0,
+			stopHr : 23,
+			stopMin : 59
+		}
+	} else if (split.length > 1) {
+		var start = ParseHour(split[0])
+			, stop = ParseHour(split[1]);
+
+		return {
+			allDay : false,
+			startHr : start.hr,
+			startMin : start.min,
+			stopHr : stop.hr,
+			stopMin : stop.min
+		};
+	}
+}
+
+function openingDaysString(obj) {
+	var days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
+			, out = ""
+			, current = false
+			, numPushed = 0
+
+		for (var i=0,d; d=days[i]; i++) {
+			if (obj[d]) {
+				// if we're the last day
+				if (i == (days.length - 1)) {
+					if (current == days[i]) {
+						// means no span of days
+						out = (numPushed === 0) ? current : "," + current;
+					} else {
+						current = current + "-" + days[i];
+						out = (numPushed === 0) ? out + current : out + "," + current;
+					}
+				} else if (!current) {
+					current = d;
+				}
+			} else if (current) {
+				if (current == days[i-1]) {
+					// means no span of days
+					out += (numPushed === 0) ? current : "," + current;
+				} else {
+					current = current + "-" + days[i-1];
+					out += (numPushed === 0) ? current : "," + current;
+				}
+
+				numPushed++;
+				current = false;
+			}
+		}
+
+		return out;
+}
+
+function openingHoursString(obj) {
+	if (obj.allDay) {
+		return "";
+	}
+
+	var startMin = (obj.startMin > 10) ? obj.startMin : "0" + obj.startMin
+		, stopMin = (obj.stopMin > 10) ? obj.stopMin : "0" + obj.stopMin
+
+	return obj.startHr + ":" + startMin + "-" + obj.stopHr + ":" + stopMin;
+}
 },{}],2:[function(require,module,exports){
+module.exports = require('./lib/cronizer')
+},{"./lib/cronizer":4}],3:[function(require,module,exports){
+
+function Token (cases, type) {
+	this.cases = cases;
+	this.type = type;
+
+	return this;
+}
+
+Token.prototype.match = function (string) {
+	for (var i=0,c; c=this.cases[i]; i++) {
+		for (var j=0,m; m=c.match[j]; j++) {
+			if (string === m) {
+				return  [this.type, c.value];
+			}
+		}
+	}
+
+	return false;
+}
+
+
+module.exports = Token;
+},{}],4:[function(require,module,exports){
+/*
+ * Cronizer is intended to take plain english statements about *days* &
+ * turn them into cron statements. It doesn't handle times, but rather assumes
+ * we're matching a day
+ *
+ * possible statements (should) include things like:
+ * May 10th every year @ midnight
+ * Weekdays @ 4:30
+ * Every Monday, Tuesday, Friday
+ * Saturday & Sunday
+ * The first and third Sunday of the month
+ * 1st & third sunday
+ * May 10 every year
+ * Tuesdays & thursdays
+ * Last Sunday in October
+ * Third Tuesday in May
+*/
+
+var Tokens = require('./tokens')
+	, utils = require('./utils')
+	, fields = require("./fields");
+
+
+function Cronizer (options) {
+	this.options = options;
+}
+
+utils.extend(Cronizer.prototype, {
+	parse : function (statement) {
+		var context = this.newContext(statement);
+
+		// 1. Identify each token in the statement string
+		this.identify(context);
+		if (context.error) {
+			// console.log(context.error);
+			return false;
+		}
+
+		// 2. Reduce tokens
+		this.reduce(context);
+		if (context.error) {
+			// console.log(context.error);
+			return false;
+		}
+
+		// 3.
+		return this.result(context);
+	},
+
+	newContext : function (statement) {
+		return {
+			statement : statement,
+			tokens : this.tokens(statement),
+			symbols : [],
+			results : [[],[],[],[],[]],
+			state : {
+				foundAt : false
+			},
+			error : undefined
+		}
+	},
+
+	tokens : function tokens (statement) {
+		var tokens;
+
+		tokens = statement.trim().toLowerCase();
+		// space out commas to capture
+		tokens = tokens.replace(/,/g, " ,");
+		// remove multiple spaces
+		tokens = tokens.replace(/\s{2,}/g,' ');
+
+
+		return tokens.split(" ");
+	},
+
+	// Symbol identification
+	identify : function identify (context) {
+
+		for (var i=0,token; token=context.tokens[i]; i++) {
+			var symbol = this.identifySymbol(token, context.state);
+			
+			// if we can't identify a symbol, everything
+			// is presumed to be broken. bail.
+			if (!symbol) { 
+				context.error = "couldn't identify symbol: \"" + token + "\"";
+				return context;
+			}
+
+			// check for at field, don't add it to symbols
+			if (symbol[0] === fields.AT) {
+				context.state.foundAt = true;
+				continue;
+			}
+
+			context.symbols.push(symbol);
+		}
+
+		return context;
+	},
+
+	identifySymbol : function identifySymbol (string, state) {
+		var symbol;
+		for(var i=0,t; t=Tokens[i]; i++) {
+			symbol = t.match(string);
+			if (symbol) {
+				return symbol;
+			}
+		}
+
+		return false;
+	},
+
+	// Reduce should combine away any modifier fields
+	// with the symbols the effect, leaving only
+	// cron fields in the symbols array
+	reduce : function reduce(context) {
+		var clean;
+
+
+		while (true) {
+			if (!this.reduceSymbols(context)) {
+				return context;
+			}
+		}
+	},
+
+	reduceSymbols : function reduceSymbols (context) {
+		for (var i=0,s; s=context.symbols[i]; i++) {
+			switch (s[0]) {
+				case fields.ALL:
+					context.symbols = [s];
+					return false;
+					break;
+				case fields.AND:
+					var left = context.symbols[i - 1]
+						, right = context.symbols[i + 1];
+					
+					// need a left & a right to join
+
+					if (!left || !right) {
+						context.error = "unmathed and identifier";
+						return false;
+					}
+					// if types don't match we can't join
+					if (left[0] != right[0]) {
+						context.error = "unmathed and types on either side of and symbol";
+						return false;
+					}
+
+					context.symbols.splice(i-1, 3, [ left[0], left[1] + "," + right[1]]);
+					return true;
+
+					break;
+				case fields.NOT:
+					break;
+				case fields.PREFIX:
+					break;
+				case fields.SUFFIX:
+					break;
+				case fields.JOIN:
+					break;
+				case fields.IGNORE:
+					break;
+			}
+		}
+
+		return false;
+	},
+
+	/* At this point the only symbol types in the symbols array
+	 * should be one of the cron fields:
+	 * SECOND,MINUTE,HOUR,MONTH_DAY,MONTH,WEEK_DAY,ALL
+	 */
+	result : function result (context) {
+		var fo = this.fieldOrder();
+
+		if (context.error) { return false; }
+		// if (typeof symbols === "string" || !symbols) { return symbols; }
+
+		// if we haven't found an at symbol
+		// assume we're dealing with midnights.
+		if (!context.state.foundAt) {
+			context.results[0] = ["0"];
+			context.results[1] = ["0"];
+		}
+
+		// Sort symbols into the fields they affect
+		for (var i=0,s; s=context.symbols[i]; i++) {
+			if (s[0] === fields.ALL) { return s[1]; }
+			var field = fo[s[0]];
+			context.results[field].push(s[1]);
+		}
+
+		// Reduce sets to corresponding arrays
+		for (var i=0,r; r=context.results[i]; i++) {
+			r = r.join();
+			if (!r || r === "") { 
+				r = "*";
+			}
+			context.results[i] = r;
+		}
+
+		return context.results.join(" ");
+	},
+
+	fieldOrder : function () {
+		var fo = {}
+		// currently don't support seconds
+		// fo[fields.SECOND] = 0;
+		fo[fields.MINUTE] = 0;
+		fo[fields.HOUR] = 1;
+		fo[fields.MONTH_DAY] = 2;
+		fo[fields.MONTH] = 3;
+		fo[fields.WEEK_DAY] = 4;
+		return fo
+	}
+});
+
+
+module.exports = Cronizer;
+},{"./fields":5,"./tokens":6,"./utils":7}],5:[function(require,module,exports){
+// Constants to represent fields in a cron pattern
+module.exports = {
+	// Cron Fields
+	SECOND : "SECOND",
+	MINUTE : "MINUTE",
+	HOUR : "HOUR",
+	MONTH_DAY : "MONTH_DAY",
+	MONTH : "MONTH",
+	WEEK_DAY : "WEEK_DAY",
+	ALL : "ALL",
+
+	// Modifier fields
+	AT : "AT",
+	AND : "AND",
+	NOT : "NOT",
+	PREFIX : "PREFIX",
+	SUFFIX : "SUFFIX",
+	IGNORE : "IGNORE"
+	
+}
+},{}],6:[function(require,module,exports){
+var Token = require('./Token')
+	, fields = require('./fields');
+
+/*
+ * May 10th every year @ midnight
+ * Weekdays @ 4:30
+ * Every Monday, Tuesday, Friday
+ * Saturday & Sunday
+ * The first and third Sunday of the month
+ * 1st & third sunday
+ * May 10 every year
+ * Tuesdays & thursdays
+ * Last Sunday in October
+ * Third Tuesday in May
+ */
+
+// var second = new Token(['']);
+// var minute = new Token(['']);
+// var hour = new Token([
+// ]);
+
+var all = new Token([
+	{ match : ["daily","midnight"], value : "0 0 * * *" },
+	{ match : ["annually","yearly", "*"], value : "0 0 1 1 *" },
+	{ match : ["monthly"], value : "0 0 1 * *" },
+	{ match : ["weekly"], value : "0 0 * * 0" }
+], fields.ALL);
+
+var monthDay = new Token([
+	{ match : ["1st", "1"], value : 1},
+	{ match : ["2nd", "2"], value : 2},
+	{ match : ["3rd", "3"], value : 3},
+	{ match : ["4th", "4"], value : 4},
+	{ match : ["5th", "5"], value : 5},
+	{ match : ["6th", "6"], value : 6},
+	{ match : ["7th", "7"], value : 7},
+	{ match : ["8th", "8"], value : 8},
+	{ match : ["9th", "9"], value : 9},
+	{ match : ["10th", "10"], value : 10},
+	{ match : ["11th", "11"], value : 11},
+	{ match : ["12th", "12"], value : 12},
+	{ match : ["13th", "13"], value : 13},
+	{ match : ["14th", "14"], value : 14},
+	{ match : ["16th", "15"], value : 15},
+	{ match : ["16th", "16"], value : 16},
+	{ match : ["17th", "17"], value : 17},
+	{ match : ["18th", "18"], value : 18},
+	{ match : ["19th", "19"], value : 19},
+	{ match : ["20th", "20"], value : 20},
+	{ match : ["21st", "21"], value : 21},
+	{ match : ["22nd", "22"], value : 22},
+	{ match : ["23rd", "23"], value : 23},
+	{ match : ["24th", "24"], value : 24},
+	{ match : ["25th", "25"], value : 25},
+	{ match : ["26th", "26"], value : 26},
+	{ match : ["27th", "27"], value : 27},
+	{ match : ["28th", "28"], value : 28},
+	{ match : ["29th", "29"], value : 29},
+	{ match : ["30th", "30"], value : 30},
+	{ match : ["31st", "31"], value : 31},
+], fields.MONTH_DAY);
+
+var month = new Token([
+	{ match : ["january", "jan"], value : 0 },
+	{ match : ["february", "feb"], value : 1 },
+	{ match : ["march", "mar"], value : 2 },
+	{ match : ["april", "apr"], value : 3 },
+	{ match : ["may"], value : 4 },
+	{ match : ["june", "jun"], value : 5 },
+	{ match : ["july", "jul"], value : 6 },
+	{ match : ["august", "aug"], value : 7 },
+	{ match : ["september", "sept", "sep"], value : 8 },
+	{ match : ["october", "oct"], value : 9 },
+	{ match : ["november", "nov"], value : 10 },
+	{ match : ["december", "dec"], value : 11 },
+], fields.MONTH);
+
+var weekDay = new Token([
+	{ match : ["sundays", "sunday", "sun", "su"], value : 0 },
+	{ match : ["mondays","monday","mon", "mo"], value : 1 },
+	{ match : ["tuesdays","tuesday", "tues", "tue", "tu"], value : 2 },
+	{ match : ["wednesdays", "wednesday", "wed", "we"], value : 3 },
+	{ match : ["thursdays", "thursday", "thurs", "thur", "th"], value : 4 },
+	{ match : ["fridays", "friday", "fri", "fr"], value : 5 },
+	{ match : ["saturdays", "saturday", "sat", "sa"], value : 6 },
+	{ match : ["day"], value : "*"	}
+], fields.WEEK_DAY);
+
+var at = new Token([
+	{ match : ['at','@','on'], value : null }
+], fields.AT);
+
+var and = new Token([
+	{ match : ["and", "&", ","], value : null }
+], fields.AND);
+
+var not = new Token([
+	{ match : ["not","except","but"], value : null }
+], fields.NOT);
+
+var Tokens = [
+	all,
+	// second,
+	// minute,
+	// hour,
+	monthDay,
+	month,
+	weekDay,
+	at,
+	and,
+	not,
+]
+
+module.exports = Tokens;
+},{"./Token":3,"./fields":5}],7:[function(require,module,exports){
+
+module.exports = {
+	extend : function extend(obj) {
+		Array.prototype.slice.call(arguments, 1).forEach(function(source){
+			if (source) {
+		    for (var prop in source) {
+		      obj[prop] = source[prop];
+		    }
+	    }
+		});
+		return obj;
+	}
+}
+},{}],8:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var BasicForm = React.createClass({displayName: 'BasicForm',
+var BasicForm = React.createClass({displayName: "BasicForm",
 	render : function () {
 		return (
 			React.createElement("form", null
@@ -379,7 +913,7 @@ var BasicForm = React.createClass({displayName: 'BasicForm',
 });
 
 module.exports = BasicForm;
-},{}],3:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * ** NOT A COMPONENT **
@@ -485,7 +1019,7 @@ function handleField (obj, i, fields) {
 }
 
 module.exports = BasicFormFields;
-},{"./ValidTextInput":44,"./ValidTextareaInput":45,"underscore":63}],4:[function(require,module,exports){
+},{"./ValidTextInput":50,"./ValidTextareaInput":51,"underscore":63}],10:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Clock is used for selecting time values in 15-minute
@@ -499,7 +1033,7 @@ var hours = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 	, minutes = ["00","15","30","45"]
 	, phase = ["am","pm"];
 
-var Clock = React.createClass({displayName: 'Clock',
+var Clock = React.createClass({displayName: "Clock",
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
@@ -624,7 +1158,7 @@ var Clock = React.createClass({displayName: 'Clock',
 });
 
 module.exports = Clock
-},{}],5:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -633,7 +1167,7 @@ module.exports = Clock
 
 var TouchButton = require('./TouchButton');
 
-var ConfirmDialogue = React.createClass({displayName: 'ConfirmDialogue',
+var ConfirmDialogue = React.createClass({displayName: "ConfirmDialogue",
 	propTypes : {
 		confirmButtonTitle : React.PropTypes.string,
 		cancelButtonTitle : React.PropTypes.string,
@@ -671,7 +1205,7 @@ var ConfirmDialogue = React.createClass({displayName: 'ConfirmDialogue',
 });
 
 module.exports = ConfirmDialogue;
-},{"./TouchButton":39}],6:[function(require,module,exports){
+},{"./TouchButton":45}],12:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* CronInput takes a human-readable string input & tries to
@@ -682,7 +1216,7 @@ module.exports = ConfirmDialogue;
 
 var cronizer = require('cronizer');
 
-var CronInput = React.createClass({displayName: 'CronInput',
+var CronInput = React.createClass({displayName: "CronInput",
 	propTypes : {
 		// name this thing.
 		name : React.PropTypes.string.isRequired,
@@ -762,7 +1296,7 @@ var CronInput = React.createClass({displayName: 'CronInput',
 });
 
 module.exports = CronInput;
-},{"cronizer":55}],7:[function(require,module,exports){
+},{"cronizer":2}],13:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * @stateful
@@ -780,7 +1314,7 @@ var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oc
 	, days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
 
 
-var DatePicker = React.createClass({displayName: 'DatePicker',
+var DatePicker = React.createClass({displayName: "DatePicker",
 	propTypes : {
 		className : React.PropTypes.string,
 		name : React.PropTypes.string.isRequired,
@@ -878,7 +1412,7 @@ var DatePicker = React.createClass({displayName: 'DatePicker',
 });
 
 module.exports = DatePicker;
-},{"./MonthCalendar":23,"react":222}],8:[function(require,module,exports){
+},{"./MonthCalendar":29,"react":222}],14:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -902,7 +1436,7 @@ var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'S
 	, minutes = [0,15,30,45];
 
 
-var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
+var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 	propTypes : {
 		// Center date to choose around. Defaults to the current time.
 		// Should be a js Date object
@@ -1054,7 +1588,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 /* @private
  * WheelPicker
  */
-var WheelPicker = React.createClass({displayName: 'WheelPicker',
+var WheelPicker = React.createClass({displayName: "WheelPicker",
 	propTypes : {
 		// The date to center the picker to. Defaults to now.
 		centerDate : React.PropTypes.object.isRequired,
@@ -1210,9 +1744,9 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	day : function (date, key) {
 		return (
 			React.createElement("li", {
-			'data-year': date.getFullYear(), 
-			'data-month': date.getMonth(), 
-			'data-value': date.getDate(), 
+			"data-year": date.getFullYear(), 
+			"data-month": date.getMonth(), 
+			"data-value": date.getDate(), 
 			key: key}, 
 				this.stringValue(date)
 		)
@@ -1238,7 +1772,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return days;
 	},
 	hour : function (value, hour) {
-		return React.createElement("li", {'data-value': value, key: hour}, hour)
+		return React.createElement("li", {"data-value": value, key: hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -1248,7 +1782,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.createElement("li", {'data-value': value, key: key}, value)
+		return React.createElement("li", {"data-value": value, key: key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -1285,7 +1819,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return (
 			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
 				React.createElement(TouchAnchor, {className: "showCalendar right", text: "cal.", onClick: this.onShowCalendar}), 
-				React.createElement("div", {ref: "day", 'data-name': "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "day", "data-name": "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -1294,7 +1828,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -1303,7 +1837,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -1312,12 +1846,12 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
-						React.createElement("li", {'data-value': 0}, "am"), 
-						React.createElement("li", {'data-value': 1}, "pm"), 
+						React.createElement("li", {"data-value": 0}, "am"), 
+						React.createElement("li", {"data-value": 1}, "pm"), 
 						React.createElement("li", null), 
 						React.createElement("li", null)
 					)
@@ -1328,7 +1862,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 });
 
 module.exports = DateTimePicker;
-},{"../deps/iscroll":54,"./MonthCalendar":23,"./TouchAnchor":38}],9:[function(require,module,exports){
+},{"../deps/iscroll":60,"./MonthCalendar":29,"./TouchAnchor":44}],15:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* children are @stateful
@@ -1338,7 +1872,7 @@ module.exports = DateTimePicker;
 var DatePicker = require('./DatePicker')
 	, TimeWheelPicker = require('./TimeWheelPicker');
 
-var DateTimeRangePicker = React.createClass({displayName: 'DateTimeRangePicker',
+var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	propTypes : {
 		disabled : React.PropTypes.bool,
 		className : React.PropTypes.string,
@@ -1401,7 +1935,7 @@ var DateTimeRangePicker = React.createClass({displayName: 'DateTimeRangePicker',
 });
 
 module.exports = DateTimeRangePicker;
-},{"./DatePicker":7,"./TimeWheelPicker":37}],10:[function(require,module,exports){
+},{"./DatePicker":13,"./TimeWheelPicker":43}],16:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -1410,7 +1944,7 @@ module.exports = DateTimeRangePicker;
 
 var TouchButton = require('./TouchButton');
 
-var Dialogue = React.createClass({displayName: 'Dialogue',
+var Dialogue = React.createClass({displayName: "Dialogue",
 	propTypes : {
 		acceptButtonTitle : React.PropTypes.string,
 		// Accept Handler
@@ -1443,7 +1977,7 @@ var Dialogue = React.createClass({displayName: 'Dialogue',
 });
 
 module.exports = Dialogue;
-},{"./TouchButton":39}],11:[function(require,module,exports){
+},{"./TouchButton":45}],17:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1452,7 +1986,7 @@ module.exports = Dialogue;
  * 
  */
 
-var DurationPicker = React.createClass({displayName: 'DurationPicker',
+var DurationPicker = React.createClass({displayName: "DurationPicker",
 	propTypes : {
 		unixTime : React.PropTypes.bool.isRequired,
 		onChange : React.PropTypes.func,
@@ -1476,14 +2010,14 @@ var DurationPicker = React.createClass({displayName: 'DurationPicker',
 });
 
 module.exports = DurationPicker;
-},{}],12:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /** @jsx React.DOM */
 
 // modal wrapper for any react element
 // stateless, by default shows a header above with
 // no title & a close button that triggers onClose prop
 
-var ElementModal = React.createClass({displayName: 'ElementModal',
+var ElementModal = React.createClass({displayName: "ElementModal",
 	propTypes : {
 		element : React.PropTypes.element.isRequired,
 		// supply a close handler func to actually close the
@@ -1534,12 +2068,12 @@ var ElementModal = React.createClass({displayName: 'ElementModal',
 });
 
 module.exports = ElementModal;
-},{}],13:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Basic 505 Error Component */
 
-var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
+var FiveOhFive = React.createClass({displayName: "FiveOhFive",
 	propTypes : {
 		message : React.PropTypes.string,
 		title : React.PropTypes.string,
@@ -1571,12 +2105,12 @@ var FiveOhFive = React.createClass({displayName: 'FiveOhFive',
 });
 
 module.exports = FiveOhFive
-},{}],14:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Standard Not-Found Component with a go-back button. */
 
-var FourOhFour = React.createClass({displayName: 'FourOhFour',
+var FourOhFour = React.createClass({displayName: "FourOhFour",
 	propTypes : {
 		message : React.PropTypes.string,
 		title : React.PropTypes.string
@@ -1610,7 +2144,7 @@ var FourOhFour = React.createClass({displayName: 'FourOhFour',
 });
 
 module.exports = FourOhFour;
-},{}],15:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /** @jsx React.DOM */
 
 // @todo - UNFINISHED
@@ -1632,7 +2166,7 @@ var Clock = require('./Clock')
 		["Sa","Sat."]
 	];
 
-var HoursInput = React.createClass({displayName: 'HoursInput',
+var HoursInput = React.createClass({displayName: "HoursInput",
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
@@ -1679,7 +2213,7 @@ var HoursInput = React.createClass({displayName: 'HoursInput',
 
 		for (var i=0,day; day=days[i]; i++) {
 			dayClass = (obj[day[0]]) ? "day selected" : "day";
-			out.push(React.createElement("div", {key: i, 'data-rel': day[0], onClick: this.onToggleDay, className: dayClass}, day[1]));
+			out.push(React.createElement("div", {key: i, "data-rel": day[0], onClick: this.onToggleDay, className: dayClass}, day[1]));
 		}
 
 		return (
@@ -1710,12 +2244,12 @@ var HoursInput = React.createClass({displayName: 'HoursInput',
 });
 
 module.exports = HoursInput;
-},{"./Clock":4,"Hours":1}],16:[function(require,module,exports){
+},{"./Clock":10,"Hours":1}],22:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
 // A placeholder Item
-var Item = React.createClass({displayName: 'Item',
+var Item = React.createClass({displayName: "Item",
 	render : function () {
 		return (
 			React.createElement("div", {className: "item"}, 
@@ -1726,7 +2260,7 @@ var Item = React.createClass({displayName: 'Item',
 });
 
 module.exports = Item;
-},{}],17:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var DeviceStore = require("../stores/DeviceStore")
@@ -1734,7 +2268,7 @@ var DeviceStore = require("../stores/DeviceStore")
 
 var Spinner = require('./Spinner');
 
-var List = React.createClass({displayName: 'List',
+var List = React.createClass({displayName: "List",
 	propTypes : {
 		className : React.PropTypes.string,
 		data : React.PropTypes.array.isRequired,
@@ -1805,10 +2339,10 @@ var List = React.createClass({displayName: 'List',
 });
 
 module.exports = List;
-},{"../stores/DeviceStore":64,"./Spinner":32,"underscore":63}],18:[function(require,module,exports){
+},{"../stores/DeviceStore":64,"./Spinner":38,"underscore":63}],24:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var ListItem = React.createClass({displayName: 'ListItem',
+var ListItem = React.createClass({displayName: "ListItem",
 	render : function () {
 		return (
 			React.createElement("div", {className: "item"}
@@ -1818,14 +2352,14 @@ var ListItem = React.createClass({displayName: 'ListItem',
 });
 
 module.exports = ListItem;
-},{}],19:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Map component handles display & interaction with a map.
  * 
  */
 
-var Map = React.createClass({displayName: 'Map',
+var Map = React.createClass({displayName: "Map",
 	componentDidMount : function () {
 		this.initMap();
 	},
@@ -1846,12 +2380,12 @@ var Map = React.createClass({displayName: 'Map',
 });
 
 module.exports = Map;
-},{}],20:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var Showdown = require('../deps/Showdown');
 
-var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
+var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
 	propTypes : {
 		name : React.PropTypes.string.isRequired,
 		// Change handler in the form (value, name)
@@ -1920,7 +2454,7 @@ var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 });
 
 module.exports = MarkdownEditor;
-},{"../deps/Showdown":52}],21:[function(require,module,exports){
+},{"../deps/Showdown":58}],27:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -1930,7 +2464,7 @@ module.exports = MarkdownEditor;
 
 var Showdown = require('../deps/Showdown');
 
-var MarkdownText = React.createClass({displayName: 'MarkdownText',
+var MarkdownText = React.createClass({displayName: "MarkdownText",
 	propTypes : {
 		// The Markdown to render
 		value : React.PropTypes.string.isRequired
@@ -1950,12 +2484,12 @@ var MarkdownText = React.createClass({displayName: 'MarkdownText',
 });
 
 module.exports = MarkdownText;
-},{"../deps/Showdown":52}],22:[function(require,module,exports){
+},{"../deps/Showdown":58}],28:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* Message Box Compnent */
 
-var Message = React.createClass({displayName: 'Message',
+var Message = React.createClass({displayName: "Message",
 	propTypes : {
 		message : React.PropTypes.string.isRequired,
 	},
@@ -1978,7 +2512,7 @@ var Message = React.createClass({displayName: 'Message',
 });
 
 module.exports = Message;
-},{}],23:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -1993,7 +2527,7 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
 
-var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
+var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 	propTypes : {
 		name : React.PropTypes.string,
 		// we accept onMouseDown & onTouchEnd Handlers
@@ -2107,7 +2641,7 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 										onTouchEnd: this.onSelectDay, 
 										className: c, 
 										key:  d + (w * 7), 
-										'data-value': wd.valueOf()
+										"data-value": wd.valueOf()
 										}, wd.getDate()));
 			}
 			weeks.push(React.createElement("tr", {key: w}, week));
@@ -2136,7 +2670,7 @@ var MonthCalendar = React.createClass({displayName: 'MonthCalendar',
 });
 
 module.exports = MonthCalendar;
-},{"./TouchAnchor":38}],24:[function(require,module,exports){
+},{"./TouchAnchor":44}],30:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var CronInput = require('./CronInput')
@@ -2172,7 +2706,7 @@ thirtyDaysAgo.setHours(18);
 var foFive = new Date();
 // foFive.setMinutes(25);
 
-var Playground = React.createClass({displayName: 'Playground',
+var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
 			component : "Signature",
@@ -2315,7 +2849,7 @@ var Playground = React.createClass({displayName: 'Playground',
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./Clock":4,"./CronInput":6,"./DatePicker":7,"./DateTimePicker":8,"./DateTimeRangePicker":9,"./HoursInput":15,"./Map":19,"./MarkdownEditor":20,"./MarkdownText":21,"./PriceInput":25,"./ResultsTextInput":26,"./S3PhotoUploader":27,"./Select":28,"./Signature":29,"./SlideShow":30,"./Slider":31,"./TagInput":33,"./TimePicker":35,"./TimeSpanInput":36,"./TouchButton":39,"./ValidTextInput":44,"./ValidTextareaInput":45}],25:[function(require,module,exports){
+},{"./Clock":10,"./CronInput":12,"./DatePicker":13,"./DateTimePicker":14,"./DateTimeRangePicker":15,"./HoursInput":21,"./Map":25,"./MarkdownEditor":26,"./MarkdownText":27,"./PriceInput":31,"./ResultsTextInput":32,"./S3PhotoUploader":33,"./Select":34,"./Signature":35,"./SlideShow":36,"./Slider":37,"./TagInput":39,"./TimePicker":41,"./TimeSpanInput":42,"./TouchButton":45,"./ValidTextInput":50,"./ValidTextareaInput":51}],31:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -2330,7 +2864,7 @@ module.exports = Playground;
 
 var maskMoney = require('../deps/MaskMoney');
 
-var PriceInput = React.createClass({displayName: 'PriceInput',
+var PriceInput = React.createClass({displayName: "PriceInput",
 	propTypes : {
 		// Value for the field
 		value : React.PropTypes.number.isRequired,
@@ -2392,14 +2926,14 @@ var PriceInput = React.createClass({displayName: 'PriceInput',
 });
 
 module.exports = PriceInput;
-},{"../deps/MaskMoney":50}],26:[function(require,module,exports){
+},{"../deps/MaskMoney":56}],32:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var ReactPropTypes = React.PropTypes
 	, KeyCodes = require('../constants/KeyCodes');
 
 
-var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
+var ResultsTextInput = React.createClass({displayName: "ResultsTextInput",
   propTypes: {
     search : ReactPropTypes.func.isRequired,
     onSelect : ReactPropTypes.func.isRequired,
@@ -2500,7 +3034,7 @@ var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
 });
 
 module.exports = ResultsTextInput;
-},{"../constants/KeyCodes":49}],27:[function(require,module,exports){
+},{"../constants/KeyCodes":55}],33:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -2515,7 +3049,7 @@ module.exports = ResultsTextInput;
 
 var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
+var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
 	propTypes : {
 		// @todo
 	},
@@ -2615,10 +3149,10 @@ var S3PhotoUploader = React.createClass({displayName: 'S3PhotoUploader',
 });
 
 module.exports = S3PhotoUploader;
-},{"../deps/S3Upload":51}],28:[function(require,module,exports){
+},{"../deps/S3Upload":57}],34:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var Select = React.createClass({displayName: 'Select',
+var Select = React.createClass({displayName: "Select",
 	propTypes : {
 		// Name of the select field
 		name : React.PropTypes.string.isRequired,
@@ -2719,7 +3253,7 @@ var Select = React.createClass({displayName: 'Select',
 
 		for (var i=0,opt; opt=this.props.options[i]; i++) {
 			opt = this.formatOption(opt);
-			options.push(React.createElement("li", {key: i, 'data-value': opt[0], onClick: this.onSelectOption}, opt[1]))
+			options.push(React.createElement("li", {key: i, "data-value": opt[0], onClick: this.onSelectOption}, opt[1]))
 		}
 
 		return (
@@ -2744,7 +3278,7 @@ var Select = React.createClass({displayName: 'Select',
 });
 
 module.exports = Select;
-},{}],29:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * SignaturePad takes user signatures & spits out
@@ -2757,7 +3291,7 @@ var DeviceStore = require('../stores/DeviceStore')
 var SignaturePad = require('../deps/SignaturePad')
 	, TouchButton = require('./TouchButton');
 
-var Signature = React.createClass({displayName: 'Signature',
+var Signature = React.createClass({displayName: "Signature",
 	propTypes : {
 		// optional dataURI to populate signature with
 		data : React.PropTypes.string,
@@ -2874,14 +3408,14 @@ var Signature = React.createClass({displayName: 'Signature',
 });
 
 module.exports= Signature;
-},{"../deps/SignaturePad":53,"../stores/DeviceStore":64,"./TouchButton":39}],30:[function(require,module,exports){
+},{"../deps/SignaturePad":59,"../stores/DeviceStore":64,"./TouchButton":45}],36:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
  * SlideShow is your classic, one-up slider
  */
 
-var SlideShow = React.createClass({displayName: 'SlideShow',
+var SlideShow = React.createClass({displayName: "SlideShow",
 	propTypes : {
 		loop : React.PropTypes.bool,
 		onSlideEnd : React.PropTypes.func,
@@ -2988,7 +3522,7 @@ var SlideShow = React.createClass({displayName: 'SlideShow',
 		
 		this.props.slides.forEach(function(slide, i){
 			var c = (i === self.state.slide) ? "current indicator" : "indicator";
-			indicators.push(React.createElement("span", {key: i, 'data-slide': i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
+			indicators.push(React.createElement("span", {key: i, "data-slide": i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
 		});
 
 		return (
@@ -3029,12 +3563,12 @@ var SlideShow = React.createClass({displayName: 'SlideShow',
 
 module.exports = SlideShow;
 
-},{}],31:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var startX, startY;
 
-var Slider = React.createClass({displayName: 'Slider',
+var Slider = React.createClass({displayName: "Slider",
 	propTypes: {
 	  min: React.PropTypes.number,
 	  max: React.PropTypes.number,
@@ -3130,12 +3664,12 @@ var Slider = React.createClass({displayName: 'Slider',
 });
 
 module.exports = Slider;
-},{}],32:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /** @jsx React.DOM */
 
 // A simple Spinner
 
-var Spinner = React.createClass({displayName: 'Spinner',
+var Spinner = React.createClass({displayName: "Spinner",
 	propTypes : {
 		// none
 	},
@@ -3153,7 +3687,7 @@ var Spinner = React.createClass({displayName: 'Spinner',
 });
 
 module.exports = Spinner;
-},{}],33:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  *  @stateful
@@ -3162,7 +3696,7 @@ module.exports = Spinner;
 
 var KeyCodes = require("../constants/KeyCodes");
 
-var TagInput = React.createClass({displayName: 'TagInput',
+var TagInput = React.createClass({displayName: "TagInput",
 	propTypes : {
 		// be sure to include "tags" in your prop if you want
 		// consistent styling
@@ -3261,7 +3795,7 @@ var TagInput = React.createClass({displayName: 'TagInput',
 			}
 			tags.push(React.createElement("span", {key: i, className: "tag"}, 
 									t, 
-									React.createElement("span", {'data-key': i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
+									React.createElement("span", {"data-key": i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
 								));
 		});
 
@@ -3277,14 +3811,14 @@ var TagInput = React.createClass({displayName: 'TagInput',
 });
 
 module.exports = TagInput;
-},{"../constants/KeyCodes":49}],34:[function(require,module,exports){
+},{"../constants/KeyCodes":55}],40:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * Tags displays a list of tags.
  * 
  */
 
-var Tags = React.createClass({displayName: 'Tags',
+var Tags = React.createClass({displayName: "Tags",
 	propTypes : {
 		placeholder : React.PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
@@ -3324,7 +3858,7 @@ var Tags = React.createClass({displayName: 'Tags',
 });
 
 module.exports = Tags;
-},{}],35:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /** @jsx React.DOM */
 /*
  * TimePicker Pairs the Clock Component with an
@@ -3334,7 +3868,7 @@ module.exports = Tags;
 
 var Clock = require('./Clock');
 
-var TimePicker = React.createClass({displayName: 'TimePicker',
+var TimePicker = React.createClass({displayName: "TimePicker",
 	propTypes : {
 		// @todo
 	},
@@ -3416,12 +3950,12 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 });
 
 module.exports = TimePicker;
-},{"./Clock":4}],36:[function(require,module,exports){
+},{"./Clock":10}],42:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var Time = require('../utils/time');
 
-var TimeSpanInput = React.createClass({displayName: 'TimeSpanInput',
+var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 	propTypes : {
 		name : React.PropTypes.string,
 		// must be a tuple of two date objects:
@@ -3494,7 +4028,7 @@ var TimeSpanInput = React.createClass({displayName: 'TimeSpanInput',
 // A Single Column Time Picker
 var iScroll = require('../deps/iscroll');
 
-var TimeColumnPicker = React.createClass({displayName: 'TimeColumnPicker',
+var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 	propTypes : {
 		value : React.PropTypes.object.isRequired,
 		mustBefore : React.PropTypes.object,
@@ -3634,7 +4168,7 @@ var TimeColumnPicker = React.createClass({displayName: 'TimeColumnPicker',
 				, displayHour = (hr < 12) ? hr : hr - 12;
 			if (displayHour === 0) { displayHour = 12; }
 			if (min === 0) { min = "00"; }
-			times.push(React.createElement("li", {key: index, 'data-hours': hr, 'data-minutes': min}, displayHour + ":" + min + phase));
+			times.push(React.createElement("li", {key: index, "data-hours": hr, "data-minutes": min}, displayHour + ":" + min + phase));
 		});
 
 		return (
@@ -3654,7 +4188,7 @@ var TimeColumnPicker = React.createClass({displayName: 'TimeColumnPicker',
 });
 
 module.exports = TimeSpanInput;
-},{"../deps/iscroll":54,"../utils/time":67}],37:[function(require,module,exports){
+},{"../deps/iscroll":60,"../utils/time":67}],43:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* @stateful
@@ -3672,7 +4206,7 @@ var hours = [1,2,3,4,5,6,7,8,9,10,11,12]
 	, minutes = [0,15,30,45];
 
 
-var TimeWheelPicker = React.createClass({displayName: 'TimeWheelPicker',
+var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	propTypes : {
 		className : React.PropTypes.string,
 		// name of the field
@@ -3809,7 +4343,7 @@ var TimeWheelPicker = React.createClass({displayName: 'TimeWheelPicker',
 /* @private
  * WheelPicker
  */
-var WheelPicker = React.createClass({displayName: 'WheelPicker',
+var WheelPicker = React.createClass({displayName: "WheelPicker",
 	propTypes : {
 		killTouch : React.PropTypes.bool.isRequired,
 		name : React.PropTypes.string.isRequired,
@@ -3926,7 +4460,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 
 	// Render Methods
 	hour : function (value, hour) {
-		return React.createElement("li", {'data-value': value, key: hour}, hour)
+		return React.createElement("li", {"data-value": value, key: hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -3936,7 +4470,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.createElement("li", {'data-value': value, key: key}, value)
+		return React.createElement("li", {"data-value": value, key: key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -3967,7 +4501,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 
 		return (
 			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
-				React.createElement("div", {ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -3976,7 +4510,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -3985,12 +4519,12 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
-						React.createElement("li", {'data-value': 0}, "am"), 
-						React.createElement("li", {'data-value': 1}, "pm"), 
+						React.createElement("li", {"data-value": 0}, "am"), 
+						React.createElement("li", {"data-value": 1}, "pm"), 
 						React.createElement("li", null), 
 						React.createElement("li", null)
 					)
@@ -4001,7 +4535,7 @@ var WheelPicker = React.createClass({displayName: 'WheelPicker',
 });
 
 module.exports = TimeWheelPicker;
-},{"../deps/iscroll":54}],38:[function(require,module,exports){
+},{"../deps/iscroll":60}],44:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -4012,7 +4546,7 @@ var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var TouchAnchor = React.createClass({displayName: 'TouchAnchor',
+var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,
@@ -4099,7 +4633,7 @@ var TouchAnchor = React.createClass({displayName: 'TouchAnchor',
 });
 
 module.exports = TouchAnchor;
-},{"../utils/clickbuster":66}],39:[function(require,module,exports){
+},{"../utils/clickbuster":66}],45:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*
@@ -4112,7 +4646,7 @@ var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var TouchButton = React.createClass({displayName: 'TouchButton',
+var TouchButton = React.createClass({displayName: "TouchButton",
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,
@@ -4200,12 +4734,12 @@ var TouchButton = React.createClass({displayName: 'TouchButton',
 });
 
 module.exports = TouchButton;
-},{"../utils/clickbuster":66}],40:[function(require,module,exports){
+},{"../utils/clickbuster":66}],46:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
 // @stateful
-var TouchInput = React.createClass({displayName: 'TouchInput',
+var TouchInput = React.createClass({displayName: "TouchInput",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
@@ -4237,7 +4771,7 @@ var TouchInput = React.createClass({displayName: 'TouchInput',
 		// clicks from focusing the field (which would activate
 		// the keyboard on touch devices)
 		setTimeout(function () {
-			self.setState({ readOnly : this.props.readOnly || false });
+			self.setState({ readOnly : self.props.readOnly || false });
 		}, this.props.initialInputDelay);
 	},
 
@@ -4270,7 +4804,7 @@ var TouchInput = React.createClass({displayName: 'TouchInput',
 });
 
 module.exports = TouchInput;
-},{}],41:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
@@ -4280,7 +4814,7 @@ module.exports = TouchInput;
 // *******
 // *******
 
-var TouchSelect = React.createClass({displayName: 'TouchSelect',
+var TouchSelect = React.createClass({displayName: "TouchSelect",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
@@ -4319,10 +4853,10 @@ var TouchSelect = React.createClass({displayName: 'TouchSelect',
 });
 
 module.exports = TouchSelect;
-},{}],42:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var TouchTextarea = React.createClass({displayName: 'TouchTextarea',
+var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 	propTypes : {
 		// default height for the field
 		defaultHeight : React.PropTypes.number,
@@ -4421,10 +4955,10 @@ var TouchTextarea = React.createClass({displayName: 'TouchTextarea',
 });
 
 module.exports = TouchTextarea;
-},{}],43:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
+var ValidSelectInput = React.createClass({displayName: "ValidSelectInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -4497,12 +5031,12 @@ var ValidSelectInput = React.createClass({displayName: 'ValidSelectInput',
 });
 
 module.exports = ValidSelectInput;
-},{}],44:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var TouchInput = require('./TouchInput');
 
-var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
+var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -4588,12 +5122,12 @@ var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
 });
 
 module.exports = ValidTextInput;
-},{"./TouchInput":40}],45:[function(require,module,exports){
+},{"./TouchInput":46}],51:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var TouchTextarea = require('./TouchTextarea')
 
-var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
+var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -4677,12 +5211,12 @@ var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 });
 
 module.exports = ValidTextareaInput;
-},{"./TouchTextarea":42}],46:[function(require,module,exports){
+},{"./TouchTextarea":48}],52:[function(require,module,exports){
 /** @jsx React.DOM */
 
 var TouchInput = require('./TouchInput');
 
-var ValidTouchInput = React.createClass({displayName: 'ValidTouchInput',
+var ValidTouchInput = React.createClass({displayName: "ValidTouchInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,
@@ -4772,11 +5306,11 @@ var ValidTouchInput = React.createClass({displayName: 'ValidTouchInput',
 });
 
 module.exports = ValidTouchInput;
-},{"./TouchInput":40}],47:[function(require,module,exports){
+},{"./TouchInput":46}],53:[function(require,module,exports){
 /** @jsx React.DOM */
 
 
-var Switch = React.createClass({displayName: 'Switch',
+var Switch = React.createClass({displayName: "Switch",
 	propTypes : {
 		enabled : React.PropTypes.bool,
 		onToggle : React.PropTypes.func.isRequired,
@@ -4813,7 +5347,7 @@ var Switch = React.createClass({displayName: 'Switch',
 });
 
 module.exports = Switch
-},{}],48:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = keyMirror({
@@ -4822,7 +5356,7 @@ module.exports = keyMirror({
 	DEVICE_ORIENTATION_CHANGE : null
 	
 });
-},{"react/lib/keyMirror":207}],49:[function(require,module,exports){
+},{"react/lib/keyMirror":207}],55:[function(require,module,exports){
 var KeyCodes = {
 	enter : 13,
 	left : 37,
@@ -4835,7 +5369,7 @@ var KeyCodes = {
 }
 
 module.exports = KeyCodes;
-},{}],50:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 // jQuery MaskMoney Plugin
 // @url: https://github.com/plentz/jquery-maskmoney
 (function ($) {
@@ -5241,7 +5775,7 @@ module.exports = KeyCodes;
 })(window.jQuery || window.Zepto);
 
 module.exports = $.maskMoney;
-},{}],51:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 // https://github.com/tadruj/s3upload-coffee-javascript
 
 function S3Upload(el, options) {
@@ -5359,7 +5893,7 @@ S3Upload.prototype.uploadFile = function(file) {
 };
 
 module.exports = S3Upload;
-},{}],52:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 //
 // showdown.js -- A javascript port of Markdown.
 //
@@ -6814,7 +7348,7 @@ if (typeof define === 'function' && define.amd) {
         return Showdown;
     });
 }
-},{}],53:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 /*!
  * Signature Pad v1.3.6
  * https://github.com/szimek/signature_pad
@@ -7154,7 +7688,7 @@ Bezier.prototype._point = function (t, start, c1, c2, end) {
 };
 
 module.exports = SignaturePad;
-},{}],54:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 /*! iScroll v5.1.3 ~ (c) 2008-2014 Matteo Spinelli ~ http://cubiq.org/license */
 (function (window, document, Math) {
 var rAF = window.requestAnimationFrame	||
@@ -9168,402 +9702,6 @@ if ( typeof module != 'undefined' && module.exports ) {
 }
 
 })(window, document, Math);
-},{}],55:[function(require,module,exports){
-module.exports = require('./lib/cronizer')
-},{"./lib/cronizer":57}],56:[function(require,module,exports){
-
-function Token (cases, type) {
-	this.cases = cases;
-	this.type = type;
-
-	return this;
-}
-
-Token.prototype.match = function (string) {
-	for (var i=0,c; c=this.cases[i]; i++) {
-		for (var j=0,m; m=c.match[j]; j++) {
-			if (string === m) {
-				return  [this.type, c.value];
-			}
-		}
-	}
-
-	return false;
-}
-
-
-module.exports = Token;
-},{}],57:[function(require,module,exports){
-/*
- * Cronizer is intended to take plain english statements about *days* &
- * turn them into cron statements. It doesn't handle times, but rather assumes
- * we're matching a day
- *
- * possible statements (should) include things like:
- * May 10th every year @ midnight
- * Weekdays @ 4:30
- * Every Monday, Tuesday, Friday
- * Saturday & Sunday
- * The first and third Sunday of the month
- * 1st & third sunday
- * May 10 every year
- * Tuesdays & thursdays
- * Last Sunday in October
- * Third Tuesday in May
-*/
-
-var Tokens = require('./tokens')
-	, utils = require('./utils')
-	, fields = require("./fields");
-
-
-function Cronizer (options) {
-	this.options = options;
-}
-
-utils.extend(Cronizer.prototype, {
-	parse : function (statement) {
-		var context = this.newContext(statement);
-
-		// 1. Identify each token in the statement string
-		this.identify(context);
-		if (context.error) {
-			// console.log(context.error);
-			return false;
-		}
-
-		// 2. Reduce tokens
-		this.reduce(context);
-		if (context.error) {
-			// console.log(context.error);
-			return false;
-		}
-
-		// 3.
-		return this.result(context);
-	},
-
-	newContext : function (statement) {
-		return {
-			statement : statement,
-			tokens : this.tokens(statement),
-			symbols : [],
-			results : [[],[],[],[],[]],
-			state : {
-				foundAt : false
-			},
-			error : undefined
-		}
-	},
-
-	tokens : function tokens (statement) {
-		var tokens;
-
-		tokens = statement.trim().toLowerCase();
-		// space out commas to capture
-		tokens = tokens.replace(/,/g, " ,");
-		// remove multiple spaces
-		tokens = tokens.replace(/\s{2,}/g,' ');
-
-
-		return tokens.split(" ");
-	},
-
-	// Symbol identification
-	identify : function identify (context) {
-
-		for (var i=0,token; token=context.tokens[i]; i++) {
-			var symbol = this.identifySymbol(token, context.state);
-			
-			// if we can't identify a symbol, everything
-			// is presumed to be broken. bail.
-			if (!symbol) { 
-				context.error = "couldn't identify symbol: \"" + token + "\"";
-				return context;
-			}
-
-			// check for at field, don't add it to symbols
-			if (symbol[0] === fields.AT) {
-				context.state.foundAt = true;
-				continue;
-			}
-
-			context.symbols.push(symbol);
-		}
-
-		return context;
-	},
-
-	identifySymbol : function identifySymbol (string, state) {
-		var symbol;
-		for(var i=0,t; t=Tokens[i]; i++) {
-			symbol = t.match(string);
-			if (symbol) {
-				return symbol;
-			}
-		}
-
-		return false;
-	},
-
-	// Reduce should combine away any modifier fields
-	// with the symbols the effect, leaving only
-	// cron fields in the symbols array
-	reduce : function reduce(context) {
-		var clean;
-
-
-		while (true) {
-			if (!this.reduceSymbols(context)) {
-				return context;
-			}
-		}
-	},
-
-	reduceSymbols : function reduceSymbols (context) {
-		for (var i=0,s; s=context.symbols[i]; i++) {
-			switch (s[0]) {
-				case fields.ALL:
-					context.symbols = [s];
-					return false;
-					break;
-				case fields.AND:
-					var left = context.symbols[i - 1]
-						, right = context.symbols[i + 1];
-					
-					// need a left & a right to join
-
-					if (!left || !right) {
-						context.error = "unmathed and identifier";
-						return false;
-					}
-					// if types don't match we can't join
-					if (left[0] != right[0]) {
-						context.error = "unmathed and types on either side of and symbol";
-						return false;
-					}
-
-					context.symbols.splice(i-1, 3, [ left[0], left[1] + "," + right[1]]);
-					return true;
-
-					break;
-				case fields.NOT:
-					break;
-				case fields.PREFIX:
-					break;
-				case fields.SUFFIX:
-					break;
-				case fields.JOIN:
-					break;
-				case fields.IGNORE:
-					break;
-			}
-		}
-
-		return false;
-	},
-
-	/* At this point the only symbol types in the symbols array
-	 * should be one of the cron fields:
-	 * SECOND,MINUTE,HOUR,MONTH_DAY,MONTH,WEEK_DAY,ALL
-	 */
-	result : function result (context) {
-		var fo = this.fieldOrder();
-
-		if (context.error) { return false; }
-		// if (typeof symbols === "string" || !symbols) { return symbols; }
-
-		// if we haven't found an at symbol
-		// assume we're dealing with midnights.
-		if (!context.state.foundAt) {
-			context.results[0] = ["0"];
-			context.results[1] = ["0"];
-		}
-
-		// Sort symbols into the fields they affect
-		for (var i=0,s; s=context.symbols[i]; i++) {
-			if (s[0] === fields.ALL) { return s[1]; }
-			var field = fo[s[0]];
-			context.results[field].push(s[1]);
-		}
-
-		// Reduce sets to corresponding arrays
-		for (var i=0,r; r=context.results[i]; i++) {
-			r = r.join();
-			if (!r || r === "") { 
-				r = "*";
-			}
-			context.results[i] = r;
-		}
-
-		return context.results.join(" ");
-	},
-
-	fieldOrder : function () {
-		var fo = {}
-		// currently don't support seconds
-		// fo[fields.SECOND] = 0;
-		fo[fields.MINUTE] = 0;
-		fo[fields.HOUR] = 1;
-		fo[fields.MONTH_DAY] = 2;
-		fo[fields.MONTH] = 3;
-		fo[fields.WEEK_DAY] = 4;
-		return fo
-	}
-});
-
-
-module.exports = Cronizer;
-},{"./fields":58,"./tokens":59,"./utils":60}],58:[function(require,module,exports){
-// Constants to represent fields in a cron pattern
-module.exports = {
-	// Cron Fields
-	SECOND : "SECOND",
-	MINUTE : "MINUTE",
-	HOUR : "HOUR",
-	MONTH_DAY : "MONTH_DAY",
-	MONTH : "MONTH",
-	WEEK_DAY : "WEEK_DAY",
-	ALL : "ALL",
-
-	// Modifier fields
-	AT : "AT",
-	AND : "AND",
-	NOT : "NOT",
-	PREFIX : "PREFIX",
-	SUFFIX : "SUFFIX",
-	IGNORE : "IGNORE"
-	
-}
-},{}],59:[function(require,module,exports){
-var Token = require('./Token')
-	, fields = require('./fields');
-
-/*
- * May 10th every year @ midnight
- * Weekdays @ 4:30
- * Every Monday, Tuesday, Friday
- * Saturday & Sunday
- * The first and third Sunday of the month
- * 1st & third sunday
- * May 10 every year
- * Tuesdays & thursdays
- * Last Sunday in October
- * Third Tuesday in May
- */
-
-// var second = new Token(['']);
-// var minute = new Token(['']);
-// var hour = new Token([
-// ]);
-
-var all = new Token([
-	{ match : ["daily","midnight"], value : "0 0 * * *" },
-	{ match : ["annually","yearly", "*"], value : "0 0 1 1 *" },
-	{ match : ["monthly"], value : "0 0 1 * *" },
-	{ match : ["weekly"], value : "0 0 * * 0" }
-], fields.ALL);
-
-var monthDay = new Token([
-	{ match : ["1st", "1"], value : 1},
-	{ match : ["2nd", "2"], value : 2},
-	{ match : ["3rd", "3"], value : 3},
-	{ match : ["4th", "4"], value : 4},
-	{ match : ["5th", "5"], value : 5},
-	{ match : ["6th", "6"], value : 6},
-	{ match : ["7th", "7"], value : 7},
-	{ match : ["8th", "8"], value : 8},
-	{ match : ["9th", "9"], value : 9},
-	{ match : ["10th", "10"], value : 10},
-	{ match : ["11th", "11"], value : 11},
-	{ match : ["12th", "12"], value : 12},
-	{ match : ["13th", "13"], value : 13},
-	{ match : ["14th", "14"], value : 14},
-	{ match : ["16th", "15"], value : 15},
-	{ match : ["16th", "16"], value : 16},
-	{ match : ["17th", "17"], value : 17},
-	{ match : ["18th", "18"], value : 18},
-	{ match : ["19th", "19"], value : 19},
-	{ match : ["20th", "20"], value : 20},
-	{ match : ["21st", "21"], value : 21},
-	{ match : ["22nd", "22"], value : 22},
-	{ match : ["23rd", "23"], value : 23},
-	{ match : ["24th", "24"], value : 24},
-	{ match : ["25th", "25"], value : 25},
-	{ match : ["26th", "26"], value : 26},
-	{ match : ["27th", "27"], value : 27},
-	{ match : ["28th", "28"], value : 28},
-	{ match : ["29th", "29"], value : 29},
-	{ match : ["30th", "30"], value : 30},
-	{ match : ["31st", "31"], value : 31},
-], fields.MONTH_DAY);
-
-var month = new Token([
-	{ match : ["january", "jan"], value : 0 },
-	{ match : ["february", "feb"], value : 1 },
-	{ match : ["march", "mar"], value : 2 },
-	{ match : ["april", "apr"], value : 3 },
-	{ match : ["may"], value : 4 },
-	{ match : ["june", "jun"], value : 5 },
-	{ match : ["july", "jul"], value : 6 },
-	{ match : ["august", "aug"], value : 7 },
-	{ match : ["september", "sept", "sep"], value : 8 },
-	{ match : ["october", "oct"], value : 9 },
-	{ match : ["november", "nov"], value : 10 },
-	{ match : ["december", "dec"], value : 11 },
-], fields.MONTH);
-
-var weekDay = new Token([
-	{ match : ["sundays", "sunday", "sun", "su"], value : 0 },
-	{ match : ["mondays","monday","mon", "mo"], value : 1 },
-	{ match : ["tuesdays","tuesday", "tues", "tue", "tu"], value : 2 },
-	{ match : ["wednesdays", "wednesday", "wed", "we"], value : 3 },
-	{ match : ["thursdays", "thursday", "thurs", "thur", "th"], value : 4 },
-	{ match : ["fridays", "friday", "fri", "fr"], value : 5 },
-	{ match : ["saturdays", "saturday", "sat", "sa"], value : 6 },
-	{ match : ["day"], value : "*"	}
-], fields.WEEK_DAY);
-
-var at = new Token([
-	{ match : ['at','@','on'], value : null }
-], fields.AT);
-
-var and = new Token([
-	{ match : ["and", "&", ","], value : null }
-], fields.AND);
-
-var not = new Token([
-	{ match : ["not","except","but"], value : null }
-], fields.NOT);
-
-var Tokens = [
-	all,
-	// second,
-	// minute,
-	// hour,
-	monthDay,
-	month,
-	weekDay,
-	at,
-	and,
-	not,
-]
-
-module.exports = Tokens;
-},{"./Token":56,"./fields":58}],60:[function(require,module,exports){
-
-module.exports = {
-	extend : function extend(obj) {
-		Array.prototype.slice.call(arguments, 1).forEach(function(source){
-			if (source) {
-		    for (var prop in source) {
-		      obj[prop] = source[prop];
-		    }
-	    }
-		});
-		return obj;
-	}
-}
 },{}],61:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -9875,6 +10013,8 @@ var process = module.exports = {};
 process.nextTick = (function () {
     var canSetImmediate = typeof window !== 'undefined'
     && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
     var canPost = typeof window !== 'undefined'
     && window.postMessage && window.addEventListener
     ;
@@ -9883,8 +10023,29 @@ process.nextTick = (function () {
         return function (f) { return window.setImmediate(f) };
     }
 
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
     if (canPost) {
-        var queue = [];
         window.addEventListener('message', function (ev) {
             var source = ev.source;
             if ((source === window || source === null) && ev.data === 'process-tick') {
@@ -9924,7 +10085,7 @@ process.emit = noop;
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
-}
+};
 
 // TODO(shtylman)
 process.cwd = function () { return '/' };
@@ -11413,7 +11574,7 @@ window.addEventListener("orientationchange", function(e){
 
 // export a singleton
 module.exports = DeviceStore
-},{"../constants/DeviceConstants":48,"./Store":65}],65:[function(require,module,exports){
+},{"../constants/DeviceConstants":54,"./Store":65}],65:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter
   , _ = require('underscore')
 
@@ -31377,4 +31538,4 @@ module.exports = warning;
 },{"./emptyFunction":181,"_process":62}],222:[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":95}]},{},[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47]);
+},{"./lib/React":95}]},{},[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53]);

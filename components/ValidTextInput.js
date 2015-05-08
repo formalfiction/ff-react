@@ -2,7 +2,7 @@
 
 var TouchInput = require('./TouchInput');
 
-var ValidTextInput = React.createClass({displayName: 'ValidTextInput',
+var ValidTextInput = React.createClass({displayName: "ValidTextInput",
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,

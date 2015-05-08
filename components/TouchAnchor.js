@@ -8,7 +8,7 @@ var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var TouchAnchor = React.createClass({displayName: 'TouchAnchor',
+var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,

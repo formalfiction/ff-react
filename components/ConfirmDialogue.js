@@ -6,7 +6,7 @@
 
 var TouchButton = require('./TouchButton');
 
-var ConfirmDialogue = React.createClass({displayName: 'ConfirmDialogue',
+var ConfirmDialogue = React.createClass({displayName: "ConfirmDialogue",
 	propTypes : {
 		confirmButtonTitle : React.PropTypes.string,
 		cancelButtonTitle : React.PropTypes.string,
