@@ -4,7 +4,7 @@
  * 
  */
 
-var Map = React.createClass({displayName: "Map",
+var Map = React.createClass({displayName: 'Map',
 	componentDidMount : function () {
 		this.initMap();
 	},

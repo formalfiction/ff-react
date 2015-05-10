@@ -21,7 +21,7 @@ var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'S
 	, minutes = [0,15,30,45];
 
 
-var DateTimePicker = React.createClass({displayName: "DateTimePicker",
+var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 	propTypes : {
 		// Center date to choose around. Defaults to the current time.
 		// Should be a js Date object
@@ -173,7 +173,7 @@ var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 /* @private
  * WheelPicker
  */
-var WheelPicker = React.createClass({displayName: "WheelPicker",
+var WheelPicker = React.createClass({displayName: 'WheelPicker',
 	propTypes : {
 		// The date to center the picker to. Defaults to now.
 		centerDate : React.PropTypes.object.isRequired,
@@ -329,9 +329,9 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 	day : function (date, key) {
 		return (
 			React.createElement("li", {
-			"data-year": date.getFullYear(), 
-			"data-month": date.getMonth(), 
-			"data-value": date.getDate(), 
+			'data-year': date.getFullYear(), 
+			'data-month': date.getMonth(), 
+			'data-value': date.getDate(), 
 			key: key}, 
 				this.stringValue(date)
 		)
@@ -357,7 +357,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 		return days;
 	},
 	hour : function (value, hour) {
-		return React.createElement("li", {"data-value": value, key: hour}, hour)
+		return React.createElement("li", {'data-value': value, key: hour}, hour)
 	},
 	hours : function (pm) {
 		var hrs = [];
@@ -367,7 +367,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 		return hrs;
 	},
 	minute : function (value, key) {
-		return React.createElement("li", {"data-value": value, key: key}, value)
+		return React.createElement("li", {'data-value': value, key: key}, value)
 	},
 	minutes : function () {
 		var mins = [];
@@ -404,7 +404,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 		return (
 			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
 				React.createElement(TouchAnchor, {className: "showCalendar right", text: "cal.", onClick: this.onShowCalendar}), 
-				React.createElement("div", {ref: "day", "data-name": "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "day", 'data-name': "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -413,7 +413,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "hour", 'data-name': "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -422,7 +422,7 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "minute", 'data-name': "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
@@ -431,12 +431,12 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 						React.createElement("li", null)
 					)
 				), 
-				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
+				React.createElement("div", {ref: "phase", 'data-name': "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
 					React.createElement("ul", null, 
 						React.createElement("li", null), 
 						React.createElement("li", null), 
-						React.createElement("li", {"data-value": 0}, "am"), 
-						React.createElement("li", {"data-value": 1}, "pm"), 
+						React.createElement("li", {'data-value': 0}, "am"), 
+						React.createElement("li", {'data-value': 1}, "pm"), 
 						React.createElement("li", null), 
 						React.createElement("li", null)
 					)

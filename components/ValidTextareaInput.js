@@ -2,7 +2,7 @@
 
 var TouchTextarea = require('./TouchTextarea')
 
-var ValidTextareaInput = React.createClass({displayName: "ValidTextareaInput",
+var ValidTextareaInput = React.createClass({displayName: 'ValidTextareaInput',
 	propTypes : {
 		// gotta name yo fields
 		name : React.PropTypes.string.isRequired,

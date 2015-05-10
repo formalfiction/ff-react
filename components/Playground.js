@@ -33,7 +33,7 @@ thirtyDaysAgo.setHours(18);
 var foFive = new Date();
 // foFive.setMinutes(25);
 
-var Playground = React.createClass({displayName: "Playground",
+var Playground = React.createClass({displayName: 'Playground',
 	getInitialState : function () {
 		return {
 			component : "Signature",

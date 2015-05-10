@@ -155,7 +155,6 @@ var form = {
 		// first check for passed in "onSave" prop
 		if (typeof this.props.onSubmit === "function") {
 			this.props.onSubmit(data);
-
 		// if not, check for local "onSave" method
 		} else if (typeof this.onSubmit === "function") {
 			this.onSubmit(data);

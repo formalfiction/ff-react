@@ -2,7 +2,7 @@
 
 var Time = require('../utils/time');
 
-var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
+var TimeSpanInput = React.createClass({displayName: 'TimeSpanInput',
 	propTypes : {
 		name : React.PropTypes.string,
 		// must be a tuple of two date objects:
@@ -75,7 +75,7 @@ var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 // A Single Column Time Picker
 var iScroll = require('../deps/iscroll');
 
-var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
+var TimeColumnPicker = React.createClass({displayName: 'TimeColumnPicker',
 	propTypes : {
 		value : React.PropTypes.object.isRequired,
 		mustBefore : React.PropTypes.object,
@@ -215,7 +215,7 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 				, displayHour = (hr < 12) ? hr : hr - 12;
 			if (displayHour === 0) { displayHour = 12; }
 			if (min === 0) { min = "00"; }
-			times.push(React.createElement("li", {key: index, "data-hours": hr, "data-minutes": min}, displayHour + ":" + min + phase));
+			times.push(React.createElement("li", {key: index, 'data-hours': hr, 'data-minutes': min}, displayHour + ":" + min + phase));
 		});
 
 		return (

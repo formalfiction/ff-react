@@ -2,7 +2,7 @@
 
 var Showdown = require('../deps/Showdown');
 
-var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
+var MarkdownEditor = React.createClass({displayName: 'MarkdownEditor',
 	propTypes : {
 		name : React.PropTypes.string.isRequired,
 		// Change handler in the form (value, name)

@@ -2,7 +2,7 @@
 
 // A simple Spinner
 
-var Spinner = React.createClass({displayName: "Spinner",
+var Spinner = React.createClass({displayName: 'Spinner',
 	propTypes : {
 		// none
 	},

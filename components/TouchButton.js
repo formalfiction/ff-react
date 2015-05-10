@@ -10,7 +10,7 @@ var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var TouchButton = React.createClass({displayName: "TouchButton",
+var TouchButton = React.createClass({displayName: 'TouchButton',
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,

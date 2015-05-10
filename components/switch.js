@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 
-var Switch = React.createClass({displayName: "Switch",
+var Switch = React.createClass({displayName: 'Switch',
 	propTypes : {
 		enabled : React.PropTypes.bool,
 		onToggle : React.PropTypes.func.isRequired,
