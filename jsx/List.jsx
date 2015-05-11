@@ -37,13 +37,10 @@ var List = React.createClass({
 	// Event Handlers
 	onScroll : function (e) {
 		if (typeof this.props.onLoadMore == "function" && !this.props.loading && this.isMounted()) {
-			var body = document.body
-				, html = document.documentElement
-				, height = Math.max( body.scrollHeight, body.offsetHeight, 
-														 html.clientHeight, html.scrollHeight, html.offsetHeight );
+			var height = e.target.scrollHeight;
 
 			// only call onLoadMore if we're in the bottom 85% of the page and scrolling down
-			if ((window.scrollY + window.innerHeight) > (height * 0.85) && e.lastScrollY < window.scrollY) {
+			if ((e.target.scrollTop + e.target.offsetHeight) > (height * 0.85) && e.lastScrollY < e.target.scrollTop) {
 				this.props.onLoadMore();
 			}
 		}

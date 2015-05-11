@@ -7,7 +7,7 @@
 
 var Showdown = require('../deps/Showdown');
 
-var MarkdownText = React.createClass({displayName: 'MarkdownText',
+var MarkdownText = React.createClass({displayName: "MarkdownText",
 	propTypes : {
 		// The Markdown to render
 		value : React.PropTypes.string.isRequired

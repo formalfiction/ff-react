@@ -29,6 +29,7 @@ var SignaturePad = function (canvas, options) {
     this.backgroundColor = opts.backgroundColor || "rgba(0,0,0,0)";
     this.onEnd = opts.onEnd;
     this.onBegin = opts.onBegin;
+    this.disabled = opts.disabled;
 
     this._canvas = canvas;
     this._ctx = canvas.getContext("2d");
@@ -74,6 +75,7 @@ SignaturePad.prototype._strokeUpdate = function (event) {
 };
 
 SignaturePad.prototype._strokeBegin = function (event) {
+    if (this.disabled) { return; }
     this._reset();
     this._strokeUpdate(event);
     if (typeof this.onBegin === 'function') {
@@ -82,6 +84,7 @@ SignaturePad.prototype._strokeBegin = function (event) {
 };
 
 SignaturePad.prototype._strokeDraw = function (point) {
+    if (this.disabled) { return; }
     var ctx = this._ctx,
         dotSize = typeof(this.dotSize) === 'function' ? this.dotSize() : this.dotSize;
 
@@ -92,6 +95,7 @@ SignaturePad.prototype._strokeDraw = function (point) {
 };
 
 SignaturePad.prototype._strokeEnd = function (event) {
+    if (this.disabled) { return; }
     var canDrawCurve = this.points.length > 2,
         point = this.points[0];
 

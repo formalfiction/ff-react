@@ -4,7 +4,7 @@ var ReactPropTypes = React.PropTypes
 	, KeyCodes = require('../constants/KeyCodes');
 
 
-var ResultsTextInput = React.createClass({displayName: 'ResultsTextInput',
+var ResultsTextInput = React.createClass({displayName: "ResultsTextInput",
   propTypes: {
     search : ReactPropTypes.func.isRequired,
     onSelect : ReactPropTypes.func.isRequired,

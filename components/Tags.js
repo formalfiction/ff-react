@@ -4,7 +4,7 @@
  * 
  */
 
-var Tags = React.createClass({displayName: 'Tags',
+var Tags = React.createClass({displayName: "Tags",
 	propTypes : {
 		placeholder : React.PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma

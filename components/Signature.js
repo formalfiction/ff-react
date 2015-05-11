@@ -10,7 +10,7 @@ var DeviceStore = require('../stores/DeviceStore')
 var SignaturePad = require('../deps/SignaturePad')
 	, TouchButton = require('./TouchButton');
 
-var Signature = React.createClass({displayName: 'Signature',
+var Signature = React.createClass({displayName: "Signature",
 	propTypes : {
 		// optional dataURI to populate signature with
 		data : React.PropTypes.string,
@@ -34,7 +34,8 @@ var Signature = React.createClass({displayName: 'Signature',
 		}
 	},
 	componentDidMount : function () {
-		DeviceStore.onOrientationChange(this.onOrientationChange);
+		DeviceStore.onOrientationChange(this.onResizeEnd);
+		DeviceStore.onResizeEnd(this.onResizeEnd);
 		var w = this.getDOMNode().offsetWidth
 			, canvas = this.refs.canvas.getDOMNode()
 			, ratio = window.devicePixelRatio || 1
@@ -51,10 +52,11 @@ var Signature = React.createClass({displayName: 'Signature',
 			this.signaturePad.enabled(false);
 		}
 		
-		this.onOrientationChange();
+		this.onResizeEnd();
 	},
 	componentWillUnmount : function () {
-		DeviceStore.offOrientationChange(this.onOrientationChange);
+		DeviceStore.offResizeEnd(this.onResizeEnd);
+		DeviceStore.offOrientationChange(this.onResizeEnd);
 	},
 	componentDidUpdate : function () {
 		if (this.props.signed) {
@@ -62,7 +64,7 @@ var Signature = React.createClass({displayName: 'Signature',
 		}
 	},
 	// Methods
-	onOrientationChange : function () {
+	onResizeEnd : function () {
 		var canvas = this.refs.canvas.getDOMNode()
 			, ratio = window.devicePixelRatio || 1
 			, signatureCopy;
@@ -96,7 +98,7 @@ var Signature = React.createClass({displayName: 'Signature',
 	reset : function (e) {
 		e.preventDefault();
 		this.signaturePad.clear();
-		this.signaturePad.enabled(true);
+		this.signaturePad.disabled = false;
 		return false;
 	},
 	done : function (e) {
@@ -110,7 +112,7 @@ var Signature = React.createClass({displayName: 'Signature',
 		if (typeof this.props.done === "function") {
 			this.props.done(this.signaturePad.toDataURL());
 		}
-		this.signaturePad.enabled(false);
+		this.signaturePad.disabled = true;
 		return false;
 	},
 	render : function () {

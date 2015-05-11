@@ -2,7 +2,7 @@
 
 
 // @stateful
-var TouchInput = React.createClass({displayName: 'TouchInput',
+var TouchInput = React.createClass({displayName: "TouchInput",
 	propTypes : {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click

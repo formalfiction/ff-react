@@ -34,7 +34,8 @@ var Signature = React.createClass({
 		}
 	},
 	componentDidMount : function () {
-		DeviceStore.onOrientationChange(this.onOrientationChange);
+		DeviceStore.onOrientationChange(this.onResizeEnd);
+		DeviceStore.onResizeEnd(this.onResizeEnd);
 		var w = this.getDOMNode().offsetWidth
 			, canvas = this.refs.canvas.getDOMNode()
 			, ratio = window.devicePixelRatio || 1
@@ -51,10 +52,11 @@ var Signature = React.createClass({
 			this.signaturePad.enabled(false);
 		}
 		
-		this.onOrientationChange();
+		this.onResizeEnd();
 	},
 	componentWillUnmount : function () {
-		DeviceStore.offOrientationChange(this.onOrientationChange);
+		DeviceStore.offResizeEnd(this.onResizeEnd);
+		DeviceStore.offOrientationChange(this.onResizeEnd);
 	},
 	componentDidUpdate : function () {
 		if (this.props.signed) {
@@ -62,7 +64,7 @@ var Signature = React.createClass({
 		}
 	},
 	// Methods
-	onOrientationChange : function () {
+	onResizeEnd : function () {
 		var canvas = this.refs.canvas.getDOMNode()
 			, ratio = window.devicePixelRatio || 1
 			, signatureCopy;
@@ -96,7 +98,7 @@ var Signature = React.createClass({
 	reset : function (e) {
 		e.preventDefault();
 		this.signaturePad.clear();
-		this.signaturePad.enabled(true);
+		this.signaturePad.disabled = false;
 		return false;
 	},
 	done : function (e) {
@@ -110,7 +112,7 @@ var Signature = React.createClass({
 		if (typeof this.props.done === "function") {
 			this.props.done(this.signaturePad.toDataURL());
 		}
-		this.signaturePad.enabled(false);
+		this.signaturePad.disabled = true;
 		return false;
 	},
 	render : function () {

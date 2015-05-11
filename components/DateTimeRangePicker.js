@@ -7,7 +7,7 @@
 var DatePicker = require('./DatePicker')
 	, TimeWheelPicker = require('./TimeWheelPicker');
 
-var DateTimeRangePicker = React.createClass({displayName: 'DateTimeRangePicker',
+var DateTimeRangePicker = React.createClass({displayName: "DateTimeRangePicker",
 	propTypes : {
 		disabled : React.PropTypes.bool,
 		className : React.PropTypes.string,
