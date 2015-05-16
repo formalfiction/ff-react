@@ -18,13 +18,14 @@ var CronInput = require('./CronInput')
 	, SlideShow = require('./SlideShow')
 	, TouchButton = require('./TouchButton')
 	, TagInput = require('./TagInput')
+	, TemplateForm = require('./TemplateForm')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
 	, ValidTextInput = require('./ValidTextInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
-var components = ["TagInput","Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -36,7 +37,7 @@ var foFive = new Date();
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "Signature",
+			component : "TemplateForm",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -47,6 +48,7 @@ var Playground = React.createClass({displayName: "Playground",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
 				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
+				TemplateForm : {}
 			}
 		}
 	},
@@ -109,6 +111,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "TagInput":
 			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			break;
+		case "TemplateForm":
+			component = React.createElement(TemplateForm, {name: "TemplateForm", template: "mary {had} a little {lamb} whos fleece was white as {snow}!", value: this.state.values.TemplateForm, onValueChange: this.onValueChange})
 			break;
 		case "TimePicker":
 			component = React.createElement(TimePicker, null)

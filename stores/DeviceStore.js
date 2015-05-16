@@ -19,7 +19,7 @@ var DeviceStore = Store.extend({
 		e.lastScrollY = DeviceStore.scrolling.lastScrollY;
 		e.lastScrollX = DeviceStore.scrolling.lastScrollX;
 
-		this.emit(DeviceConstants.DEVICE_SCROLL, e);
+		DeviceStore.emit(DeviceConstants.DEVICE_SCROLL, e);
 		
 		DeviceStore.scrolling.lastScrollY = e.target.scrollTop;
 		DeviceStore.scrolling.lastScrollX = e.target.scrollLeft;

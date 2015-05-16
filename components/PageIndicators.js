@@ -26,6 +26,10 @@ var PageIndicators = React.createClass({displayName: "PageIndicators",
 	// Render
 	render : function () {
 		var pages = [];
+		if (this.props.numPages <= 1) {
+			return (React.createElement("div", {className: "pageIndicators"}));
+		}
+
 		for (var i=1; i <= this.props.numPages; i++) {
 			pages.push(React.createElement(TouchAnchor, {className: (i === this.props.page) ? "current indicator" : "indicator", 
 															key: i, 

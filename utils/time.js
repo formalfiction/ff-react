@@ -98,6 +98,19 @@ var time = {
 		return (date.valueOf() > now.valueOf()) ? time.relativeFutureDateString(date, now) : time.relativePastDateString(date, now);
 	},
 
+	newDate : function (year, month, date, hours, minutes, seconds, millseconds) {
+		var d = new Date();
+		d.setFullYear(year || d.getFullYear());
+		d.setMonth(month || 1);
+		d.setDate(date || 1);
+		d.setHours(hours || 0);
+		d.setMinutes(minutes || 0);
+		d.setSeconds(seconds || 0);
+		d.setMilliseconds(millseconds || 0);
+
+		return d;
+	},
+
 	// http://ejohn.org/blog/javascript-pretty-date/
 	relativePastDateString : function (date, now) {
 		date = this.validDate(date)
