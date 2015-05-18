@@ -13,6 +13,7 @@ var TemplateForm = React.createClass({displayName: "TemplateForm",
 		onValueChange : React.PropTypes.func.isRequired,
 		split : React.PropTypes.object,
 		match : React.PropTypes.object,
+		disabled : React.PropTypes.bool
 	},
 
 	// ComponentLifecycle
@@ -21,33 +22,41 @@ var TemplateForm = React.createClass({displayName: "TemplateForm",
 			className : "templateForm",
 			name : "templateForm",
 			split : /({.+?})/gi,
-			match : /{(.+?)}/gi
+			match : /{(.+?)}/gi,
+			disabled : false
 		}
 	},
 
 	// Methods
-	stringValue : function () {
-		var str = ""
-			, split = this.props.template.split(this.props.split);
+	statics : {
+		defaultMatch : function () { return this.getDefaultProps().match },
+		defaultSplit : function () { return this.getDefaultProps().split },
+		stringValue : function (template, values, splitRegex, matchRegex) {
+			matchRegex || (matchRegex = TemplateForm.defaultMatch())
+			splitRegex || (splitRegex = TemplateForm.defaultSplit())
+			values || (values = {})
 
-		for (var i=0, el; el=split[i]; i++) {
-			var match = this.props.match.exec(el);
-			if (match) {
-				match = match[1];
-				str += this.props.value[match] || "";
-			} else {
-				str += el;
+			var str = ""
+				, split = template.split(splitRegex);
+
+			for (var i=0, el; el=split[i]; i++) {
+				var match = matchRegex.exec(el);
+				if (match) {
+					var m = values[match[1]] || "";
+					str += "{" + m + "}";
+				} else {
+					str += el;
+				}
 			}
-		}
 
-		return str;
+			return str;
+		},
 	},
 
 	// EventHandlers
 	onChange : function (e) {
 		var o = this.props.value;
 		o[e.target.name] = e.target.value;
-		console.log(this.stringValue());
 		this.props.onValueChange(o,this.props.name);
 	},
 
@@ -60,7 +69,13 @@ var TemplateForm = React.createClass({displayName: "TemplateForm",
 			var match = this.props.match.exec(el);
 			if (match) {
 				match = match[1];
-				markup.push(React.createElement("input", {key: i, type: "text", name: match, placeholder: match, value: this.props.value[match], onChange: this.onChange}));
+				markup.push(React.createElement("input", {key: i, 
+														type: "text", 
+														name: match, 
+														placeholder: match, 
+														value: this.props.value[match], 
+														onChange: this.onChange, 
+														disabled: this.props.disabled}));
 			} else {
 				markup.push(React.createElement("span", {key: i}, el));
 			}
