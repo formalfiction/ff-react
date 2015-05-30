@@ -10,7 +10,7 @@ var clickbuster = require('../utils/clickbuster');
 
 var startX, startY;
 
-var TouchButton = React.createClass({displayName: "TouchButton",
+var LoadingTouchButton = React.createClass({
 	propTypes : {
 		// the text label for the button
 		text : React.PropTypes.string,
@@ -19,15 +19,18 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 		onClick : React.PropTypes.func.isRequired,
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number
+		initialInputDelay : React.PropTypes.number,
+		loading : React.PropTypes.bool
 	},
 
 	// lifecycle
 	getDefaultProps : function () {
 		return {
+			className : "loadingTouchButton",
 			text : "button",
 			moveThreshold : 10,
 			initialInputDelay : 500,
+			loading : false
 		}
 	},
 	componentDidMount : function () {
@@ -91,15 +94,16 @@ var TouchButton = React.createClass({displayName: "TouchButton",
 
 	// Render
 	render : function () {
-		var className = this.props.className;
-		if (this.props.loading) {
-			className + " loading";
-		}
-
 		return (
-			React.createElement("button", React.__spread({},  this.props, {className: className, onClick: this.onClick, onMouseDown: this.onInput, onTouchStart: this.onTouchStart}), this.props.text)
+			<button {...this.props} disabled={this.props.disabled || this.props.loading} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>
+				{(this.props.loading) ? <div className="spinner">
+																	<div className="bounce1"></div>
+																	<div className="bounce2"></div>
+																	<div className="bounce3"></div>
+																</div> : this.props.text}
+			</button>
 		);
 	}
 });
 
-module.exports = TouchButton;
+module.exports = LoadingTouchButton;

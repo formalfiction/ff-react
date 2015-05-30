@@ -6,6 +6,7 @@ var CronInput = require('./CronInput')
 	, DateTimePicker = require('./DateTimePicker')
 	, DateTimeRangePicker = require('./DateTimeRangePicker')
 	, HoursInput = require('./HoursInput')
+	, LoadingTouchButton = require('./LoadingTouchButton')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
@@ -16,6 +17,7 @@ var CronInput = require('./CronInput')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
+	, TouchAnchor = require('./TouchAnchor')
 	, TouchButton = require('./TouchButton')
 	, TagInput = require('./TagInput')
 	, TemplateForm = require('./TemplateForm')
@@ -24,7 +26,7 @@ var CronInput = require('./CronInput')
 	, ValidTextInput = require('./ValidTextInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","Login","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
 									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
@@ -37,7 +39,7 @@ var foFive = new Date();
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "TemplateForm",
+			component : "LoadingTouchButton",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -49,7 +51,8 @@ var Playground = React.createClass({displayName: "Playground",
 				TimeSpanInput : [new Date(), new Date()],
 				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
 				TemplateForm : {}
-			}
+			},
+			loading : false
 		}
 	},
 	pickComponent : function (e) {
@@ -64,9 +67,12 @@ var Playground = React.createClass({displayName: "Playground",
 		values[name] = value;
 		this.setState({ values : values });
 	},
+	onToggleLoading : function () {
+		this.setState({ loading : !this.state.loading });
+	},
  	render : function () {
  		var options = []
- 			, component;
+ 			, component, extras;
 
  		components.forEach(function(c,i){
  			options.push(React.createElement("option", {key: i, value: c}, c));
@@ -85,8 +91,9 @@ var Playground = React.createClass({displayName: "Playground",
 		case "HoursInput":
 			component = React.createElement(HoursInput, {name: "HoursInput", value: this.state.values.HoursInput, onValueChange: this.onValueChange})
 			break;
-		case "Login":
-			component = React.createElement(Login, null)
+		case "LoadingTouchButton":
+			extras = React.createElement("p", null, React.createElement(TouchAnchor, {onClick: this.onToggleLoading, text: "toggle loading"}))
+			component = React.createElement(LoadingTouchButton, {loading: this.state.loading, onClick: this.onToggleLoading})
 			break;
 		case "MarkdownEditor":
 			component = React.createElement(MarkdownEditor, null)
@@ -170,6 +177,9 @@ var Playground = React.createClass({displayName: "Playground",
 					)
 				), 
 				React.createElement("div", {className: "component"}, 
+					React.createElement("div", {className: "extras"}, 
+						extras
+					), 
 					React.createElement("div", {className: "wrapper"}, 
 						component
 					)

@@ -96,7 +96,7 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 		var options = {
 					mouseWheel : true,
 					snap : 'li',
-					snapThreshold : 3,
+					snapThreshold : 10,
 				};
 
 		this.scroller = new iScroll(this.refs["scroller"].getDOMNode(), options);
@@ -143,7 +143,7 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 		var self = this
 		return function () {
 			// add 3 to choose the center element (hopefully in the middle)
-			var i = this.currentPage.pageY + 3
+			var i = this.currentPage.pageY + 2
 				, el = this.scroller.children[i]
 				, value = new Date(self.props.value);
 
@@ -182,6 +182,31 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 			this[e.currentTarget.getAttribute('data-name') + "Scroll"].handleEvent(e);
 		}
 	},
+	onSelectTime : function (e) {
+		var el = e.target
+			, value = new Date(this.props.value);
+
+		// convert to number with +
+		value.setHours(+el.getAttribute('data-hours'));
+		value.setMinutes(+el.getAttribute('data-minutes'));
+		value.setSeconds(0);
+		value.setMilliseconds(0);
+
+		// re-set the date to avoid modifying day values
+		// can arise when too many hours are added to the
+		// new value
+		// @todo - make sure that doesn't happen.
+		value.setYear(this.props.value.getFullYear())
+		value.setMonth(this.props.value.getMonth())
+		value.setDate(this.props.value.getDate())
+
+
+		if (this.props.value.valueOf() != value.valueOf()) {
+			this.scrollToTime(value);
+			this.props.onValueChange(value, this.props.name);
+			this.setSelected(this.scroller, +el.getAttribute('data-index') + 2);
+		}
+	},
 
 	// iterate over each time, calling func
 	// with (hour, min, phase, index)
@@ -208,14 +233,15 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 
 	// Render 
 	render : function () {
-		var times = [];
+		var times = []
+			, self = this
 
 		this.eachTime(function (hr,min,index) {
 			var phase = (hr < 12) ? "am" : "pm"
 				, displayHour = (hr < 12) ? hr : hr - 12;
 			if (displayHour === 0) { displayHour = 12; }
 			if (min === 0) { min = "00"; }
-			times.push(React.createElement("li", {key: index, "data-hours": hr, "data-minutes": min}, displayHour + ":" + min + phase));
+			times.push(React.createElement("li", {key: index, onClick: self.onSelectTime, onTouchEnd: self.onSelectTime, "data-index": index, "data-hours": hr, "data-minutes": min}, displayHour + ":" + min + phase));
 		});
 
 		return (
@@ -223,9 +249,7 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 				React.createElement("ul", null, 
 					React.createElement("li", null), 
 					React.createElement("li", null), 
-					React.createElement("li", null), 
 					times, 
-					React.createElement("li", null), 
 					React.createElement("li", null), 
 					React.createElement("li", null)
 				)

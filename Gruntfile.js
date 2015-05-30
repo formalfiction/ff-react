@@ -9,7 +9,7 @@ module.exports = function (grunt) {
         failOnError: true
       },
       'playground' : {
-      	command : 'http-server playground',
+      	command : 'http-server playground -p 9090',
       	stdout : false,
       	failOnError : true
       },

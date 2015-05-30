@@ -116,6 +116,92 @@
 .hoursInput .days .day.selected {
   background: #999;
 }
+@-webkit-keyframes bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+button.loadingTouchButton {
+  min-height: 35px;
+  text-transform: uppercase;
+  background: #efefef;
+  color: #fff;
+  border-radius: 2px;
+  padding: 6px 6px;
+  margin: 5px 0;
+  box-shadow: none;
+  width: 100%;
+  border: none;
+  min-height: 40px;
+}
+button.loadingTouchButton .spinner {
+  margin: 0 auto;
+  width: 70px;
+  text-align: center;
+}
+button.loadingTouchButton .spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: rgba(0,0,0,0.25);
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+  animation: bouncedelay 1.4s infinite ease-in-out;
+/* Prevent first frame from flickering when animation starts */
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+button.loadingTouchButton .spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+button.loadingTouchButton .spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+@-moz-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@-webkit-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@-o-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
 .modal {
   z-index: 3;
   margin: auto;
@@ -258,6 +344,79 @@
 .signature .done {
   float: right;
 }
+.spinner {
+  margin: 50px auto 0;
+  width: 70px;
+  text-align: center;
+}
+.spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: rgba(0,0,0,0.25);
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+  animation: bouncedelay 1.4s infinite ease-in-out;
+/* Prevent first frame from flickering when animation starts */
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+@-webkit-keyframes bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+@-moz-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@-webkit-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@-o-keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
 .slider {
   position: relative;
   width: 100%;
@@ -383,7 +542,7 @@
 }
 .timeSpanInput .picker ul li {
   text-align: center;
-  height: 40px;
+  height: 56px;
   opacity: 0.45;
 }
 .timeSpanInput .picker ul li.selected {

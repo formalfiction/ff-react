@@ -91,8 +91,13 @@ var TouchButton = React.createClass({
 
 	// Render
 	render : function () {
+		var className = this.props.className;
+		if (this.props.loading) {
+			className + " loading";
+		}
+
 		return (
-			<button {...this.props} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>{this.props.text}</button>
+			<button {...this.props} className={className} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>{this.props.text}</button>
 		);
 	}
 });

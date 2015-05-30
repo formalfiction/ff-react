@@ -154,6 +154,10 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
     }).error(function (response){
       if (response.meta) {
         action.error = response.meta.error;
+      } else {
+        if (response.statusText) {
+          action.error = { message : response.statusText };
+        }
       }
       self.dispatch({
         source : "SERVER_ACTION",
