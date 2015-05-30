@@ -2868,7 +2868,7 @@ var foFive = new Date();
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "LoadingTouchButton",
+			component : "TimeSpanInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -4219,7 +4219,8 @@ module.exports = TimePicker;
 },{"./Clock":10}],45:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var Time = require('../utils/time');
+var Time = require('../utils/time')
+	, TimeWheelPicker = require('./TimeWheelPicker')
 
 var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 	propTypes : {
@@ -4282,51 +4283,65 @@ var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 	render : function () {
 		return (
 			React.createElement("div", {className: "timeSpanInput"}, 
-				React.createElement(TimeColumnPicker, {className: "start picker", name: "start", value: this.props.value[0], mustBefore: this.props.value[1], interval: this.props.interval, onValueChange: this.onValueChange}), 
+				React.createElement(TimeWheelPicker, {className: "start picker", name: "start", value: this.props.value[0], mustBefore: this.props.value[1], interval: this.props.interval, onValueChange: this.onValueChange}), 
 				React.createElement("p", {className: "divider"}, "-"), 
-				React.createElement(TimeColumnPicker, {className: "end picker", name: "end", value: this.props.value[1], mustAfter: this.props.value[0], interval: this.props.interval, onValueChange: this.onValueChange})
+				React.createElement(TimeWheelPicker, {className: "end picker", name: "end", value: this.props.value[1], mustAfter: this.props.value[0], interval: this.props.interval, onValueChange: this.onValueChange})
 			)
 		);
 	}
 });
 
+module.exports = TimeSpanInput;
+},{"../utils/time":70,"./TimeWheelPicker":46}],46:[function(require,module,exports){
+var iScroll = require('../deps/iscroll');
+var time = require('../utils/time');
+
+function copyTouch (t) {
+	return { identifier: t.identifier, pageX: t.pageX, pageY: t.pageY, screenX : t.screenX, screenY : t.screenY };
+}
 
 // A Single Column Time Picker
-var iScroll = require('../deps/iscroll');
-
-var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
+var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 	propTypes : {
 		value : React.PropTypes.object.isRequired,
 		mustBefore : React.PropTypes.object,
 		mustAfter : React.PropTypes.object,
 		// interval in minutes
 		interval : React.PropTypes.number,
+		// how far (in pixels) a touch event has to move before
+		// it's considered scrolling instead of a tap
+		yTouchThreshold : React.PropTypes.number,
 	},
+
+	// And now a little uglyness:
+	startTouch : undefined,
+	endTouch : undefined,
 
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
 			className : "timeColumnPicker",
-			interval : 15
+			interval : 15,
+			value : new Date(),
+			yTouchThreshold : 5,
+			scrollerOptions : {
+				mouseWheel : true,
+				snap : 'li',
+				snapThreshold : 0.334,
+			}
 		}
 	},
 
 	componentDidMount : function () {
-		var options = {
-					mouseWheel : true,
-					snap : 'li',
-					snapThreshold : 10,
-				};
-
-		this.scroller = new iScroll(this.refs["scroller"].getDOMNode(), options);
+		this.scroller = new iScroll(this.refs["scroller"].getDOMNode(), this.props.scrollerOptions);
 		this.scroller.on('scrollEnd', this.scrollEnder());
-		this.scroller.on('touchEnd', this.props.onTouchEnd);
+		// this.scroller.on('touchEnd', this.props.onTouchEnd);
 
-		// this.silent = true;
+		this.locked = true;
 		this.scrollToTime(this.props.value);
 	},
 	componentDidUpdate : function () {
-		this.silent = true;
+		this.locked = true;
 		this.scrollToTime(this.props.value);
 	},
 
@@ -4346,10 +4361,8 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 			}
 		}
 
-		// add the offset?
-		// i += 3
-
-		this.scroller.goToPage(0,i,200);
+		this.setSelected(this.scroller, i + 2);
+		this.scroller.goToPage(0,i,150);
 	},
 	setSelected : function (iscroll, sel) {
 		for (var i=0; i < iscroll.scroller.children.length; i++){
@@ -4361,32 +4374,18 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 	scrollEnder : function () {
 		var self = this
 		return function () {
-			// add 3 to choose the center element (hopefully in the middle)
+			// add 2 to choose the center element (hopefully in the middle)
 			var i = this.currentPage.pageY + 2
 				, el = this.scroller.children[i]
-				, value = new Date(self.props.value);
+				, value = new Date(el.getAttribute("data-value"));
 
-			self.setSelected(this, i);
+			if (i < 2) { i = 2; }
+			else if (i > (this.scroller.children.length - 4)) { i = this.scroller.children.length -4; }
 
-			// convert to number with +
-			value.setHours(+el.getAttribute('data-hours'));
-			value.setMinutes(+el.getAttribute('data-minutes'));
-			value.setSeconds(0);
-			value.setMilliseconds(0);
-
-			// re-set the date to avoid modifying day values
-			// can arise when too many hours are added to the
-			// new value
-			// @todo - make sure that doesn't happen.
-			value.setYear(self.props.value.getFullYear())
-			value.setMonth(self.props.value.getMonth())
-			value.setDate(self.props.value.getDate())
-
-			if (self.silent) {
-				self.silent = false;
+			if (self.locked) {
+				self.locked = false;
 				return;
 			}
-
 
 			if (self.props.value.valueOf() != value.valueOf()) {
 				self.props.onValueChange(value, self.props.name);
@@ -4395,47 +4394,46 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 	},
 
 	// Event Handlers
-	onTouchEnd : function (e) {
-		if (this.props.killTouch) {
-			e.stopPropagation();
-			this[e.currentTarget.getAttribute('data-name') + "Scroll"].handleEvent(e);
-		}
+	onTouchStart : function (e) {
+		this.startTouch = copyTouch(e.touches[0]);
 	},
-	onSelectTime : function (e) {
+	onTouchEnd : function (e) {
 		var el = e.target
-			, value = new Date(this.props.value);
+			, value = new Date(el.getAttribute("data-value"));
 
-		// convert to number with +
-		value.setHours(+el.getAttribute('data-hours'));
-		value.setMinutes(+el.getAttribute('data-minutes'));
-		value.setSeconds(0);
-		value.setMilliseconds(0);
+		this.endTouch = copyTouch(e.changedTouches[0]);
+		this.locked = false;
 
-		// re-set the date to avoid modifying day values
-		// can arise when too many hours are added to the
-		// new value
-		// @todo - make sure that doesn't happen.
-		value.setYear(this.props.value.getFullYear())
-		value.setMonth(this.props.value.getMonth())
-		value.setDate(this.props.value.getDate())
+		// Only trigger if not scrolling
+		if (Math.abs(this.startTouch.pageY - this.endTouch.pageY) < this.props.yTouchThreshold && this.isMounted()) {
+			e.stopPropagation();
+			if (this.props.value.valueOf() != value.valueOf()) {
+				this.props.onValueChange(value, this.props.name);
+			}
+		}
 
+		this.startTouch = undefined;
+		this.endTouch = undefined;
+	},
+	onClick : function (e) {
+		var el = e.target
+			, value = new Date(el.getAttribute("data-value"));
 
 		if (this.props.value.valueOf() != value.valueOf()) {
-			this.scrollToTime(value);
+			e.stopPropagation();
 			this.props.onValueChange(value, this.props.name);
-			this.setSelected(this.scroller, +el.getAttribute('data-index') + 2);
 		}
 	},
 
 	// iterate over each time, calling func
 	// with (hour, min, phase, index)
 	eachTime : function (func) {
-		var l = 24, interval, d;
+		var l = 23, interval, d;
 
 		// count by hours if interval is either 0 or 60
 		if (!this.props.interval || this.props.interval >= 60) {
 			for (var h=0; h <= l; h++) {
-				func(h, 0, h);
+				func(time.newDate(this.props.value.getFullYear(), this.props.value.getMonth(), this.props.value.getDate(), h, 0), h);
 			}
 
 		// otherwise use an inner loop for minutes
@@ -4443,7 +4441,7 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 			var i = 0;
 			for (var h=0; h <= l; h++) {
 				for (var m=0; m < 60; m += this.props.interval) {
-					func(h, m, i);
+					func(time.newDate(this.props.value.getFullYear(), this.props.value.getMonth(), this.props.value.getDate(), h, m), i);
 					i++;
 				}
 			}
@@ -4455,12 +4453,8 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 		var times = []
 			, self = this
 
-		this.eachTime(function (hr,min,index) {
-			var phase = (hr < 12) ? "am" : "pm"
-				, displayHour = (hr < 12) ? hr : hr - 12;
-			if (displayHour === 0) { displayHour = 12; }
-			if (min === 0) { min = "00"; }
-			times.push(React.createElement("li", {key: index, onClick: self.onSelectTime, onTouchEnd: self.onSelectTime, "data-index": index, "data-hours": hr, "data-minutes": min}, displayHour + ":" + min + phase));
+		this.eachTime(function (value,index) {
+			times.push(React.createElement("li", {key: index, onClick: self.onClick, onTouchStart: self.onTouchStart, onTouchEnd: self.onTouchEnd, "data-value": value.toString()}, time.timeString(value)));
 		});
 
 		return (
@@ -4477,355 +4471,8 @@ var TimeColumnPicker = React.createClass({displayName: "TimeColumnPicker",
 	}
 });
 
-module.exports = TimeSpanInput;
-},{"../deps/iscroll":63,"../utils/time":70}],46:[function(require,module,exports){
-/** @jsx React.DOM */
-
-/* @stateful
- *
- * Wheelie Time Picker
- * 
- * **Picker Show / Hiding & Touch Events**
- * 
- */
-
-
-var iScroll = require('../deps/iscroll');
-
-var hours = [1,2,3,4,5,6,7,8,9,10,11,12]
-	, minutes = [0,15,30,45];
-
-
-var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
-	propTypes : {
-		className : React.PropTypes.string,
-		// name of the field
-		name : React.PropTypes.string.isRequired,
-		// onChange handler in the form (value, name)
-		onValueChange : React.PropTypes.func,
-		// Value for the datepicker. Should be a js Date object
-		value : React.PropTypes.object
-	},
-
-	// Component Lifecycle
-	getDefaultProps : function () {
-		return {
-			className : "timeWheelPicker",
-			centerDate : new Date(),
-			value : new Date(),
-		}
-	},
-	getInitialState : function () {
-		var d = this.dateValue(this.props.value)
-		d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
-		d.setSeconds(0);
-		d.setMilliseconds(0);
-		return {
-			focused : false,
-			value : d,
-		}
-	},
-
-	// Method
-	focus : function () {
-		this.setState({ focused : true });
-	},
-	blur : function () {
-		this.setState({ focused : false });
-	},
-
-	// Event Handlers
-	onFocus : function (e) {
-		this.setState({ focused : true });
-	},
-	onBlur : function (e) {
-		this.setState({ focused : false });
-	},
-	onChange : function (value) {
-		// for now we're providing a sort of fake event. 
-		// probably a bad idea.
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange({
-				target : {
-					name : this.props.name,
-					value : value
-				}
-			});
-		}
-		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(value, this.props.name);
-		}
-	},
-	onKeyUp : function (e) {
-		// kill keyboard input
-		e.preventDefault();
-		e.stopPropagation();
-	},
-	onPickerChange : function (val, name) {
-		this.onChange(val);
-	},
-	onInputChange : function (e) {
-		// no-op
-	},
-	onPickerMouseDown : function (e) {
-		e.preventDefault();
-		// Cancel Blur event triggered by focusing the picker
-		$(this.refs["field"].getDOMNode()).focus();
-	},
-	onPickerChange : function (value, name) {
-		if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(value, name);
-		}
-	},
-	onToggleCalendar : function () {
-		var o = {};
-		o.showCalendar = !this.state.showCalendar;
-		this.setState(o);
-	},
-
-	// Render Methods
-	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
-			} else {
-				var now = new Date()
-				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-	stringValue : function (value) {
-		if (!value) { return ""; }
-		var date = this.dateValue(value)
-			, mins = (Math.round(date.getMinutes() / 15) * 15)
-			, phase = (date.getHours() < 12) ? "am" : "pm"
-			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
-		
-		if (mins === 0) { mins = "00"; }
-		if (hours == 0) { hours = "12"; }
-
-		return hours + ":" + mins + " " + phase;
-	},
-	render : function () {
-		var value = new Date(this.dateValue(this.props.value))
-			, stringValue = this.stringValue(value)
-			, picker;
-
-		if (this.state.focused) {
-			picker = React.createElement(WheelPicker, {onMouseDown: this.onPickerMouseDown, killTouch: true, value: value, centerDate: this.props.centerDate, onValueChange: this.onPickerChange, name: this.props.name})
-		}
-
-		return (
-			React.createElement("div", {className: this.props.className}, 
-				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
-				picker
-			)
-		);
-	}
-});
-
-
-/* @private
- * WheelPicker
- */
-var WheelPicker = React.createClass({displayName: "WheelPicker",
-	propTypes : {
-		killTouch : React.PropTypes.bool.isRequired,
-		name : React.PropTypes.string.isRequired,
-		onMouseDown : React.PropTypes.func,
-		onTouchEnd : React.PropTypes.func,
-		onShowCalendar : React.PropTypes.func,
-		// Change in the form of (value, name)
-		onValueChange : React.PropTypes.func.isRequired,
-		// @private for now, don't modify.
-		segments : React.PropTypes.array.isRequired,
-		// should be a js date object
-		value : React.PropTypes.object.isRequired,
-	},
-
-	// Component Lifecycle
-	getDefaultProps : function () {
-		return {
-			segments : ['hour','minute','phase'],
-			itemsShowing : 5,
-			killTouch : false,
-			value : new Date(),
-		}
-	},
-	componentDidMount : function () {
-		var self = this
-			, options = {
-					mouseWheel : true,
-					snap : 'li',
-					snapThreshold : 3,
-				};
-
-		this.props.segments.forEach(function(segment){
-			var name = segment + 'Scroll';
-			self[name] = new iScroll(self.refs[segment].getDOMNode(), options);
-			self[name].on('scrollEnd', self.scrollEnder(segment));
-			self[name].on('touchEnd', self.props.onTouchEnd);
-		});
-
-		this.scrollToTime(this.props.value);
-	},
-
-	// Methods
-	scrollToTime : function (date) {
-
-		var hours = date.getHours()
-			, minutes = Math.floor(date.getMinutes() / 15) + 1
-			, pm = (hours > 11);
-
-		if (pm) { hours = hours - 12; }
-
-		hours = (hours > 0) ? hours - 1 : hours;
-		minutes = (minutes > 0) ? minutes - 1 : minutes;
-
-		this.hourScroll.goToPage(0,hours,200);
-		this.minuteScroll.goToPage(0,minutes,200);
-		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
-	},
-	setSelected : function (iscroll, sel) {
-		for (var i=0; i < iscroll.scroller.children.length; i++){
-			iscroll.scroller.children[i].className = (sel === i) ? "selected" : "";
-		}
-	},
-
-	// Factory Funcs
-	scrollEnder : function (segment) {
-		var self = this;
-		return function () {
-			// add two to choose the center element (hopefully in the middle)
-			var i = this.currentPage.pageY + 2
-				// convert to number with +
-				, scrollValue = +this.scroller.children[i].getAttribute('data-value')
-				, oldValue = self.props.value
-				, value = new Date(self.props.value);
-
-			self.setSelected(this, i);
-
-			switch (segment) {
-				case "hour":
-					value.setHours(scrollValue);
-					break;
-				case "minute":
-					value.setMinutes(scrollValue);
-					break;
-				case "phase":
-					if (scrollValue === 0 && value.getHours() > 12) {
-						value.setHours(value.getHours() - 12);
-					} else if (scrollValue === 1 && value.getHours() < 12) {
-						value.setHours(value.getHours() + 12);
-					}
-					break;
-			}
-
-
-			if (oldValue != value) {
-				self.props.onValueChange(value, self.props.name);
-			}
-		}
-	},
-
-	// Event Handlers
-	onTouchEnd : function (e) {
-		if (this.props.killTouch) {
-			e.stopPropagation();
-			this[e.currentTarget.getAttribute('data-name') + "Scroll"].handleEvent(e);
-		}
-	},
-
-	onShowCalendar : function (e) {
-		if (typeof this.props.onShowCalendar === "function") {
-			e.stopPropagation();
-			this.props.onShowCalendar();
-		}
-	},
-
-	// Render Methods
-	hour : function (value, hour) {
-		return React.createElement("li", {"data-value": value, key: hour}, hour)
-	},
-	hours : function (pm) {
-		var hrs = [];
-		for (var i=1; i<=12; i++) {
-			hrs.push(this.hour(pm ? i + 12 : i, i));
-		}
-		return hrs;
-	},
-	minute : function (value, key) {
-		return React.createElement("li", {"data-value": value, key: key}, value)
-	},
-	minutes : function () {
-		var mins = [];
-		for (var i=0; i<4; i++) {
-			mins.push(this.minute(minutes[i],i))
-		}
-		return mins;
-	},
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
-		// Ensure Value is a valid date.
-		if (!isDate) {
-			if (typeof value === "number" && value != NaN) {
-				value = new Date(this.props.value)
-			} else {
-				var now = new Date()
-				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
-			}
-		}
-
-		return value;
-	},
-
-	render : function () {
-		var value = this.props.value
-			, hours = this.hours(this.props.centerDate.getHours() > 11)
-			, minutes = this.minutes();
-
-		return (
-			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
-				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						hours, 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				), 
-				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						minutes, 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				), 
-				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						React.createElement("li", {"data-value": 0}, "am"), 
-						React.createElement("li", {"data-value": 1}, "pm"), 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				)
-			)
-		);
-	}
-});
-
 module.exports = TimeWheelPicker;
-},{"../deps/iscroll":63}],47:[function(require,module,exports){
+},{"../deps/iscroll":63,"../utils/time":70}],47:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /*

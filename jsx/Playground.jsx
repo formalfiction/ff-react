@@ -39,7 +39,7 @@ var foFive = new Date();
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "LoadingTouchButton",
+			component : "TimeSpanInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,

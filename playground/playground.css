@@ -544,6 +544,8 @@ button.loadingTouchButton .spinner .bounce2 {
   text-align: center;
   height: 56px;
   opacity: 0.45;
+  box-sizing: border-box;
+  padding-top: 20px;
 }
 .timeSpanInput .picker ul li.selected {
   opacity: 1;
@@ -558,7 +560,7 @@ button.loadingTouchButton .spinner .bounce2 {
   margin: 0;
   position: absolute;
   text-align: center;
-  top: 45%;
+  top: 46.5%;
   left: 45%;
 }
 .timeSpanInput:after {
