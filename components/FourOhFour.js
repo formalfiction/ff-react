@@ -26,7 +26,7 @@ var FourOhFour = React.createClass({displayName: "FourOhFour",
 	// Render
 	render : function () {
 		return (
-			React.createElement("div", {className: "fourOhFour error"}, 
+			React.createElement("div", {className: "fourOhFour"}, 
 				React.createElement("h3", null, this.props.title), 
 				React.createElement("p", null, this.props.message), 
 				React.createElement("button", {onClick: this.reloadPage, onTouchEnd: this.goBack}, "Reload")

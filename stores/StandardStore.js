@@ -7,15 +7,16 @@ var Store = require('./Store')
  *
  */
 
-// replace the first matched element in an array 
-// @param list {array} the list to modify
+// update the first matched element in an array
+// using underscore's extend method
+// @param list {array} the list of objects
 // @param fn {function} truth test function
-// @param element {whatever} the elememt to add
+// @param element {anything} updates to make
 // @return true if modified, otherwise false
-function replace(list, fn, element) {
+function update(list, fn, element) {
 	for (var i=0,e; e=list[i]; i++) {
 		if (fn(e)) {
-			list.splice(i, 1, element);
+			list[i] = _.extend(list[i], element)
 			return true;
 		}
 	}
@@ -95,7 +96,7 @@ var StandardStore = Store.extend({
 	},
 
 	// add a model to the store
-	// if it's already in the store, the stored model will be updated
+	// if it's already in the store, the stored model will be updated.
 	// the object must have either an id or cid field
 	// @param {object} model - the model object to add to the store
 	add : function (model) {
@@ -110,7 +111,7 @@ var StandardStore = Store.extend({
 		}
 
 		// check to see if we already have the model
-		if (replace(this._models, idMatcher(model.id || model.cid), model)) {
+		if (update(this._models, idMatcher(model.id || model.cid), model)) {
 			return model;
 		}
 
@@ -126,7 +127,7 @@ var StandardStore = Store.extend({
 		if (!this.valid(model)) { 
 			return false;
 		}
-		return replace(this._models, idMatcher(model.id || model.cid || ''), model);
+		return update(this._models, idMatcher(model.id || model.cid || ''), model);
 	},
 
 	// @param model {object|string|number} - either the model object to be removed OR

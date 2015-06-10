@@ -5,6 +5,7 @@ var CronInput = require('./CronInput')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
 	, DateTimeRangePicker = require('./DateTimeRangePicker')
+	, GridView = require('./GridView')
 	, HoursInput = require('./HoursInput')
 	, LoadingTouchButton = require('./LoadingTouchButton')
 	, Map = require('./Map')
@@ -26,7 +27,7 @@ var CronInput = require('./CronInput')
 	, ValidTextInput = require('./ValidTextInput')
 	, ValidTextareaInput = require('./ValidTextareaInput');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
 									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
 
 var thirtyDaysAgo = new Date()
@@ -39,8 +40,24 @@ var foFive = new Date();
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "TimeSpanInput",
+			component : "GridView",
 			values : {
+				GridView : [
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
+				],
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
@@ -87,6 +104,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "DateTimeRangePicker":
 			component = React.createElement(DateTimeRangePicker, {name: "DateTimePicker", value: this.state.values.DateTimeRangePicker, onValueChange: this.onValueChange})
+			break;
+		case "GridView":
+			component = React.createElement(GridView, {data: this.state.values.GridView})
 			break;
 		case "HoursInput":
 			component = React.createElement(HoursInput, {name: "HoursInput", value: this.state.values.HoursInput, onValueChange: this.onValueChange})
