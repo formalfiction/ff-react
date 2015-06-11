@@ -1,27 +1,31 @@
 /** @jsx React.DOM */
 
-var TouchAnchor = require('./TouchAnchor');
+var Time = require('../utils/time')
+	, TouchAnchor = require('./TouchAnchor');
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	, dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 	, days = { sun : 7, mon : 0, tue : 1, wed : 2, thu : 3, fri : 4, sat : 5 };
 
+
+function copyTouch (t) {
+	return { identifier: t.identifier, pageX: t.pageX, pageY: t.pageY, screenX : t.screenX, screenY : t.screenY };
+}
+
+
 var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 	propTypes : {
-		name : React.PropTypes.string,
-		// we accept onMouseDown & onTouchEnd Handlers
-		// for use in conjunction with an input field
-		// to cancel events that would blur the field.
-		onMouseDown : React.PropTypes.func,
-		onTouchEnd : React.PropTypes.func,
-		// the date we want to see on the calendar
-		// @todo - make this a date object
-		value : React.PropTypes.object.isRequired,
-		onChange : React.PropTypes.func,
-		// onChange handler in the form (value, name)
-		onValueChange : React.PropTypes.func,
+		// it's an unfortunate limitation of this layout technique that we
+		// need a definied pixel width 
+		width : React.PropTypes.number.isRequired,
 		// an array of dates to show 
 		data : React.PropTypes.array.isRequired,
+		// the date we want to see on the calendar, must be a valid date object
+		// will default to the current date, the view will automatically
+		// put monday first
+		date : React.PropTypes.object,
+		// onChange handler in the form (value, name)
+		onValueChange : React.PropTypes.func,
 		// if these funcs are defined, each data item will be passed
 		dataStartDate : React.PropTypes.func,
 		dataEndDate : React.PropTypes.func,
@@ -29,9 +33,6 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 		dataAllDay : React.PropTypes.func,
 
 		headerHeight : React.PropTypes.number,
-		// it's an unfortunate limitation of this layout technique that we
-		// need a definied pixel width 
-		width : React.PropTypes.number.isRequired,
 		// optional. pass in a height & we'll scale this shit to that height
 		// if height isn't defined, you can tune vertical scaling with "hourHeight"
 		height : React.PropTypes.number,
@@ -44,32 +45,48 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 		endHour : React.PropTypes.number,
 		// either a string, or an array of integers in miltary time
 		// to show markers for
-		// hourMarkers 
+		hourMarkers : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
 
 		// minute increment to snap the timeruler to. default is 15
 		// set to 0 for no snapping
-		timeRulerSnap : React.PropTypes.number
+		timeRulerSnap : React.PropTypes.number,
+		// a popover component to present on clicking
+		popover : React.PropTypes.func,
+		// how far (in pixels) a touch event has to move before
+		// it's considered scrolling instead of a tap
+		yTouchThreshold : React.PropTypes.number,
+		// handler for when a data item is clicked
+		onSelectData : React.PropTypes.func,
+		// @todo - currently unimplemented
+		// handler for when UI manipulations are made to a data object, such as dragging
+		// a data object, or extending an end time
+		onChangeData : React.PropTypes.func
 	},
+
+	startTouch : undefined,
+	endTouch : undefined,
+
 	// Lifecycle
 	getDefaultProps : function () {
 		return {
 			name : "calendar",
-			value : new Date(),
+			date : new Date(),
 			headerHeight : 50,
 			width : 600,
 			startHour : 7,
 			endHour : 22 ,
 			hourMarkers : [9,12,17],
 			hourHeight : 50,
-			timeRulerSnap : 15
+			timeRulerSnap : 15,
+			yTouchThreshold : 5
 		}
 	},
 	getInitialState : function () {
-		var startDay = this.props.value.toString().split(' ')[0].toLowerCase()
-			, monday = new Date(this.props.value)
-			, sunday = new Date(this.props.value);
+		var startDay = this.props.date.toString().split(' ')[0].toLowerCase()
+			, monday = new Date(this.props.date)
+			, sunday = new Date(this.props.date);
 		
-		monday.setDate(this.props.value.getDate() - days[startDay]);
+		monday.setDate(this.props.date.getDate() - days[startDay]);
 		sunday.setDate(monday.getDate() + 6);
 
 		return {
@@ -122,6 +139,41 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 
 
 	// Event Handlers
+	onClick : function (e) {
+		if (typeof this.props.popover === "function") {
+			this.setState({ 
+				popover : { 
+					y : e.clientY - e.currentTarget.getBoundingClientRect().top + e.currentTarget.scrollTop,
+					x : e.clientX - e.currentTarget.getBoundingClientRect().left + e.currentTarget.scrollLeft,
+					date : this.state.timeRuler.time
+				}
+			});
+		}
+	},
+	onClosePopover : function () {
+		this.setState({ popover : undefined });
+	},
+	onTouchStart : function (e) {
+		this.startTouch = copyTouch(e.touches[0]);
+	},
+	onTouchEnd : function (e) {
+		this.endTouch = copyTouch(e.changedTouches[0]);
+
+		// Only trigger toClient if not scrolling
+		if (Math.abs(this.startTouch.pageY - this.endTouch.pageY) < this.props.yTouchThreshold && this.isMounted()) {
+			// BookingActions.toBooking(this.props.role, this.props.data.id);
+			this.onClick(this.endTouch);
+		}
+
+		this.startTouch = undefined;
+		this.endTouch = undefined;
+	},
+	onSelectData : function (e) {
+		var i = +e.target.getAttribute('data-index');
+		if (typeof this.props.onSelectData === "function") {
+			this.props.onSelectData(this.props.data[i]);
+		}
+	},
 	onSelectDay : function (e) {
 		e.preventDefault();
 		var value = +e.target.getAttribute("data-value")
@@ -157,36 +209,47 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 	},
 	onSetTimeRuler : function (e) {
 		var y = e.clientY - e.currentTarget.getBoundingClientRect().top + e.currentTarget.scrollTop
+			, x = e.clientX - e.currentTarget.getBoundingClientRect().left + e.currentTarget.scrollLeft
+			, dayInt = Math.floor(x / (this.props.width / 7))
 			, minute = ((y / this.props.hourHeight) + this.props.startHour) * 60
-			, numIncs;
+			, numTicks
+			, tick = 0, nextTick = 0;
 
 		if (this.props.timeRulerSnap) {
-			numIncs = (60 / this.props.timeRulerSnap) * (this.props.endHour - this.props.startHour);
+			numTicks = (60 / this.props.timeRulerSnap) * ((this.props.endHour - this.props.startHour) * 60);
 
-			for (var i=0; i < numIncs; i++) {
+			for (var i=0; i < numTicks; i++) {
 				var tick = i * this.props.timeRulerSnap
 					, nextTick = (i+1) * this.props.timeRulerSnap;
 
 				if (minute > tick && minute < nextTick) {
-					y = (minute - tick < nextTick - minute) ? (this.props.hourHeight / 60) * tick : (this.props.hourHeight / 60) * nextTick;
-					console.log(y);
+					// shift y to the appriate snap value
+					if (minute - tick < nextTick - minute) {
+						y -= (this.props.hourHeight / 60) * (minute - tick);
+						minute = tick;
+					} else {
+						y += (this.props.hourHeight / 60) * (nextTick - minute);
+						minute = nextTick;
+					}
+					break;
 				}
 			}
 		}
 
-		var t = new Date();
+		var t = new Date(this.state.monday);
 		var roundHours = Math.floor(minute / 60)
 			, roundMinutes = Math.round(minute - (roundHours * 60));
 
+		t.setDate(t.getDate() + dayInt)
 		t.setHours(roundHours);
 		t.setMinutes(roundMinutes);
+		t.setSeconds(0);
+		t.setMilliseconds(0);
 
-		this.setState({
-			timeRuler : {
-				y : y,
-				time : t
-			}
-		});
+		this.setState({ timeRuler : {
+			y : y,
+			time : t
+		}});
 	},
 	onClearTimeRuler : function () {
 		this.setState({ timeRuler : undefined });
@@ -213,7 +276,7 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 										};
 				hours.push(
 					React.createElement("div", {key: hr, className: (hr % 2 == 0) ? "even hourMarker" : "odd hourMarker", style: style}, 
-						React.createElement("div", {className: "label", style: { position : "absolute", top : -7, width : 50, left : this.props.width / 2 - 25, textAlign : "center"}}, hr)
+						React.createElement("div", {className: "label", style: { position : "absolute", top : -10, width : 70, left : this.props.width / 2 - 35, textAlign : "center"}}, (hr <= 12) ? hr + ":00am" : (hr - 12) + ":00pm")
 					)
 				);
 			}
@@ -241,7 +304,7 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 						width : width,
 						height : ((endDate.valueOf() - startDate.valueOf()) / 1000 / 60 / 60) * this.props.hourHeight
 					}
-					data.push(React.createElement("div", {key: "data-" + i, className: "entry", style: style}, this.dataTitle(d,i)));
+					data.push(React.createElement("div", {key: "data-" + i, className: "entry", style: style, "data-index": i, onClick: this.onSelectData}, this.dataTitle(d,i)));
 				}
 			} else {
 				// @todo - put allDay entires along the top
@@ -255,12 +318,16 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 
 		return (
 			React.createElement("div", {className: "timeRuler", style: { position : "absolute", left : 0, height : 0, width : this.props.width, top : this.state.timeRuler.y}}, 
-				React.createElement("div", {className: "label"}, "\"\"")
+				React.createElement("div", {className: "label"}, Time.timeString(this.state.timeRuler.time))
 			)
 		);
 	},
+	renderPopover : function () {
+		if (!this.state.popover) { return undefined; }
+		return React.createElement(this.props.popover, React.__spread({},  this.props, {x: this.state.popover.x, y: this.state.popover.y, position: "top", onClose: this.onClosePopover, date: this.state.popover.date}))
+	},
 	render : function () {
-		var value = this.props.value
+		var value = this.props.date
 			, dayHeight = ((this.props.endHour - this.props.startHour) * this.props.hourHeight) - this.props.headerHeight 
 			, viewportStyle = {
 				position : "absolute",
@@ -297,7 +364,9 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 	 			React.createElement("header", {ref: "header", style: { width : "100%", height : this.props.headerHeight}}, 
 	 				headers
 	 			), 
-	 			React.createElement("div", {ref: "viewport", className: "viewport", style: viewportStyle, onMouseEnter: this.onSetTimeRuler, onMouseMove: this.onSetTimeRuler, onMouseLeave: this.onClearTimeRuler}, 
+	 			React.createElement("div", {ref: "viewport", className: "viewport", style: viewportStyle, 
+			 			onMouseEnter: this.onSetTimeRuler, onMouseMove: this.onSetTimeRuler, onMouseLeave: this.onClearTimeRuler, 
+			 			onClick: this.onClick, onTouchStart: this.onTouchStart, onTouchEnd: this.onTouchEnd}, 
 		 			React.createElement("div", {ref: "document", className: "document", style: { position : "absolute", top : 0, left : 0, width : this.props.width, height : dayHeight}}, 
 		 				React.createElement("div", {className: "days"}, 
 		 					days
@@ -308,7 +377,8 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 			 			React.createElement("div", {className: "entries"}, 
 			 				this.renderData()
 			 			), 
-			 			this.renderTimeRuler()
+			 			this.renderTimeRuler(), 
+			 			this.renderPopover()
 		 			)
 	 			)
 	 		)
