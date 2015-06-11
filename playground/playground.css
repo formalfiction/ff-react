@@ -110,8 +110,43 @@
   -o-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
-.gridView section {
+.gridView .viewport {
   overflow: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: -10px;
+  right: -10px;
+  z-index: 3;
+}
+.gridView header.header {
+  padding: 0;
+  margin: 0;
+  z-index: 2;
+}
+.gridView .colHeader {
+  background: #b44414;
+  z-index: 1;
+}
+.gridView .pinned {
+  z-index: 2;
+}
+.gridView section.table {
+  overflow: auto;
+}
+.gridView section.table .cell {
+  background: #fff;
+}
+.gridView section.table .pinned {
+  z-index: 1;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.15);
+}
+.gridView .scrollBar {
+  z-index: 2;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.25);
+  box-shadow: 0 0 4px rgba(0,0,0,0.15);
+  position: absolute;
 }
 .hoursInput {
   width: 100%;
@@ -658,6 +693,28 @@ button.loadingTouchButton .spinner .bounce2 {
 .timeWheelPicker .picker .hour ul li {
   text-align: right;
 }
+.calendar.week header {
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+}
+.calendar.week .even.day {
+  background: rgba(0,0,0,0.025);
+}
+.calendar.week .timeRuler {
+  border-bottom: 1px solid #f00;
+}
+.calendar.week .hourMarker {
+  border-bottom: 1px solid #999;
+}
+.calendar.week .hourMarker .label {
+  background: #fff;
+}
+.calendar.week .entry {
+  background: #f00;
+  border-radius: 3px;
+  z-index: 1;
+}
 .playground,
 body {
   width: 100%;
@@ -685,4 +742,8 @@ body header .content {
   max-width: 960px;
   padding: 10px 2%;
   margin: 0 auto;
+}
+.playground .component .wrapper,
+body .component .wrapper {
+  position: relative;
 }

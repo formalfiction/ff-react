@@ -25,10 +25,11 @@ var CronInput = require('./CronInput')
 	, TimePicker = require('./TimePicker')
 	, TimeSpanInput = require('./TimeSpanInput')
 	, ValidTextInput = require('./ValidTextInput')
-	, ValidTextareaInput = require('./ValidTextareaInput');
+	, ValidTextareaInput = require('./ValidTextareaInput')
+	, WeekCalendar = require('./WeekCalendar');
 
 var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput"];
+									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -37,37 +38,47 @@ thirtyDaysAgo.setHours(18);
 var foFive = new Date();
 // foFive.setMinutes(25);
 
+var nextHour = new Date();
+nextHour.setHours(nextHour.getHours() + 1)
+nextHour.setMinutes(0)
+nextHour.setSeconds(0)
+nextHour.setMilliseconds(0)
+
+var threeHoursFromNow = new Date(nextHour);
+threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
+
+
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "GridView",
+			component : "WeekCalendar",
 			values : {
-				GridView : [
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-					["I","will","not","instruct","my","classmates","on","aincient","asian", "war", "tactics"],
-				],
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
+				GridView : [
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+					["LAST","ROW","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+				],
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
 				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
-				TemplateForm : {}
+				TemplateForm : {},
+				WeekCalendar : [{ startDate : nextHour, endDate : threeHoursFromNow, title : "Booking", allDay : false }]
 			},
 			loading : false
 		}
@@ -183,6 +194,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "ValidTextareaInput":
 			component = React.createElement(ValidTextareaInput, {id: "ValidTextArea", label: "Text Area Input", value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
+			break;
+		case "WeekCalendar":
+			component = React.createElement(WeekCalendar, {data: this.state.values.WeekCalendar, height: 500})
 			break;
  		}
 		return (
