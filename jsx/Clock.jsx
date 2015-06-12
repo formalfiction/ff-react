@@ -15,7 +15,8 @@ var Clock = React.createClass({
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
-		disabled : React.PropTypes.bool
+		disabled : React.PropTypes.bool,
+		value : React.PropTypes.object.isRequired
 	},
 
 	// Methods
@@ -29,12 +30,6 @@ var Clock = React.createClass({
 				minutes : 0,
 				phase : 0
 			}
-		}
-		
-		if (typeof val === "number" && val !== NaN) {
-			val = new Date(val)
-		} else {
-			val = new Date()
 		}
 
 		var h = val.getHours()
@@ -59,19 +54,12 @@ var Clock = React.createClass({
 			, m = values.minutes
 			, d = this.props.value;
 
-		// ensure we have a date to work with.
-		if (typeof d === "number" && d !== NaN) {
-			d = new Date(d)
-		} else {
-			d = new Date()
-		}
-
 		// Add 1 to hours to un-array-index
 		d.setHours(h + 1);
 		// Multiply minutes by 15 as we work in 15 minute increments
 		d.setMinutes(m * 15);
 
-		return d.valueOf();
+		return d;
 	},
 
 	// Factory Funcs
@@ -83,9 +71,8 @@ var Clock = React.createClass({
 			var values = self._values(self.props.value);
 			// if (values[unit] < self[unit].length - 1) {
 				values[unit] = values[unit] + 1;
-				self._change.call(self, values);
+				self.onChange.call(self, values);
 			// }
-			return false;
 		}
 	},
 	// return an down-incrementer
@@ -96,9 +83,8 @@ var Clock = React.createClass({
 			var values = self._values(self.props.value);
 			// if (values[unit] > 0) {
 				values[unit] = values[unit] - 1;
-				self._change.call(self, values);
+				self.onChange.call(self, values);
 			// }
-			return false;
 		}
 	},
 
@@ -106,6 +92,8 @@ var Clock = React.createClass({
 	onChange : function (values) {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this._timeValue(values));
+		} else if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(this._timeValue(values));
 		}
 	},
 

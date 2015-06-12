@@ -4,7 +4,7 @@ var Time = require('../utils/time')
 	, TouchAnchor = require('./TouchAnchor');
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	, dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	, dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 	, days = { sun : 7, mon : 0, tue : 1, wed : 2, thu : 3, fri : 4, sat : 5 };
 
 
@@ -26,7 +26,7 @@ var WeekCalendar = React.createClass({
 		date : React.PropTypes.object,
 		// onChange handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
-		// if these funcs are defined, each data item will be passed
+		// if these funcs are defined, each data item will be passed a data item, and the iteration
 		dataStartDate : React.PropTypes.func,
 		dataEndDate : React.PropTypes.func,
 		dataTitle : React.PropTypes.func,
@@ -100,7 +100,16 @@ var WeekCalendar = React.createClass({
 	componentDidUpdate : function () {
 	},
 	componentWillReceiveProps : function (nextProps) {
+		var startDay = nextProps.date.toString().split(' ')[0].toLowerCase()
+			, monday = new Date(nextProps.date)
+			, sunday = new Date(nextProps.date);
+		
+		monday.setDate(this.props.date.getDate() - days[startDay]);
+		sunday.setDate(monday.getDate() + 6);
+
 		this.setState({
+			monday : monday,
+			sunday : sunday,
 			hourHeight : (nextProps.height) ? (nextProps.height - this.props.headerHeight) / (nextProps.endHour - nextProps.startHour) : nextProps.hourHeight
 		});
 	},
@@ -341,10 +350,15 @@ var WeekCalendar = React.createClass({
 
 		for (var d=0; d < 7; d++) {
 			var width = this.props.width / 7
-				, hours = [];
+				, hours = []
+				, day = new Date(this.state.monday);
+
+			day.setDate(day.getDate() + d);
 
 			headers.push(
-				<div key={"header-" + d} className="dayHeader" style={this.headerStyle(d, width)}>{dayNames[d]}</div>
+				<div key={"header-" + d} className="dayHeader" style={this.headerStyle(d, width)}>
+					<p>{dayNames[d]}<br />{day.getDate()}/{day.getMonth()}</p>
+				</div>
 			);
 
 			var dayStyle = {

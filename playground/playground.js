@@ -1037,7 +1037,8 @@ var Clock = React.createClass({displayName: "Clock",
 	propTypes : {
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
-		disabled : React.PropTypes.bool
+		disabled : React.PropTypes.bool,
+		value : React.PropTypes.object.isRequired
 	},
 
 	// Methods
@@ -1051,12 +1052,6 @@ var Clock = React.createClass({displayName: "Clock",
 				minutes : 0,
 				phase : 0
 			}
-		}
-		
-		if (typeof val === "number" && val !== NaN) {
-			val = new Date(val)
-		} else {
-			val = new Date()
 		}
 
 		var h = val.getHours()
@@ -1081,19 +1076,12 @@ var Clock = React.createClass({displayName: "Clock",
 			, m = values.minutes
 			, d = this.props.value;
 
-		// ensure we have a date to work with.
-		if (typeof d === "number" && d !== NaN) {
-			d = new Date(d)
-		} else {
-			d = new Date()
-		}
-
 		// Add 1 to hours to un-array-index
 		d.setHours(h + 1);
 		// Multiply minutes by 15 as we work in 15 minute increments
 		d.setMinutes(m * 15);
 
-		return d.valueOf();
+		return d;
 	},
 
 	// Factory Funcs
@@ -1105,9 +1093,8 @@ var Clock = React.createClass({displayName: "Clock",
 			var values = self._values(self.props.value);
 			// if (values[unit] < self[unit].length - 1) {
 				values[unit] = values[unit] + 1;
-				self._change.call(self, values);
+				self.onChange.call(self, values);
 			// }
-			return false;
 		}
 	},
 	// return an down-incrementer
@@ -1118,9 +1105,8 @@ var Clock = React.createClass({displayName: "Clock",
 			var values = self._values(self.props.value);
 			// if (values[unit] > 0) {
 				values[unit] = values[unit] - 1;
-				self._change.call(self, values);
+				self.onChange.call(self, values);
 			// }
-			return false;
 		}
 	},
 
@@ -1128,6 +1114,8 @@ var Clock = React.createClass({displayName: "Clock",
 	onChange : function (values) {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this._timeValue(values));
+		} else if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(this._timeValue(values));
 		}
 	},
 
@@ -2530,7 +2518,10 @@ var List = React.createClass({displayName: "List",
 		// should be a react element that we can iterate with
 		element : React.PropTypes.func,
 		// string to display when we have no items in the list
-		noItemsString : React.PropTypes.string
+		noItemsString : React.PropTypes.string,
+		// array of indexes to add "selected" class to.
+		// for a single selection, pass in a single element array :)
+		selected : React.PropTypes.array
 	},
 
 	// Lifecycle
@@ -2539,6 +2530,7 @@ var List = React.createClass({displayName: "List",
 			className : "list",
 			noItemsString : "No Items",
 			data : [],
+			selected : []
 		}
 	},
 	componentDidMount : function () {
@@ -2562,12 +2554,15 @@ var List = React.createClass({displayName: "List",
 
 	// Render
 	render : function () {
-		var items = [], loader;
-
+		var items = [], loader, selected;
 
 		if (this.props.data.length) {
 			for (var i=0,m; m=this.props.data[i]; i++) {
-				items.push(React.createElement(this.props.element, React.__spread({},  this.props, {data: m, key: m.id || m.cid || i})));
+				selected = false;
+				for (var j=0; j < this.props.selected.length; j++) {
+					if (i === this.props.selected[j]) { selected = true; break; }
+				}
+				items.push(React.createElement(this.props.element, React.__spread({},  this.props, {selected: selected, data: m, index: i, key: m.id || m.cid || i})));
 			}
 		} else if (!this.props.loading) {
 			items = React.createElement("div", {className: "noItems"}, React.createElement("h4", {className: "text-center"}, this.props.noItemsString))
@@ -5540,7 +5535,7 @@ var Time = require('../utils/time')
 	, TouchAnchor = require('./TouchAnchor');
 
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-	, dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	, dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 	, days = { sun : 7, mon : 0, tue : 1, wed : 2, thu : 3, fri : 4, sat : 5 };
 
 
@@ -5562,7 +5557,7 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 		date : React.PropTypes.object,
 		// onChange handler in the form (value, name)
 		onValueChange : React.PropTypes.func,
-		// if these funcs are defined, each data item will be passed
+		// if these funcs are defined, each data item will be passed a data item, and the iteration
 		dataStartDate : React.PropTypes.func,
 		dataEndDate : React.PropTypes.func,
 		dataTitle : React.PropTypes.func,
@@ -5636,7 +5631,16 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 	componentDidUpdate : function () {
 	},
 	componentWillReceiveProps : function (nextProps) {
+		var startDay = nextProps.date.toString().split(' ')[0].toLowerCase()
+			, monday = new Date(nextProps.date)
+			, sunday = new Date(nextProps.date);
+		
+		monday.setDate(this.props.date.getDate() - days[startDay]);
+		sunday.setDate(monday.getDate() + 6);
+
 		this.setState({
+			monday : monday,
+			sunday : sunday,
 			hourHeight : (nextProps.height) ? (nextProps.height - this.props.headerHeight) / (nextProps.endHour - nextProps.startHour) : nextProps.hourHeight
 		});
 	},
@@ -5877,10 +5881,15 @@ var WeekCalendar = React.createClass({displayName: "WeekCalendar",
 
 		for (var d=0; d < 7; d++) {
 			var width = this.props.width / 7
-				, hours = [];
+				, hours = []
+				, day = new Date(this.state.monday);
+
+			day.setDate(day.getDate() + d);
 
 			headers.push(
-				React.createElement("div", {key: "header-" + d, className: "dayHeader", style: this.headerStyle(d, width)}, dayNames[d])
+				React.createElement("div", {key: "header-" + d, className: "dayHeader", style: this.headerStyle(d, width)}, 
+					React.createElement("p", null, dayNames[d], React.createElement("br", null), day.getDate(), "/", day.getMonth())
+				)
 			);
 
 			var dayStyle = {

@@ -16,7 +16,10 @@ var List = React.createClass({
 		// should be a react element that we can iterate with
 		element : React.PropTypes.func,
 		// string to display when we have no items in the list
-		noItemsString : React.PropTypes.string
+		noItemsString : React.PropTypes.string,
+		// array of indexes to add "selected" class to.
+		// for a single selection, pass in a single element array :)
+		selected : React.PropTypes.array
 	},
 
 	// Lifecycle
@@ -25,6 +28,7 @@ var List = React.createClass({
 			className : "list",
 			noItemsString : "No Items",
 			data : [],
+			selected : []
 		}
 	},
 	componentDidMount : function () {
@@ -48,12 +52,15 @@ var List = React.createClass({
 
 	// Render
 	render : function () {
-		var items = [], loader;
-
+		var items = [], loader, selected;
 
 		if (this.props.data.length) {
 			for (var i=0,m; m=this.props.data[i]; i++) {
-				items.push(<this.props.element {...this.props} data={m} key={m.id || m.cid || i} />);
+				selected = false;
+				for (var j=0; j < this.props.selected.length; j++) {
+					if (i === this.props.selected[j]) { selected = true; break; }
+				}
+				items.push(<this.props.element {...this.props} selected={selected} data={m} index={i} key={m.id || m.cid || i} />);
 			}
 		} else if (!this.props.loading) {
 			items = <div className="noItems"><h4 className="text-center">{this.props.noItemsString}</h4></div>
