@@ -127,10 +127,14 @@ var GridView = React.createClass({displayName: "GridView",
 			, maxX = this.state.docWidth - vp.clientWidth
 			, maxY = this.state.docHeight - vp.clientHeight;
 
+		console.log(vp.clientWidth, this.state.docWidth);
+
 		if (x < 0 || vp.clientWidth < this.state.docWidth) { x = 0; }
 		else if (x > maxX) { x = maxX; }
 		if (y < 0 || vp.clientHeight < this.state.docHeight) { y = 0; }
 		else if (y > maxY) { y = maxY; }
+
+		console.log(x,y);
 
 		this.setState({ scrollX : x, scrollY : y});
 	},

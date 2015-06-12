@@ -51,7 +51,7 @@ threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "WeekCalendar",
+			component : "GridView",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,

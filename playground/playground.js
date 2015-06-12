@@ -1038,106 +1038,150 @@ var Clock = React.createClass({displayName: "Clock",
 		name : React.PropTypes.string,
 		onValueChange : React.PropTypes.func,
 		disabled : React.PropTypes.bool,
+		// must be a valid date object
 		value : React.PropTypes.object.isRequired
 	},
 
 	// Methods
 	// Break a date value up into the needed hours / minutes / phase
 	// pieces
-	_values : function (val) {
-		// if no initial value return 9:00am
-		if (!val) {
-			return {
-				hours : 8,
-				minutes : 0,
-				phase : 0
-			}
-		}
+	// _values : function (val) {
+	// 	// if no initial value return 9:00am
+	// 	if (!val) {
+	// 		return {
+	// 			hours : 8,
+	// 			minutes : 0,
+	// 			phase : 0
+	// 		}
+	// 	}
 
-		var h = val.getHours()
-			, ph = (h <= 12) ? 0 : 1;
+	// 	var h = val.getHours()
+	// 		, ph = (h < 12) ? 0 : 1;
 
-		// if we're in the aft, minus 12 to de-militarize time
-		if (ph === 1) {
-			h = h - 12;
-		}
+	// 	// if we're in the aft, minus 12 to de-militarize time
+	// 	if (ph === 1) {
+	// 		h = h - 12;
+	// 	}
 
-		return {
-			hours : (h === 0) ? h : h - 1,
-			minutes : (15 * Math.round(val.getMinutes() / 15)) / 15,
-			phase : ph
-		}
+	// 	return {
+	// 		hours : (h === 0) ? 11 : h - 1,
+	// 		minutes : (15 * Math.round(val.getMinutes() / 15)) / 15,
+	// 		phase : ph
+	// 	}
 
-	},
-	// restore hours / minutes / phase to a date value.
-	// returns a numerical js date.
-	_timeValue : function (values) {
-		var h = (values.phase === 0) ? values.hours : values.hours + 12
-			, m = values.minutes
-			, d = this.props.value;
+	// },
+	// // restore hours / minutes / phase to a date value.
+	// // returns a numerical js date.
+	// _timeValue : function (values) {
+	// 	var h = (values.phase === 0) ? values.hours : values.hours + 12
+	// 		, m = values.minutes
+	// 		, d = this.props.value;
 
-		// Add 1 to hours to un-array-index
-		d.setHours(h + 1);
-		// Multiply minutes by 15 as we work in 15 minute increments
-		d.setMinutes(m * 15);
+	// 	// Add 1 to hours to un-array-index
+	// 	d.setHours(h + 1);
+	// 	// Multiply minutes by 15 as we work in 15 minute increments
+	// 	d.setMinutes(m * 15);
 
-		return d;
-	},
+	// 	return d;
+	// },
+
+
 
 	// Factory Funcs
 	// return a up-incrementer
 	up : function (unit) {
 		var self = this;
 		return function (e) {
+			var t = new Date(self.props.value);
 			e.preventDefault();
-			var values = self._values(self.props.value);
-			// if (values[unit] < self[unit].length - 1) {
-				values[unit] = values[unit] + 1;
-				self.onChange.call(self, values);
-			// }
+			switch (unit) {
+				case "hours":
+					t.setHours((t.getHours() === 23) ? 0 : t.getHours() + 1)
+					break;
+				case "minutes":
+					t.setMinutes((t.getMinutes() === 45) ? 0 : t.getMinutes() + 15)
+					break;
+				case "phase":
+					t.setHours((t.getHours() < 12) ? t.getHours() + 12 : t.getHours() - 12)
+					break;
+			}
+			t.setYear(self.props.value.getFullYear())
+			t.setMonth(self.props.value.getMonth())
+			t.setDate(self.props.value.getDate())
+			self.onChange.call(self, t);
 		}
 	},
 	// return an down-incrementer
 	down : function (unit) {
 		var self = this;
 		return function(e) {
+			var t = new Date(self.props.value);
 			e.preventDefault();
-			var values = self._values(self.props.value);
-			// if (values[unit] > 0) {
-				values[unit] = values[unit] - 1;
-				self.onChange.call(self, values);
-			// }
+			switch (unit) {
+				case "hours":
+					t.setHours((t.getHours() === 0) ? 23 : t.getHours() - 1)
+					break;
+				case "minutes":
+					t.setMinutes((t.getMinutes() === 0) ? 45 : t.getMinutes() - 15)
+					break;
+				case "phase":
+					t.setHours((t.getHours() < 12) ? t.getHours() - 12 : t.getHours() + 12)
+					break;
+			}
+			t.setYear(self.props.value.getFullYear())
+			t.setMonth(self.props.value.getMonth())
+			t.setDate(self.props.value.getDate())
+			self.onChange.call(self, t);
 		}
 	},
 
 	// Event Handlers
-	onChange : function (values) {
+	onChange : function (value) {
 		if (typeof this.props.onChange === "function") {
-			this.props.onChange(this._timeValue(values));
+			this.props.onChange(value);
 		} else if (typeof this.props.onValueChange === "function") {
-			this.props.onValueChange(this._timeValue(values));
+			this.props.onValueChange(value, this.props.name);
 		}
+	},
+
+	hours : function () {
+		var hours = this.props.value.getHours();
+		hours = (hours < 12) ? hours : hours - 12;
+		if (!hours) {
+			hours = "12"
+		} else if (hours < 10) {
+			hours = "0" + hours;
+		}
+		return hours;
+	},
+	minutes : function () {
+		return this.props.value.getMinutes() || "00";
+	},
+	phase : function () {
+		return (this.props.value.getHours() < 12) ? "am" : "pm";
 	},
 
 	// Render
 	render : function () {
-		var values = this._values(this.props.value);
+
+		// var values = this._values(this.props.value);
+
 		return (
 			React.createElement("div", {className: "clock", onMouseDown: this.props.onMouseDown}, 
 				React.createElement("div", {className: "hours segment"}, 
 					React.createElement("a", {onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, hours[values.hours]), 
+					React.createElement("h5", null, this.hours()), 
 					React.createElement("a", {onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("h5", {className: "separator segment"}, ":"), 
 				React.createElement("div", {className: "minutes segment"}, 
 					React.createElement("a", {onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, minutes[values.minutes]), 
+					React.createElement("h5", null, this.minutes()), 
 					React.createElement("a", {onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
 				), 
 				React.createElement("div", {className: "phase segment"}, 
 					React.createElement("a", {onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
-					React.createElement("h5", null, phase[values.phase]), 
+					React.createElement("h5", null, this.phase()), 
 					React.createElement("a", {onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
 				)
 			)
@@ -2262,10 +2306,14 @@ var GridView = React.createClass({displayName: "GridView",
 			, maxX = this.state.docWidth - vp.clientWidth
 			, maxY = this.state.docHeight - vp.clientHeight;
 
+		console.log(vp.clientWidth, this.state.docWidth);
+
 		if (x < 0 || vp.clientWidth < this.state.docWidth) { x = 0; }
 		else if (x > maxX) { x = maxX; }
 		if (y < 0 || vp.clientHeight < this.state.docHeight) { y = 0; }
 		else if (y > maxY) { y = maxY; }
+
+		console.log(x,y);
 
 		this.setState({ scrollX : x, scrollY : y});
 	},
@@ -3126,7 +3174,7 @@ threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "WeekCalendar",
+			component : "GridView",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
