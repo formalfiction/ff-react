@@ -11,6 +11,7 @@ var CronInput = require('./CronInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
+	, PercentageInput = require('./PercentageInput')
 	, PriceInput = require('./PriceInput')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
@@ -28,7 +29,7 @@ var CronInput = require('./CronInput')
 	, ValidTextareaInput = require('./ValidTextareaInput')
 	, WeekCalendar = require('./WeekCalendar');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText","PriceInput","ResultsTextInput","S3PhotoUploader",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","S3PhotoUploader",
 									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
@@ -51,7 +52,7 @@ threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "GridView",
+			component : "PercentageInput",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
@@ -73,6 +74,7 @@ var Playground = React.createClass({
 				],
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
+				PercentageInput : 0.20,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
@@ -131,6 +133,9 @@ var Playground = React.createClass({
 			break;
 		case "MarkdownText":
 			component = <MarkdownText />
+			break;
+		case "PercentageInput":
+			component = <PercentageInput name="PercentageInput" value={this.state.values.PercentageInput} onValueChange={this.onValueChange} />
 			break;
 		case "PriceInput":
 			component = <PriceInput />
