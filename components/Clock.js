@@ -147,20 +147,20 @@ var Clock = React.createClass({displayName: "Clock",
 		return (
 			React.createElement("div", {className: "clock", onMouseDown: this.props.onMouseDown}, 
 				React.createElement("div", {className: "hours segment"}, 
-					React.createElement("a", {onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "up"), 
+					React.createElement("a", {onClick: this.up("hours"), onTouchEnd: this.up("hours"), className: "ss-icon"}, "ascend"), 
 					React.createElement("h5", null, this.hours()), 
-					React.createElement("a", {onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "down")
+					React.createElement("a", {onClick: this.down("hours"), onTouchEnd: this.down("hours"), className: "ss-icon"}, "descend")
 				), 
 				React.createElement("h5", {className: "separator segment"}, ":"), 
 				React.createElement("div", {className: "minutes segment"}, 
-					React.createElement("a", {onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "up"), 
+					React.createElement("a", {onClick: this.up("minutes"), onTouchEnd: this.up("minutes"), className: "ss-icon"}, "ascend"), 
 					React.createElement("h5", null, this.minutes()), 
-					React.createElement("a", {onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "down")
+					React.createElement("a", {onClick: this.down("minutes"), onTouchEnd: this.down("minutes"), className: "ss-icon"}, "descend")
 				), 
 				React.createElement("div", {className: "phase segment"}, 
-					React.createElement("a", {onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "up"), 
+					React.createElement("a", {onClick: this.up("phase"), onTouchEnd: this.up("phase"), className: "ss-icon"}, "ascend"), 
 					React.createElement("h5", null, this.phase()), 
-					React.createElement("a", {onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "down")
+					React.createElement("a", {onClick: this.down("phase"), onTouchEnd: this.down("phase"), className: "ss-icon"}, "descend")
 				)
 			)
 		);

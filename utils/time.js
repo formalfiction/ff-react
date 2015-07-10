@@ -81,6 +81,11 @@ var time = {
 		return time.timeString(start, showPhase) + " - " + time.timeString(stop, showPhase);
 	},
 
+	dateRangeString : function (start,stop) {
+		if (!start || !stop) { return ""; }
+		return time.shortDateString(start) + " - " + time.shortDateString(stop);
+	},
+
 
 	shiftDate : function (minutes, hours, days) {
 		var n = new Date()

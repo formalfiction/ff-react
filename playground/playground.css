@@ -13,6 +13,22 @@
 .clock .separator {
   margin: 25px 5px;
 }
+.checkbox input[type="checkbox"] {
+  display: none;
+}
+.checkbox input[type="checkbox"] + label .box {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin: -1px 4px 0 0;
+  vertical-align: middle;
+  background: #808080;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.checkbox input[type="checkbox"]:checked + label .box {
+  background: #f00;
+}
 .cronInput {
   margin: 0;
 }

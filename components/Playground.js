@@ -13,6 +13,7 @@ var CronInput = require('./CronInput')
 	, MarkdownText = require('./MarkdownText')
 	, PercentageInput = require('./PercentageInput')
 	, PriceInput = require('./PriceInput')
+	, CronPicker = require('./CronPicker')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Select = require('./Select')
@@ -21,6 +22,7 @@ var CronInput = require('./CronInput')
 	, SlideShow = require('./SlideShow')
 	, TouchAnchor = require('./TouchAnchor')
 	, TouchButton = require('./TouchButton')
+	, TouchCheckbox = require('./TouchCheckbox')
 	, TagInput = require('./TagInput')
 	, TemplateForm = require('./TemplateForm')
 	, TimePicker = require('./TimePicker')
@@ -29,8 +31,8 @@ var CronInput = require('./CronInput')
 	, ValidTextareaInput = require('./ValidTextareaInput')
 	, WeekCalendar = require('./WeekCalendar');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","S3PhotoUploader",
-									"Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","ValidTextInput","ValidTextareaInput","WeekCalendar"];
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
+									"S3PhotoUploader", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -52,11 +54,12 @@ threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "PercentageInput",
+			component : "CronPicker",
 			values : {
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
+				CronPicker : "0 0 * * *",
 				GridView : [
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
@@ -80,6 +83,7 @@ var Playground = React.createClass({displayName: "Playground",
 				TimeSpanInput : [new Date(), new Date()],
 				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
 				TemplateForm : {},
+				TouchCheckbox : false,
 				WeekCalendar : [{ startDate : nextHour, endDate : threeHoursFromNow, title : "Booking", allDay : false }]
 			},
 			loading : false
@@ -143,6 +147,9 @@ var Playground = React.createClass({displayName: "Playground",
 		case "ResultsTextInput":
 			component = React.createElement(ResultsTextInput, null)
 			break;
+		case "CronPicker":
+			component = React.createElement(CronPicker, {name: "CronPicker", value: this.state.values.CronPicker, onValueChange: this.onValueChange})
+			break;
 		case "S3PhotoUploader":
 			component = React.createElement(S3PhotoUploader, null)
 			break;
@@ -166,6 +173,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "TouchButton":
 			component = React.createElement(TouchButton, {name: "TouchButton", text: "Button"})
+			break;
+		case "TouchCheckbox":
+			component = React.createElement(TouchCheckbox, {name: "TouchCheckbox", label: "Checkbox", value: this.state.values.TouchCheckbox, onValueChange: this.onValueChange})
 			break;
 		case "DateTimePicker":
 			component = React.createElement(DateTimePicker, {name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})

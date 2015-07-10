@@ -147,20 +147,20 @@ var Clock = React.createClass({
 		return (
 			<div className="clock" onMouseDown={this.props.onMouseDown}>
 				<div className="hours segment">
-					<a onClick={this.up("hours")} onTouchEnd={this.up("hours")} className="ss-icon">up</a>
+					<a onClick={this.up("hours")} onTouchEnd={this.up("hours")} className="ss-icon">ascend</a>
 					<h5>{this.hours()}</h5>
-					<a onClick={this.down("hours")} onTouchEnd={this.down("hours")} className="ss-icon">down</a>
+					<a onClick={this.down("hours")} onTouchEnd={this.down("hours")} className="ss-icon">descend</a>
 				</div>
 				<h5 className="separator segment">:</h5>
 				<div className="minutes segment">
-					<a onClick={this.up("minutes")} onTouchEnd={this.up("minutes")} className="ss-icon">up</a>
+					<a onClick={this.up("minutes")} onTouchEnd={this.up("minutes")} className="ss-icon">ascend</a>
 					<h5>{this.minutes()}</h5>
-					<a onClick={this.down("minutes")} onTouchEnd={this.down("minutes")} className="ss-icon">down</a>
+					<a onClick={this.down("minutes")} onTouchEnd={this.down("minutes")} className="ss-icon">descend</a>
 				</div>
 				<div className="phase segment">
-					<a onClick={this.up("phase")} onTouchEnd={this.up("phase")} className="ss-icon">up</a>
+					<a onClick={this.up("phase")} onTouchEnd={this.up("phase")} className="ss-icon">ascend</a>
 					<h5>{this.phase()}</h5>
-					<a onClick={this.down("phase")} onTouchEnd={this.down("phase")} className="ss-icon">down</a>
+					<a onClick={this.down("phase")} onTouchEnd={this.down("phase")} className="ss-icon">descend</a>
 				</div>
 			</div>
 		);

@@ -51,6 +51,26 @@ var DeviceStore = Store.extend({
 	offResizeEnd : function (fn) {
 		this.removeListener(DeviceConstants.DEVICE_RESIZE_END, fn);
 	},
+
+	_emitKeyDown : function (e) {
+		this.emit(DeviceConstants.DEVICE_KEYDOWN, e);
+	},
+	onKeyDown : function (fn) {
+		this.on(DeviceConstants.DEVICE_KEYDOWN, fn);
+	},
+	offKeyDown : function (fn) {
+		this.removeListener(DeviceConstants.DEVICE_KEYDOWN, fn);
+	},
+
+	_emitKeyUp : function (e) {
+		this.emit(DeviceConstants.DEVICE_KEYUP, e);
+	},
+	onKeyUp : function (fn) {
+		this.on(DeviceConstants.DEVICE_KEYUP, fn);
+	},
+	offKeyUp : function (fn) {
+		this.removeListener(DeviceConstants.DEVICE_KEYUP, fn);
+	}
 });
 
 // Turn DeviceStore into a singleton
@@ -69,6 +89,14 @@ window.addEventListener("resize", function(e){
 
 window.addEventListener("orientationchange", function(e){
 	DeviceStore._emitOrientationChange(e);
+});
+
+window.addEventListener("keydown", function(e){
+	DeviceStore._emitKeyDown(e);
+});
+
+window.addEventListener("keyup", function(e){
+	DeviceStore._emitKeyUp(e);
 });
 
 // export a singleton
