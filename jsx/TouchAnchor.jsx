@@ -16,7 +16,9 @@ var TouchAnchor = React.createClass({
 		// unified click fn handler will also be called on touchEnd
 		onClick : React.PropTypes.func.isRequired,
 		// a delay (in ms) before the component will respond
-		initialInputDelay : React.PropTypes.number
+		initialInputDelay : React.PropTypes.number,
+		// disable click handler
+		disabled : React.PropTypes.bool
 	},
 
 	// lifecycle
@@ -71,6 +73,8 @@ var TouchAnchor = React.createClass({
 		e.stopPropagation();
 	  this.onReset(e);
 
+	  if (this.props.disabled) { return; }
+
 	  if (e.type == 'touchend') {
 	    clickbuster.preventGhostClick(startX, startY);
 	  }
@@ -89,7 +93,7 @@ var TouchAnchor = React.createClass({
 	// Render
 	render : function () {
 		return (
-			<a {...this.props} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>{this.props.text}</a>
+			<a {...this.props} className={this.props.className + (this.props.disabled ? " disabled" : "")} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>{this.props.text}</a>
 		);
 	}
 });

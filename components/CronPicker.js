@@ -19,7 +19,7 @@ var RepeatPicker = React.createClass({displayName: "RepeatPicker",
 		return {
 			name : "cronPicker",
 			className : "cronPicker",
-			value : "0 0 * * *",
+			value : "* 0 0 * * *",
 		};
 	},
 	getInitialState : function () {
