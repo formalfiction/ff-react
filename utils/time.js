@@ -75,10 +75,27 @@ var time = {
 
 		return showPhase ? hours + ":" + mins + phase : hours + ":" + mins;
 	},
+	shortTimeString : function(date) {
+		date = this.validDate(date)
+		if (!date) { return ""; }
+
+		var mins = date.getMinutes()
+			, phase = (date.getHours() < 12) ? "am" : "pm"
+			, hours = (phase === "am") ? date.getHours() : date.getHours() - 12 
+		
+		if (hours == 0) { hours = "12"; }
+
+		return (mins != 0) ? hours + ":" + mins : hours;
+	},
 
 	timeRangeString : function (start,stop,showPhase) {
 		if (!start || !stop) { return ""; }
 		return time.timeString(start, showPhase) + " - " + time.timeString(stop, showPhase);
+	},
+
+	shortTimeRangeString : function (start,stop) {
+		if (!start || !stop) { return ""; }
+		return time.shortTimeString(start) + "-" + time.shortTimeString(stop);
 	},
 
 	dateRangeString : function (start,stop) {
