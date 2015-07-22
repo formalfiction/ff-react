@@ -50,7 +50,7 @@ var PercentageInput = React.createClass({
 			, val = this.props.value || 0;
 
 		return (
-			<div className={"field priceInput " + this.props.className}>
+			<div className={"field percentageInput " + this.props.className}>
 				<input ref="input"
 					name={this.props.name}
 					type="text"

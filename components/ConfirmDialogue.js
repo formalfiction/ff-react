@@ -16,6 +16,7 @@ var ConfirmDialogue = React.createClass({displayName: "ConfirmDialogue",
 		onConfirm : React.PropTypes.func.isRequired,
 		title : React.PropTypes.string,
 		message : React.PropTypes.string,
+		element : React.PropTypes.element
 	},
 
 	// Component lifecycle methods
@@ -30,10 +31,17 @@ var ConfirmDialogue = React.createClass({displayName: "ConfirmDialogue",
 
 	// Render
 	render : function () {
+		var contents;
+		if (this.props.element) {
+			contents = this.props.element
+		} else {
+			contents = React.createElement("p", null, this.props.message)
+		}
+		
 		return (
 			React.createElement("div", {className: "confirm modal"}, 
 				React.createElement("h2", null, this.props.title), 
-				React.createElement("p", null, this.props.message), 
+				contents, 
 				React.createElement("div", {className: "buttons"}, 
 					React.createElement(TouchButton, {onClick: this.props.onCancel, text: this.props.cancelButtonTitle}), 
 					React.createElement(TouchButton, {onClick: this.props.onConfirm, text: this.props.confirmButtonTitle})

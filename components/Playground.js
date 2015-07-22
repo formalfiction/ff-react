@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
-var CronInput = require('./CronInput')
+var AddressInput = require('./AddressInput')
+	, CronInput = require('./CronInput')
 	, Clock = require('./Clock')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
@@ -54,8 +55,9 @@ threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "CronPicker",
+			component : "AddressInput",
 			values : {
+				AddressInput : {},
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
@@ -113,6 +115,9 @@ var Playground = React.createClass({displayName: "Playground",
  		});
 
  		switch (this.state.component) {
+ 		case "AddressInput":
+ 			component = React.createElement(AddressInput, {name: "AddressInput", value: this.state.values.AddressInput, onValueChange: this.onValueChange, showNameField: true})
+ 			break;
 		case "Clock":
 			component = React.createElement(Clock, null)
 			break;

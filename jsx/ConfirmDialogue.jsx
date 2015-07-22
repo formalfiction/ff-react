@@ -16,6 +16,7 @@ var ConfirmDialogue = React.createClass({
 		onConfirm : React.PropTypes.func.isRequired,
 		title : React.PropTypes.string,
 		message : React.PropTypes.string,
+		element : React.PropTypes.element
 	},
 
 	// Component lifecycle methods
@@ -30,10 +31,17 @@ var ConfirmDialogue = React.createClass({
 
 	// Render
 	render : function () {
+		var contents;
+		if (this.props.element) {
+			contents = this.props.element
+		} else {
+			contents = <p>{this.props.message}</p>
+		}
+		
 		return (
 			<div className="confirm modal">
 				<h2>{this.props.title}</h2>
-				<p>{this.props.message}</p>
+				{contents}
 				<div className="buttons">
 					<TouchButton onClick={this.props.onCancel} text={this.props.cancelButtonTitle} />
 					<TouchButton onClick={this.props.onConfirm} text={this.props.confirmButtonTitle} />

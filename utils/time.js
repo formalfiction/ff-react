@@ -1,6 +1,6 @@
 var time = {
 	months : ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'],
-	days : { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 },
+	days : { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 },
 	hours : [1,2,3,4,5,6,7,8,9,10,11,12],
 	minutes : [0,15,30,45],	
 	// Check if an object is a Date.
@@ -8,6 +8,14 @@ var time = {
 		return (Object.prototype.toString.call(value) === "[object Date]");
 	},
 
+	dayOfTheWeek : function (date) {
+		return this.days[date.toString().split(' ')[0].toLowerCase()]
+	},
+
+	dateString : function (date) {
+		if (Object.prototype.toString.call(date) !== "[object Date]") { return ""; }
+		return date.toString().split(' ')[0] + ". " + this.months[date.getMonth()] + " " + date.getDate()
+	},
 	shortDateString : function (date) {
 		if (Object.prototype.toString.call(date) !== "[object Date]") { return ""; }
 		return this.months[date.getMonth()] + " " + date.getDate()
