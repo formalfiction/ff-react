@@ -23,6 +23,17 @@ function update(list, fn, element) {
 	return false;
 }
 
+// like update, but replaces outright instead of extending
+function replace(list, fn, element) {
+		for (var i=0,e; e=list[i]; i++) {
+		if (fn(e)) {
+			list[i] = element
+			return true;
+		}
+	}
+	return false;
+}
+
 // remove the first element in an array
 // that passes the truth test function
 // @param list {array} - array to modify
@@ -121,13 +132,18 @@ var StandardStore = Store.extend({
 		return model;
 	},
 
-	// update a stored model
-	// @param {object} model - the model object to be updated
-	update : function (model) {
-		if (!this.valid(model)) { 
-			return false;
-		}
+	// change a stored model
+	// @param {object} model - the model object to be changed
+	change : function (model) {
+		if (!this.valid(model)) { return false; }
 		return update(this._models, idMatcher(model.id || model.cid || ''), model);
+	},
+
+	// replace a stored model
+	// @param {object} model - the model object to be changed
+	replace : function (model) {
+		if (!this.valid(model)) { return false; }
+		return replace(this._models, idMatcher(model.id || model.cid || ''), model);
 	},
 
 	// @param model {object|string|number} - either the model object to be removed OR

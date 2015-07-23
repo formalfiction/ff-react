@@ -25,7 +25,8 @@
 var _ = require('underscore')
 
 var ValidTextInput = require('./ValidTextInput')
-	, ValidTextareaInput = require('./ValidTextareaInput');
+	, ValidTextareaInput = require('./ValidTextareaInput')
+	, AddressInput = require('./AddressInput');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
@@ -60,9 +61,11 @@ function handleField (obj, i, fields) {
 		, value = model[obj.name]
 		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
 	
-	if (obj.type === "hidden") {
-		fields.push(<input type="hidden" name={obj.name} value={value} />)
-	} else if (obj.type === "text") {
+	switch (obj.type) {
+	case "hidden":
+		fields.push(<input type="hidden" name={obj.name} value={value} />);
+		break;
+	case "text":
 		fields.push(<ValidTextInput
 					key={i}
 					name={obj.name}
@@ -76,7 +79,8 @@ function handleField (obj, i, fields) {
 					onBlur={self._onFieldBlur}
 					message ={validation[obj.name + "ErrMsg"]}
 					valid={validation[obj.name + "Valid"]} />);
-	} else if (obj.type === "textarea") {
+		break;
+	case "textarea":
 		fields.push(
 				<ValidTextareaInput
 					key={i}
@@ -91,7 +95,24 @@ function handleField (obj, i, fields) {
 					onBlur={self._onFieldBlur}
 					message={validation[obj.name + "ErrMsg"]}
 					valid={validation[obj.name + "Valid"]} />);
-	} else if (obj.type === "fieldSet") {
+		break;
+	case "address":
+		fields.push(
+			<AddressInput
+				key={i}
+				name={obj.name}
+				value={value}
+				label={obj.label}
+				className={obj.className}
+				placeholder={obj.placeholder}
+				disabled={obj.disabled}
+				showValidation={showValidation}
+				onValueChange={self.onValueChange}
+				onBlur={self._onFieldBlur}
+				message={validation[obj.name + "ErrMsg"]}
+				valid={validation[obj.Name + "Valid"]} />);
+		break;
+	case "fieldSet":
 		var subFields = [];
 		fieldArray.call(self, obj['fields'], i, subFields);
 		fields.push(<div className="fieldSet" key={i}>
@@ -99,6 +120,7 @@ function handleField (obj, i, fields) {
 			<h3 className="span10">{obj['name']}</h3>
 			{subFields}
 		</div>);
+		break;
 	}
 }
 

@@ -63,13 +63,18 @@ var AddressInput = React.createClass({
 	// render
 	render : function () {
 		var address = this.props.value || {}
-			, nameField;
+			, nameField
+			, label;
 
 		if (this.props.showNameField) {
 			nameField = <ValidTouchInput label="name" className="validTextInput field name" name="name" onValueChange={this.onValueChange} valid={this.nameValid()} showValidation={this.props.showValidation} />
 		}
+		if (this.props.label) {
+			label = <label>{this.props.label}</label>
+		}
 		return (
 			<div {...this.props}>
+				{label}
 				{nameField}
 				<ValidTouchInput label="line 1" placeholder="123 abc st." className="validTextInput field lineOne" value={address.lineOne} name="lineOne" onValueChange={this.onValueChange} valid={this.lineOneValid()} showValidation={this.props.showValidation} />
 				<ValidTouchInput label="line 2" placeholder="suite 100" className="validTextInput field lineTwo" value={address.lineTwo} name="lineTwo" onValueChange={this.onValueChange} valid={this.lineTwoValid()} showValidation={this.props.showValidation} />
