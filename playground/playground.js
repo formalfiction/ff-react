@@ -3477,6 +3477,7 @@ var AddressInput = require('./AddressInput')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Select = require('./Select')
+	, SectionList = require('./SectionList')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
@@ -3492,7 +3493,7 @@ var AddressInput = require('./AddressInput')
 	, WeekCalendar = require('./WeekCalendar');
 
 var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
-									"S3PhotoUploader", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
+									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -3510,11 +3511,31 @@ nextHour.setMilliseconds(0)
 var threeHoursFromNow = new Date(nextHour);
 threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 
+var SectionHeader = React.createClass({displayName: "SectionHeader",
+	render : function () {
+		return (
+			React.createElement("div", {className: "sectionHeader"}, 
+				React.createElement("h4", null, this.props.data.title)
+			)
+		);
+	}
+});
+
+var ListItem = React.createClass({displayName: "ListItem",
+	render : function () {
+		return (
+			React.createElement("div", {className: "item"}, 
+				React.createElement("p", null, this.props.data.title)
+			)
+		);
+	}
+});
+
 
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "AddressInput",
+			component : "SectionList",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
@@ -3547,6 +3568,38 @@ var Playground = React.createClass({displayName: "Playground",
 				TouchCheckbox : false,
 				WeekCalendar : [{ startDate : nextHour, endDate : threeHoursFromNow, title : "Booking", allDay : false }]
 			},
+			SectionListData : [
+				{
+					section : {
+						title : "This is a section",
+					},
+					data : [
+						{ title : "one" },
+						{ title : "two" },
+						{ title : "three" },
+					]
+				},
+				{
+					section : {
+						title : "Another Section",
+					},
+					data : [
+						{ title : "four" },
+						{ title : "five" },
+					]
+				},
+				{
+					section : {
+						title : "Third Section"
+					},
+					data : [
+						{ title : "six" },
+						{ title : "seven" },
+						{ title : "eight" },
+						{ title : "nine" },
+					]
+				}
+			],
 			loading : false
 		}
 	},
@@ -3616,6 +3669,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "S3PhotoUploader":
 			component = React.createElement(S3PhotoUploader, null)
+			break;
+		case "SectionList":
+			component = React.createElement(SectionList, {data: this.state.SectionListData, header: SectionHeader, element: ListItem})
 			break;
 		case "Signature":
 			component = React.createElement(Signature, null)
@@ -3704,7 +3760,7 @@ var Playground = React.createClass({displayName: "Playground",
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AddressInput":9,"./Clock":12,"./CronInput":14,"./CronPicker":15,"./DatePicker":16,"./DateTimePicker":17,"./DateTimeRangePicker":18,"./GridView":24,"./HoursInput":25,"./LoadingTouchButton":29,"./Map":30,"./MarkdownEditor":31,"./MarkdownText":32,"./PercentageInput":36,"./PriceInput":38,"./ResultsTextInput":39,"./S3PhotoUploader":40,"./Select":42,"./Signature":43,"./SlideShow":44,"./Slider":45,"./TagInput":47,"./TemplateForm":49,"./TimePicker":50,"./TimeSpanInput":51,"./TouchAnchor":53,"./TouchButton":54,"./TouchCheckbox":55,"./ValidTextInput":60,"./ValidTextareaInput":61,"./WeekCalendar":63}],38:[function(require,module,exports){
+},{"./AddressInput":9,"./Clock":12,"./CronInput":14,"./CronPicker":15,"./DatePicker":16,"./DateTimePicker":17,"./DateTimeRangePicker":18,"./GridView":24,"./HoursInput":25,"./LoadingTouchButton":29,"./Map":30,"./MarkdownEditor":31,"./MarkdownText":32,"./PercentageInput":36,"./PriceInput":38,"./ResultsTextInput":39,"./S3PhotoUploader":40,"./SectionList":41,"./Select":42,"./Signature":43,"./SlideShow":44,"./Slider":45,"./TagInput":47,"./TemplateForm":49,"./TimePicker":50,"./TimeSpanInput":51,"./TouchAnchor":53,"./TouchButton":54,"./TouchCheckbox":55,"./ValidTextInput":60,"./ValidTextareaInput":61,"./WeekCalendar":63}],38:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 
@@ -4025,9 +4081,9 @@ var SectionList = React.createClass({displayName: "SectionList",
 		// from scrolling down the screen
 		onLoadMore : React.PropTypes.func,
 		// should be a react component that we can iterate with
-		headerElement : React.PropTypes.func,
+		header : React.PropTypes.func.isRequired,
 		// should be a react element that we can iterate with
-		element : React.PropTypes.func,
+		element : React.PropTypes.func.isRequired,
 		// string to display when we have no items in the list
 		noItemsString : React.PropTypes.string,
 		// array of indexes to add "selected" class to.
@@ -4069,7 +4125,7 @@ var SectionList = React.createClass({displayName: "SectionList",
 
 		if (this.props.data.length) {
 			for (var i=0,s; s=this.props.data[i]; i++) {
-				items.push(React.createElement(this.props.headerElement, {data: s.section, key: "section-" + i}));
+				items.push(React.createElement(this.props.header, {data: s.section, key: "section-" + i}));
 				for (var j=0,m; m=s.data[j]; j++) {
 					selected = false;
 					for (var k=0; k < this.props.selected.length; k++) {

@@ -18,6 +18,7 @@ var AddressInput = require('./AddressInput')
 	, ResultsTextInput = require('./ResultsTextInput')
 	, S3PhotoUploader = require('./S3PhotoUploader')
 	, Select = require('./Select')
+	, SectionList = require('./SectionList')
 	, Signature = require('./Signature')
 	, Slider = require('./Slider')
 	, SlideShow = require('./SlideShow')
@@ -33,7 +34,7 @@ var AddressInput = require('./AddressInput')
 	, WeekCalendar = require('./WeekCalendar');
 
 var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
-									"S3PhotoUploader", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
+									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
 thirtyDaysAgo.setDate(-30);
@@ -51,11 +52,31 @@ nextHour.setMilliseconds(0)
 var threeHoursFromNow = new Date(nextHour);
 threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 
+var SectionHeader = React.createClass({
+	render : function () {
+		return (
+			<div className="sectionHeader">
+				<h4>{this.props.data.title}</h4>
+			</div>
+		);
+	}
+});
+
+var ListItem = React.createClass({
+	render : function () {
+		return (
+			<div className="item">
+				<p>{this.props.data.title}</p>
+			</div>
+		);
+	}
+});
+
 
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "AddressInput",
+			component : "SectionList",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
@@ -88,6 +109,38 @@ var Playground = React.createClass({
 				TouchCheckbox : false,
 				WeekCalendar : [{ startDate : nextHour, endDate : threeHoursFromNow, title : "Booking", allDay : false }]
 			},
+			SectionListData : [
+				{
+					section : {
+						title : "This is a section",
+					},
+					data : [
+						{ title : "one" },
+						{ title : "two" },
+						{ title : "three" },
+					]
+				},
+				{
+					section : {
+						title : "Another Section",
+					},
+					data : [
+						{ title : "four" },
+						{ title : "five" },
+					]
+				},
+				{
+					section : {
+						title : "Third Section"
+					},
+					data : [
+						{ title : "six" },
+						{ title : "seven" },
+						{ title : "eight" },
+						{ title : "nine" },
+					]
+				}
+			],
 			loading : false
 		}
 	},
@@ -157,6 +210,9 @@ var Playground = React.createClass({
 			break;
 		case "S3PhotoUploader":
 			component = <S3PhotoUploader />
+			break;
+		case "SectionList":
+			component = <SectionList data={this.state.SectionListData} header={SectionHeader} element={ListItem} />
 			break;
 		case "Signature":
 			component = <Signature />

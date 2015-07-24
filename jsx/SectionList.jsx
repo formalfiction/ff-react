@@ -18,9 +18,9 @@ var SectionList = React.createClass({
 		// from scrolling down the screen
 		onLoadMore : React.PropTypes.func,
 		// should be a react component that we can iterate with
-		headerElement : React.PropTypes.func,
+		header : React.PropTypes.func.isRequired,
 		// should be a react element that we can iterate with
-		element : React.PropTypes.func,
+		element : React.PropTypes.func.isRequired,
 		// string to display when we have no items in the list
 		noItemsString : React.PropTypes.string,
 		// array of indexes to add "selected" class to.
@@ -62,7 +62,7 @@ var SectionList = React.createClass({
 
 		if (this.props.data.length) {
 			for (var i=0,s; s=this.props.data[i]; i++) {
-				items.push(<this.props.headerElement data={s.section} key={"section-" + i} />);
+				items.push(<this.props.header data={s.section} key={"section-" + i} />);
 				for (var j=0,m; m=s.data[j]; j++) {
 					selected = false;
 					for (var k=0; k < this.props.selected.length; k++) {
