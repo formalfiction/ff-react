@@ -5,8 +5,8 @@
 var Item = React.createClass({
 	render : function () {
 		return (
-			<div className="item">
-				<p>Item</p>
+			<div {...this.props} className="item">
+				<p>{this.props.data}</p>
 			</div>
 		);
 	}

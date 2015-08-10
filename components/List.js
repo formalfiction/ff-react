@@ -55,13 +55,14 @@ var List = React.createClass({displayName: "List",
 		var items = [], loader, selected;
 
 		if (this.props.data.length) {
-			for (var i=0,m; m=this.props.data[i]; i++) {
+			items = this.props.data.map(function(m, i){
 				selected = false;
 				for (var j=0; j < this.props.selected.length; j++) {
 					if (i === this.props.selected[j]) { selected = true; break; }
 				}
-				items.push(React.createElement(this.props.element, React.__spread({},  this.props, {selected: selected, data: m, index: i, key: m.id || m.cid || i})));
-			}
+				
+				return (React.createElement(this.props.element, React.__spread({},  this.props, {selected: selected, data: m, index: i, key: m.id || m.cid || i})));
+			}, this);
 		} else if (!this.props.loading) {
 			items = React.createElement("div", {className: "noItems"}, React.createElement("h4", {className: "text-center"}, this.props.noItemsString))
 		}

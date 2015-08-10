@@ -55,13 +55,14 @@ var List = React.createClass({
 		var items = [], loader, selected;
 
 		if (this.props.data.length) {
-			for (var i=0,m; m=this.props.data[i]; i++) {
+			items = this.props.data.map(function(m, i){
 				selected = false;
 				for (var j=0; j < this.props.selected.length; j++) {
 					if (i === this.props.selected[j]) { selected = true; break; }
 				}
-				items.push(<this.props.element {...this.props} selected={selected} data={m} index={i} key={m.id || m.cid || i} />);
-			}
+				
+				return (<this.props.element {...this.props} selected={selected} data={m} index={i} key={m.id || m.cid || i} />);
+			}, this);
 		} else if (!this.props.loading) {
 			items = <div className="noItems"><h4 className="text-center">{this.props.noItemsString}</h4></div>
 		}

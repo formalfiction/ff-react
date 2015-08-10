@@ -115,6 +115,21 @@
 .dateTimePicker .picker .phase {
   width: 15%;
 }
+.list.draggable {
+  margin: 0;
+  padding: 0;
+}
+.list.draggable .placeholder.item {
+  background: #fff078;
+}
+.list.draggable .placeholder:before {
+  content: "Drop here";
+  color: #e1d25a;
+}
+.list.draggable .item {
+  padding: 5px;
+  background: #eee;
+}
 .gridView {
   width: 100%;
   height: 300px;

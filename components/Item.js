@@ -5,8 +5,8 @@
 var Item = React.createClass({displayName: "Item",
 	render : function () {
 		return (
-			React.createElement("div", {className: "item"}, 
-				React.createElement("p", null, "Item")
+			React.createElement("div", React.__spread({},  this.props, {className: "item"}), 
+				React.createElement("p", null, this.props.data)
 			)
 		);
 	}

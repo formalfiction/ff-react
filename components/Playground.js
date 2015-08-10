@@ -6,6 +6,7 @@ var AddressInput = require('./AddressInput')
 	, DatePicker = require('./DatePicker')
 	, DateTimePicker = require('./DateTimePicker')
 	, DateTimeRangePicker = require('./DateTimeRangePicker')
+	, DraggableList = require('./DraggableList')
 	, GridView = require('./GridView')
 	, HoursInput = require('./HoursInput')
 	, LoadingTouchButton = require('./LoadingTouchButton')
@@ -33,7 +34,7 @@ var AddressInput = require('./AddressInput')
 	, ValidTextareaInput = require('./ValidTextareaInput')
 	, WeekCalendar = require('./WeekCalendar');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
 									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
@@ -76,12 +77,20 @@ var ListItem = React.createClass({displayName: "ListItem",
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "SectionList",
+			component : "DraggableList",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
+				DraggableList : [
+					{ name : "Apples" },
+					{ name : "Oranges" },
+					{ name : "Bananas" },
+					{ name : "Michael Jordan" },
+					{ name : "Dragonfruit" },
+					{ name : "Molly & O.J's" }
+				],
 				CronPicker : "0 0 * * *",
 				GridView : [
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
@@ -179,6 +188,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "DateTimeRangePicker":
 			component = React.createElement(DateTimeRangePicker, {name: "DateTimePicker", value: this.state.values.DateTimeRangePicker, onValueChange: this.onValueChange})
+			break;
+		case "DraggableList":
+			component = React.createElement(DraggableList, {name: "DraggableList", data: this.state.values.DraggableList, onRearrange: this.onValueChange})
 			break;
 		case "GridView":
 			component = React.createElement(GridView, {data: this.state.values.GridView})

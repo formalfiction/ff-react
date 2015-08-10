@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
-var ValidTouchInput = require('./ValidTouchInput');
+var ValidTouchInput = require('./ValidTouchInput')
+	, _ = require('underscore');
 
 var AddressInput = React.createClass({
 	propTypes : {
@@ -54,7 +55,7 @@ var AddressInput = React.createClass({
 	// event handlers
 	onValueChange : function (value, name) {
 		if (typeof this.props.onValueChange === "function") {
-			var address = this.props.value || {}
+			var address = _.extend({}, this.props.value);
 			address[name] = value;
 			this.props.onValueChange(address, this.props.name);
 		}
@@ -79,7 +80,7 @@ var AddressInput = React.createClass({
 				<ValidTouchInput label="line 1" placeholder="123 abc st." className="validTextInput field lineOne" value={address.lineOne} name="lineOne" onValueChange={this.onValueChange} valid={this.lineOneValid()} showValidation={this.props.showValidation} />
 				<ValidTouchInput label="line 2" placeholder="suite 100" className="validTextInput field lineTwo" value={address.lineTwo} name="lineTwo" onValueChange={this.onValueChange} valid={this.lineTwoValid()} showValidation={this.props.showValidation} />
 				<ValidTouchInput label="city" className="validTextInput field city" value={address.city} name="city" onValueChange={this.onValueChange} valid={this.cityValid()} showValidation={this.props.showValidation} />
-				<ValidTouchInput label="state/province" className="validTextInput field region" value={address.region} name="state/province/region" onValueChange={this.onValueChange} valid={this.regionValid()} showValidation={this.props.showValidation} />
+				<ValidTouchInput label="state/province" className="validTextInput field region" value={address.region} name="region" onValueChange={this.onValueChange} valid={this.regionValid()} showValidation={this.props.showValidation} />
 				<ValidTouchInput label="country" className="validTextInput field country" value={address.country} name="country" onValueChange={this.onValueChange} valid={this.countryValid()} showValidation={this.props.showValidation} />
 				<ValidTouchInput label="zip/postal" className="validTextInput field postalCode" value={address.postalCode} name="postalCode" onValueChange={this.onValueChange} valid={this.postalCodeValid()} showValidation={this.props.showValidation} />
 			</div>
