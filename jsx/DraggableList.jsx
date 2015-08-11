@@ -121,7 +121,7 @@ var DraggableList = React.createClass({
                   index={i}
                   data-index={i}
                   draggable="true"
-                  key={m.id || m.cid || i}
+                  key={i}
                   onDragEnd={this.onDragEnd}
                   onDragStart={this.onDragStart}/>);
       }, this);

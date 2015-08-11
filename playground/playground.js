@@ -2408,7 +2408,7 @@ var DraggableList = React.createClass({displayName: "DraggableList",
                   index: i, 
                   "data-index": i, 
                   draggable: "true", 
-                  key: m.id || m.cid || i, 
+                  key: i, 
                   onDragEnd: this.onDragEnd, 
                   onDragStart: this.onDragStart})));
       }, this);
@@ -2953,9 +2953,14 @@ module.exports = HoursInput;
 // A placeholder Item
 var Item = React.createClass({displayName: "Item",
 	render : function () {
+		var title = this.props.data;
+		if (typeof title === "object") {
+			title = this.props.data.name || this.props.data.title;
+		}
+		
 		return (
 			React.createElement("div", React.__spread({},  this.props, {className: "item"}), 
-				React.createElement("p", null, this.props.data)
+				React.createElement("p", null, title)
 			)
 		);
 	}
@@ -3499,7 +3504,7 @@ var NestableItem = React.createClass({displayName: "NestableItem",
 			items = React.createElement("div", {className: "list"}, 
 								
 									data.data.map(function(d,i){
-										return React.createElement(NestableItem, React.__spread({},  this.props, {"data-index": i, key: this.props.index + "." + i, data: d}))
+										return React.createElement(NestableItem, React.__spread({},  this.props, {"data-list": this.props.index, "data-index": i, key: this.props.index + "." + i, data: d}))
 									}, this)
 								
 							)
@@ -3518,12 +3523,12 @@ module.exports = NestableItem;
 },{}],37:[function(require,module,exports){
 /** @jsx React.DOM */
 
-var NestableItem = require('./NestableItem');
+var Item = require('./Item');
 
 var placeholder = document.createElement("div");
 placeholder.className = "placeholder item";
 
-var DraggableList = React.createClass({displayName: "DraggableList",
+var NestableList = React.createClass({displayName: "NestableList",
   propTypes : {
     data : React.PropTypes.array.isRequired,
     // should be a react element that we can iterate with
@@ -3545,8 +3550,10 @@ var DraggableList = React.createClass({displayName: "DraggableList",
     // array of indexes to add "selected" class to.
     // for a single selection, pass in a single element array :)
     selected : React.PropTypes.array,
+    // the place to look for & place data props
+    nestingProp : React.PropTypes.string,
     // @todo - the maximum depth for nesting
-    maxDepth : React.PropTypes.number
+    maxDepth : React.PropTypes.number,
   },
 
   nodePlacement : undefined,
@@ -3557,7 +3564,8 @@ var DraggableList = React.createClass({displayName: "DraggableList",
     return {
       className : "draggable list",
       selected : [],
-      element : NestableItem,
+      element : Item,
+      nestingProp : "data",
       number : 2
     }
   },
@@ -3600,56 +3608,80 @@ var DraggableList = React.createClass({displayName: "DraggableList",
       , relY = e.clientY - top
       , height = this.over.offsetHeight + top
       , parent = this.over.parentNode;
-    
-    // console.log(height * 0.25, relY, height * 0.75);
 
-    if (relY < height * 0.25) {
-      this.nodePlacement = "before";
-      parent.insertBefore(placeholder, this.over);
-    } else if (relY < height * 0.5 && relY > height * 0.25) {
-      this.nodePlacement = "inside";
-      var list = this.over.getElementsByClassName("list")[0];
-      if (!list) {
-        list = document.createElement("div");
-        list.className= "list";
-        list.appendChild(placeholder);
+    // only use "indside" checks if we can nest
+    if (!this.over.dataset.list) {
+      // console.log(height * 0.25, relY, height * 0.75);
+      if (relY < height * 0.25) {
+        this.nodePlacement = "before";
+        parent.insertBefore(placeholder, this.over);
+      } else if (relY < height * 0.5 && relY > height * 0.25) {
+        this.nodePlacement = "inside";
+        var list = this.over.getElementsByClassName("list")[0];
+        if (!list) {
+          list = document.createElement("div");
+          list.className= "list";
+          list.appendChild(placeholder);
 
-        this.over.appendChild(list);
-      } else {
-        list.appendChild(placeholder);
+          this.over.appendChild(list);
+        } else {
+          list.appendChild(placeholder);
+        }
+      } else if (relY > height * 0.5) {
+        this.nodePlacement = "after";
+        parent.insertBefore(placeholder, this.over.nextElementSibling);
       }
-    } else if (relY > height * 0.5) {
-      this.nodePlacement = "after";
-      parent.insertBefore(placeholder, this.over.nextElementSibling);
+    } else {
+      if (relY < height / 2) {
+        this.nodePlacement = "before";
+        parent.insertBefore(placeholder, this.over);
+      } else {
+        this.nodePlacement = "after";
+        parent.insertBefore(placeholder, this.over.nextElementSibling);
+      }
     }
   },
   onDragEnd: function(e) {
     if (typeof this.props.onRearrange != "function") { return; }
 
-    // this.dragged.style.display = "block";
+    this.dragged.style.display = "block";
     placeholder.remove();
 
-    // Update data
-    var data = this.props.data
+    var np = this.props.nestingProp
       , from = Number(this.dragged.dataset.index)
-      , to = Number(this.over.dataset.index);
+      , to = Number(this.over.dataset.index)
+      , fromList = this.dragged.dataset.list ? this.props.data[+this.dragged.dataset.list][np] : this.props.data
+      , toList = this.over.dataset.list ? this.props.data[+this.over.dataset.list][np] : this.props.data
+      , sameList = (this.dragged.dataset.list == this.over.dataset.list)
+      , finalAddress;
 
     if (this.nodePlacement == "inside") {
-      if (!data[to].data) {
-        data[to].data = data.splice(from, 1);
+      if (this.props.data[+this.over.dataset.index][np]) {
+        this.props.data[+this.over.dataset.index][np].splice(to, 0, fromList.splice(from, 1)[0]);
+        finalAddress = [+this.over.dataset.index, to+1];
       } else {
-        data[to].data.push(data.splice(from, 1));
+        this.props.data[+this.over.dataset.index][np] = fromList.splice(from, 1);
+        finalAddress = [+this.over.dataset.index, 0];
       }
     } else {
-      if (from < to) to--;
+      if (from < to && sameList) to--;
       if (this.nodePlacement == "after") to++;
-      data.splice(to, 0, data.splice(from, 1)[0]);
+      toList.splice(to, 0, fromList.splice(from, 1)[0]);
+      var fromAdd = +this.over.dataset.list;
+      
+      finalAddress = this.over.dataset.list ? [fromAdd, to] : [to];
     }
 
-    this.props.onRearrange(data, this.props.name);
+    console.log(finalAddress);
+    this.props.onRearrange(this.props.data, this.props.name, finalAddress);
+  },
+
+  // render
+  renderItem : function (m,i) {
+
   },
   render: function() {
-    var items;
+    var items, np = this.props.nestingProp;
 
     if (this.props.data.length) {
       items = this.props.data.map(function(m, i){
@@ -3657,17 +3689,43 @@ var DraggableList = React.createClass({displayName: "DraggableList",
         for (var j=0; j < this.props.selected.length; j++) {
           if (i === this.props.selected[j]) { selected = true; break; }
         }
+
+        var item = React.createElement(this.props.element, React.__spread({},  
+                      this.props, 
+                      {selected: selected, 
+                      data: m, 
+                      index: i, 
+                      "data-index": i, 
+                      draggable: "true", 
+                      key: i, 
+                      onDragEnd: this.onDragEnd, 
+                      onDragStart: this.onDragStart}))
+
+        if (m[np]) {
+          return (
+            React.createElement("div", {key: i + ".list"}, 
+              item, 
+              React.createElement("div", {className: "list"}, 
+                
+                  m[np].map(function(d,j){
+                    return React.createElement(this.props.element, React.__spread({},  
+                              this.props, 
+                              {"data-list": i, 
+                              "data-index": j, 
+                              key: i + "." + j, 
+                              data: d, 
+                              draggable: "true", 
+                              onDragEnd: this.onDragEnd, 
+                              onDragStart: this.onDragStart}))
+                  }, this)
+                
+              )
+            )
+          );
+        } else {
+          return item;
+        }
         
-        return (React.createElement(this.props.element, React.__spread({},  
-                  this.props, 
-                  {selected: selected, 
-                  data: m, 
-                  index: i, 
-                  "data-index": i, 
-                  draggable: "true", 
-                  key: m.id || m.cid || i, 
-                  onDragEnd: this.onDragEnd, 
-                  onDragStart: this.onDragStart})));
       }, this);
     } else if (!this.props.loading) {
       items = React.createElement("div", {className: "noItems"}, 
@@ -3684,8 +3742,8 @@ var DraggableList = React.createClass({displayName: "DraggableList",
   }
 });
 
-module.exports = DraggableList;
-},{"./NestableItem":36}],38:[function(require,module,exports){
+module.exports = NestableList;
+},{"./Item":27}],38:[function(require,module,exports){
 /** @jsx React. DOM */
 
 var TouchAnchor = require('./TouchAnchor');
@@ -3816,6 +3874,7 @@ var AddressInput = require('./AddressInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
+	, NestableList = require('./NestableList')
 	, PercentageInput = require('./PercentageInput')
 	, PriceInput = require('./PriceInput')
 	, CronPicker = require('./CronPicker')
@@ -3837,7 +3896,7 @@ var AddressInput = require('./AddressInput')
 	, ValidTextareaInput = require('./ValidTextareaInput')
 	, WeekCalendar = require('./WeekCalendar');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "NestableList", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
 									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
@@ -3880,19 +3939,19 @@ var ListItem = React.createClass({displayName: "ListItem",
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "DraggableList",
+			component : "NestableList",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
 				DraggableList : [
-					{ name : "Apples" },
-					{ name : "Oranges" },
-					{ name : "Bananas" },
-					{ name : "Michael Jordan" },
-					{ name : "Dragonfruit" },
-					{ name : "Molly & O.J's" }
+					"Apples",
+					"Oranges",
+					"Bananas",
+					"Michael Jordan",
+					"Dragonfruit",
+					"Molly & O.J's"
 				],
 				CronPicker : "0 0 * * *",
 				GridView : [
@@ -3909,6 +3968,19 @@ var Playground = React.createClass({displayName: "Playground",
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
 					["LAST","ROW","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+				],
+				NestableList : [
+					{ name : "Apples" },
+					{ name : "Oranges" },
+					{ name : "Bananas" },
+					{ name : "Michael Jordan" },
+					{ name : "Dragonfruit" },
+					{ name : "Molly & O.J's",
+						data : [
+							{ name : "Potato" },
+							{ name : "Norwegian Club" }
+						]
+					},
 				],
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
@@ -4010,6 +4082,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "MarkdownText":
 			component = React.createElement(MarkdownText, null)
+			break;
+		case "NestableList":
+			component = React.createElement(NestableList, {name: "NestableList", data: this.state.values.NestableList, onRearrange: this.onValueChange})
 			break;
 		case "PercentageInput":
 			component = React.createElement(PercentageInput, {name: "PercentageInput", value: this.state.values.PercentageInput, onValueChange: this.onValueChange})
@@ -4116,7 +4191,7 @@ var Playground = React.createClass({displayName: "Playground",
 
 window.playground = Playground;
 module.exports = Playground;
-},{"./AddressInput":9,"./Clock":12,"./CronInput":14,"./CronPicker":15,"./DatePicker":16,"./DateTimePicker":17,"./DateTimeRangePicker":18,"./DraggableList":20,"./GridView":25,"./HoursInput":26,"./LoadingTouchButton":30,"./Map":31,"./MarkdownEditor":32,"./MarkdownText":33,"./PercentageInput":39,"./PriceInput":41,"./ResultsTextInput":42,"./S3PhotoUploader":43,"./SectionList":44,"./Select":45,"./Signature":46,"./SlideShow":47,"./Slider":48,"./TagInput":50,"./TemplateForm":52,"./TimePicker":53,"./TimeSpanInput":54,"./TouchAnchor":56,"./TouchButton":57,"./TouchCheckbox":58,"./ValidTextInput":63,"./ValidTextareaInput":64,"./WeekCalendar":66}],41:[function(require,module,exports){
+},{"./AddressInput":9,"./Clock":12,"./CronInput":14,"./CronPicker":15,"./DatePicker":16,"./DateTimePicker":17,"./DateTimeRangePicker":18,"./DraggableList":20,"./GridView":25,"./HoursInput":26,"./LoadingTouchButton":30,"./Map":31,"./MarkdownEditor":32,"./MarkdownText":33,"./NestableList":37,"./PercentageInput":39,"./PriceInput":41,"./ResultsTextInput":42,"./S3PhotoUploader":43,"./SectionList":44,"./Select":45,"./Signature":46,"./SlideShow":47,"./Slider":48,"./TagInput":50,"./TemplateForm":52,"./TimePicker":53,"./TimeSpanInput":54,"./TouchAnchor":56,"./TouchButton":57,"./TouchCheckbox":58,"./ValidTextInput":63,"./ValidTextareaInput":64,"./WeekCalendar":66}],41:[function(require,module,exports){
 /** @jsx React.DOM */
 
 /* 

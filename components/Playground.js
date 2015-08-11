@@ -13,6 +13,7 @@ var AddressInput = require('./AddressInput')
 	, Map = require('./Map')
 	, MarkdownEditor = require('./MarkdownEditor')
 	, MarkdownText = require('./MarkdownText')
+	, NestableList = require('./NestableList')
 	, PercentageInput = require('./PercentageInput')
 	, PriceInput = require('./PriceInput')
 	, CronPicker = require('./CronPicker')
@@ -34,7 +35,7 @@ var AddressInput = require('./AddressInput')
 	, ValidTextareaInput = require('./ValidTextareaInput')
 	, WeekCalendar = require('./WeekCalendar');
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
+var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "NestableList", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
 									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
@@ -77,19 +78,19 @@ var ListItem = React.createClass({displayName: "ListItem",
 var Playground = React.createClass({displayName: "Playground",
 	getInitialState : function () {
 		return {
-			component : "DraggableList",
+			component : "NestableList",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
 				DateTimePicker : thirtyDaysAgo,
 				DateTimePickerCenter : thirtyDaysAgo,
 				DraggableList : [
-					{ name : "Apples" },
-					{ name : "Oranges" },
-					{ name : "Bananas" },
-					{ name : "Michael Jordan" },
-					{ name : "Dragonfruit" },
-					{ name : "Molly & O.J's" }
+					"Apples",
+					"Oranges",
+					"Bananas",
+					"Michael Jordan",
+					"Dragonfruit",
+					"Molly & O.J's"
 				],
 				CronPicker : "0 0 * * *",
 				GridView : [
@@ -106,6 +107,19 @@ var Playground = React.createClass({displayName: "Playground",
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
 					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
 					["LAST","ROW","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
+				],
+				NestableList : [
+					{ name : "Apples" },
+					{ name : "Oranges" },
+					{ name : "Bananas" },
+					{ name : "Michael Jordan" },
+					{ name : "Dragonfruit" },
+					{ name : "Molly & O.J's",
+						data : [
+							{ name : "Potato" },
+							{ name : "Norwegian Club" }
+						]
+					},
 				],
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
@@ -207,6 +221,9 @@ var Playground = React.createClass({displayName: "Playground",
 			break;
 		case "MarkdownText":
 			component = React.createElement(MarkdownText, null)
+			break;
+		case "NestableList":
+			component = React.createElement(NestableList, {name: "NestableList", data: this.state.values.NestableList, onRearrange: this.onValueChange})
 			break;
 		case "PercentageInput":
 			component = React.createElement(PercentageInput, {name: "PercentageInput", value: this.state.values.PercentageInput, onValueChange: this.onValueChange})

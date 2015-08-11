@@ -1,11 +1,11 @@
 /** @jsx React.DOM */
 
-var NestableItem = require('./NestableItem');
+var Item = require('./Item');
 
 var placeholder = document.createElement("div");
 placeholder.className = "placeholder item";
 
-var DraggableList = React.createClass({
+var NestableList = React.createClass({
   propTypes : {
     data : React.PropTypes.array.isRequired,
     // should be a react element that we can iterate with
@@ -27,8 +27,10 @@ var DraggableList = React.createClass({
     // array of indexes to add "selected" class to.
     // for a single selection, pass in a single element array :)
     selected : React.PropTypes.array,
+    // the place to look for & place data props
+    nestingProp : React.PropTypes.string,
     // @todo - the maximum depth for nesting
-    maxDepth : React.PropTypes.number
+    maxDepth : React.PropTypes.number,
   },
 
   nodePlacement : undefined,
@@ -39,7 +41,8 @@ var DraggableList = React.createClass({
     return {
       className : "draggable list",
       selected : [],
-      element : NestableItem,
+      element : Item,
+      nestingProp : "data",
       number : 2
     }
   },
@@ -82,56 +85,80 @@ var DraggableList = React.createClass({
       , relY = e.clientY - top
       , height = this.over.offsetHeight + top
       , parent = this.over.parentNode;
-    
-    // console.log(height * 0.25, relY, height * 0.75);
 
-    if (relY < height * 0.25) {
-      this.nodePlacement = "before";
-      parent.insertBefore(placeholder, this.over);
-    } else if (relY < height * 0.5 && relY > height * 0.25) {
-      this.nodePlacement = "inside";
-      var list = this.over.getElementsByClassName("list")[0];
-      if (!list) {
-        list = document.createElement("div");
-        list.className= "list";
-        list.appendChild(placeholder);
+    // only use "indside" checks if we can nest
+    if (!this.over.dataset.list) {
+      // console.log(height * 0.25, relY, height * 0.75);
+      if (relY < height * 0.25) {
+        this.nodePlacement = "before";
+        parent.insertBefore(placeholder, this.over);
+      } else if (relY < height * 0.5 && relY > height * 0.25) {
+        this.nodePlacement = "inside";
+        var list = this.over.getElementsByClassName("list")[0];
+        if (!list) {
+          list = document.createElement("div");
+          list.className= "list";
+          list.appendChild(placeholder);
 
-        this.over.appendChild(list);
-      } else {
-        list.appendChild(placeholder);
+          this.over.appendChild(list);
+        } else {
+          list.appendChild(placeholder);
+        }
+      } else if (relY > height * 0.5) {
+        this.nodePlacement = "after";
+        parent.insertBefore(placeholder, this.over.nextElementSibling);
       }
-    } else if (relY > height * 0.5) {
-      this.nodePlacement = "after";
-      parent.insertBefore(placeholder, this.over.nextElementSibling);
+    } else {
+      if (relY < height / 2) {
+        this.nodePlacement = "before";
+        parent.insertBefore(placeholder, this.over);
+      } else {
+        this.nodePlacement = "after";
+        parent.insertBefore(placeholder, this.over.nextElementSibling);
+      }
     }
   },
   onDragEnd: function(e) {
     if (typeof this.props.onRearrange != "function") { return; }
 
-    // this.dragged.style.display = "block";
+    this.dragged.style.display = "block";
     placeholder.remove();
 
-    // Update data
-    var data = this.props.data
+    var np = this.props.nestingProp
       , from = Number(this.dragged.dataset.index)
-      , to = Number(this.over.dataset.index);
+      , to = Number(this.over.dataset.index)
+      , fromList = this.dragged.dataset.list ? this.props.data[+this.dragged.dataset.list][np] : this.props.data
+      , toList = this.over.dataset.list ? this.props.data[+this.over.dataset.list][np] : this.props.data
+      , sameList = (this.dragged.dataset.list == this.over.dataset.list)
+      , finalAddress;
 
     if (this.nodePlacement == "inside") {
-      if (!data[to].data) {
-        data[to].data = data.splice(from, 1);
+      if (this.props.data[+this.over.dataset.index][np]) {
+        this.props.data[+this.over.dataset.index][np].splice(to, 0, fromList.splice(from, 1)[0]);
+        finalAddress = [+this.over.dataset.index, to+1];
       } else {
-        data[to].data.push(data.splice(from, 1));
+        this.props.data[+this.over.dataset.index][np] = fromList.splice(from, 1);
+        finalAddress = [+this.over.dataset.index, 0];
       }
     } else {
-      if (from < to) to--;
+      if (from < to && sameList) to--;
       if (this.nodePlacement == "after") to++;
-      data.splice(to, 0, data.splice(from, 1)[0]);
+      toList.splice(to, 0, fromList.splice(from, 1)[0]);
+      var fromAdd = +this.over.dataset.list;
+      
+      finalAddress = this.over.dataset.list ? [fromAdd, to] : [to];
     }
 
-    this.props.onRearrange(data, this.props.name);
+    console.log(finalAddress);
+    this.props.onRearrange(this.props.data, this.props.name, finalAddress);
+  },
+
+  // render
+  renderItem : function (m,i) {
+
   },
   render: function() {
-    var items;
+    var items, np = this.props.nestingProp;
 
     if (this.props.data.length) {
       items = this.props.data.map(function(m, i){
@@ -139,17 +166,43 @@ var DraggableList = React.createClass({
         for (var j=0; j < this.props.selected.length; j++) {
           if (i === this.props.selected[j]) { selected = true; break; }
         }
+
+        var item = <this.props.element 
+                      {...this.props} 
+                      selected={selected} 
+                      data={m}
+                      index={i}
+                      data-index={i}
+                      draggable="true"
+                      key={i}
+                      onDragEnd={this.onDragEnd}
+                      onDragStart={this.onDragStart} />
+
+        if (m[np]) {
+          return (
+            <div key={i + ".list"}>
+              {item}
+              <div className="list">
+                {
+                  m[np].map(function(d,j){
+                    return <this.props.element 
+                              {...this.props} 
+                              data-list={i}
+                              data-index={j}
+                              key={i + "." + j}
+                              data={d} 
+                              draggable="true"
+                              onDragEnd={this.onDragEnd}
+                              onDragStart={this.onDragStart} />
+                  }, this)
+                }
+              </div>
+            </div>
+          );
+        } else {
+          return item;
+        }
         
-        return (<this.props.element 
-                  {...this.props} 
-                  selected={selected} 
-                  data={m} 
-                  index={i}
-                  data-index={i}
-                  draggable="true"
-                  key={m.id || m.cid || i}
-                  onDragEnd={this.onDragEnd}
-                  onDragStart={this.onDragStart}/>);
       }, this);
     } else if (!this.props.loading) {
       items = <div className="noItems">
@@ -166,4 +219,4 @@ var DraggableList = React.createClass({
   }
 });
 
-module.exports = DraggableList;
+module.exports = NestableList;

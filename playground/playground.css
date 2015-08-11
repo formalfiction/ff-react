@@ -130,6 +130,9 @@
   padding: 5px;
   background: #eee;
 }
+.list.draggable .list {
+  margin-left: 5px;
+}
 .gridView {
   width: 100%;
   height: 300px;

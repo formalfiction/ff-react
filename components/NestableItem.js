@@ -9,7 +9,7 @@ var NestableItem = React.createClass({displayName: "NestableItem",
 			items = React.createElement("div", {className: "list"}, 
 								
 									data.data.map(function(d,i){
-										return React.createElement(NestableItem, React.__spread({},  this.props, {"data-index": i, key: this.props.index + "." + i, data: d}))
+										return React.createElement(NestableItem, React.__spread({},  this.props, {"data-list": this.props.index, "data-index": i, key: this.props.index + "." + i, data: d}))
 									}, this)
 								
 							)
