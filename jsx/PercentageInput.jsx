@@ -33,6 +33,7 @@ var PercentageInput = React.createClass({
 	// Event handlers
 	onChange : function (e) {
 		var val = +e.target.value / 100;
+		if (isNaN(val)) { val = 0; }
 
 		if (val != this.props.value) {
 			if (typeof this.props.onChange === "function") {
