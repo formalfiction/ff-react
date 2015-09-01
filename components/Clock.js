@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  * Clock is used for selecting time values in 15-minute
  * increments. Often used in conjunction with TimePicker.
@@ -19,52 +21,6 @@ var Clock = React.createClass({displayName: "Clock",
 		// must be a valid date object
 		value : React.PropTypes.object.isRequired
 	},
-
-	// Methods
-	// Break a date value up into the needed hours / minutes / phase
-	// pieces
-	// _values : function (val) {
-	// 	// if no initial value return 9:00am
-	// 	if (!val) {
-	// 		return {
-	// 			hours : 8,
-	// 			minutes : 0,
-	// 			phase : 0
-	// 		}
-	// 	}
-
-	// 	var h = val.getHours()
-	// 		, ph = (h < 12) ? 0 : 1;
-
-	// 	// if we're in the aft, minus 12 to de-militarize time
-	// 	if (ph === 1) {
-	// 		h = h - 12;
-	// 	}
-
-	// 	return {
-	// 		hours : (h === 0) ? 11 : h - 1,
-	// 		minutes : (15 * Math.round(val.getMinutes() / 15)) / 15,
-	// 		phase : ph
-	// 	}
-
-	// },
-	// // restore hours / minutes / phase to a date value.
-	// // returns a numerical js date.
-	// _timeValue : function (values) {
-	// 	var h = (values.phase === 0) ? values.hours : values.hours + 12
-	// 		, m = values.minutes
-	// 		, d = this.props.value;
-
-	// 	// Add 1 to hours to un-array-index
-	// 	d.setHours(h + 1);
-	// 	// Multiply minutes by 15 as we work in 15 minute increments
-	// 	d.setMinutes(m * 15);
-
-	// 	return d;
-	// },
-
-
-
 	// Factory Funcs
 	// return a up-incrementer
 	up : function (unit) {

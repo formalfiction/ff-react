@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  * Tags displays a list of tags.
  * 

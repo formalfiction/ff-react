@@ -1,7 +1,8 @@
 /** @jsx React.DOM */
+var React = require('React')
+	, $ = require('jquery')
 
 /* 
- * @jQuery
  *
  * Text input field with currency input mask.
  * relies on the MaskMoney Plugin for currency-formatting logic

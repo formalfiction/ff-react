@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* Basic 505 Error Component */
 

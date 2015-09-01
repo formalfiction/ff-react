@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /*
  * A Basic Dialogue with an accept button

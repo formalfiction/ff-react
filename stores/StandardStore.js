@@ -141,9 +141,15 @@ var StandardStore = Store.extend({
 
 	// replace a stored model
 	// @param {object} model - the model object to be changed
-	replace : function (model) {
+	// @param {bool} append - set to true to add this model to the list if it's not found
+	replace : function (model, append) {
 		if (!this.valid(model)) { return false; }
-		return replace(this._models, idMatcher(model.id || model.cid || ''), model);
+		var replaced = replace(this._models, idMatcher(model.id || model.cid || ''), model);
+		if (!replaced && append) { 
+			this._models.push(model);
+			return true;
+		}
+		return replaced;
 	},
 
 	// @param model {object|string|number} - either the model object to be removed OR

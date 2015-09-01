@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  * @stateful
  * 
@@ -83,7 +85,7 @@ var DatePicker = React.createClass({
 	// Cancel Blur event triggered by clicking the calendar
 	onCalendarMouseDown : function (e) {
 		e.preventDefault();
-		$(this.refs["field"].getDOMNode()).focus();
+		this.refs["field"].getDOMNode().focus();
 	},
 	onCalendarTouchEnd : function (e) {
 		e.stopPropagation();

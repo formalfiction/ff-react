@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var Select = React.createClass({displayName: "Select",
 	propTypes : {

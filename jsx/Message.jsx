@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* Message Box Compnent */
 

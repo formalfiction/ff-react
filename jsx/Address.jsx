@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var Address = React.createClass({
 	propTypes : {
@@ -8,6 +9,8 @@ var Address = React.createClass({
 	string : function () {
 		var address = this.props.value
 			, out = "";
+
+		if (!address) { return ""; }
 
 		if (address.name) { out += address.name + "\n" }
 		if (address.lineOne) { out += address.lineOne + "\n" }

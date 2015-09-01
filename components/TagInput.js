@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  *  @stateful
  *	TagInput collects tags

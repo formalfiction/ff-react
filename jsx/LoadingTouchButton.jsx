@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /*
 	TouchButtons work in conjunction with utils/clickbuster

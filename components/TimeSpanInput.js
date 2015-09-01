@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var Time = require('../utils/time')
 	, TimeWheelPicker = require('./TimeWheelPicker')

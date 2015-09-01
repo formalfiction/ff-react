@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* children are @stateful
  * A Picker for choosing a time range on a specific day

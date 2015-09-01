@@ -21,8 +21,11 @@
  * created circular dependencies.
  */
 
-var Promise = require('es6-promise').Promise;
-var _ = require('underscore');
+var Promise = require('es6-promise').Promise
+  , $ = require('jquery')
+  , _ = require('underscore');
+
+var Time = require('../utils/time')
 
 var _callbacks = [];
 var _promises = [];
@@ -133,7 +136,21 @@ Dispatcher.prototype = _.extend(Dispatcher.prototype, {
     if (!action.requestType) { console.warn('server actions require a type param, defaulting to GET request'); }
     
     if (action.requestType != "GET") {
-      data = JSON.stringify(data);
+      // Javascript Dates don't store a timezone. We need a timezone.
+      // here we supply a custom replacer function that encodes all dates
+      // with their TZ offset in hours to send to the server
+      data = JSON.stringify(data, function(key, value){
+        if (_.isObject(value) && !_.isArray(value)){
+          // clone the object so we don't overwrite existing dates.
+          value = _.clone(value);
+          for (key in value) {
+            if (_.isDate(value[key])) {
+              value[key] = Time.formatLocalDate(value[key]);
+            }
+          }
+        }
+        return value;
+      });
     }
     
     $.ajax({

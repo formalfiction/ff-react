@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* Standard Not-Found Component with a go-back button. */
 

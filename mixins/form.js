@@ -1,3 +1,4 @@
+var React = require('React');
 
 var PropTypes = React.PropTypes;
 

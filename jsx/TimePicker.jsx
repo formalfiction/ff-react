@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  * TimePicker Pairs the Clock Component with an
  * input field.

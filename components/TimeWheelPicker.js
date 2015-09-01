@@ -1,3 +1,6 @@
+/** @jsx React.DOM */
+var React = require('React');
+
 var iScroll = require('../deps/iscroll');
 var time = require('../utils/time');
 

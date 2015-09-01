@@ -1,4 +1,6 @@
 /** @jsx React.DOM */
+var React = require('React');
+
 /*
  * SignaturePad takes user signatures & spits out
  * Data-URI's of that information.

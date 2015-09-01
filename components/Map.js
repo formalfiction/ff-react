@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* Map component handles display & interaction with a map.
  * 

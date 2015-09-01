@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

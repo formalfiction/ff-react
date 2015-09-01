@@ -1,5 +1,5 @@
 /** @jsx React.DOM */
-
+var React = require('React');
 
 /*
  * templateForm takes a template prop & turns it into a form

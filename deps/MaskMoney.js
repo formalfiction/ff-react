@@ -1,3 +1,5 @@
+var $ = require('jquery');
+
 // jQuery MaskMoney Plugin
 // @url: https://github.com/plentz/jquery-maskmoney
 (function ($) {
@@ -400,6 +402,6 @@
             $.error("Method " +  method + " does not exist on jQuery.maskMoney");
         }
     };
-})(window.jQuery || window.Zepto);
+})(window.jQuery || window.Zepto || $);
 
 module.exports = $.maskMoney;

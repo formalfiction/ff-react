@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /*
 	TouchAnchor is TouchButton for anchor (<a>) tags.

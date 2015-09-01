@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 /* CronInput takes a human-readable string input & tries to
  * create a cron pattern from it.

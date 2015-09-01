@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var ReactPropTypes = React.PropTypes
 	, KeyCodes = require('../constants/KeyCodes');

@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 var ListItem = React.createClass({
 	render : function () {

@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var React = require('React');
 
 // modal wrapper for any react element
 // stateless, by default shows a header above with
