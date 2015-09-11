@@ -1,47 +1,43 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import _ from 'underscore';
 
-var _ = require('underscore');
-
-var GridView = React.createClass({displayName: "GridView",
-	propTypes : {
+class GridView extends Component {
+	static propTypes = {
 		// data should be an array of arrays, but can be transformed with the
 		// "map" prop-func
-		data : React.PropTypes.array.isRequired,
+		data : PropTypes.array.isRequired,
 		// function to return the name of each column
-		colHeaderName : React.PropTypes.func,
+		colHeaderName : PropTypes.func,
 		// predicate to return the initial width of a column. 
-		initialColWidth : React.PropTypes.func,
-		headerHeight : React.PropTypes.number,
-		rowHeight : React.PropTypes.func,
+		initialColWidth : PropTypes.func,
+		headerHeight : PropTypes.number,
+		rowHeight : PropTypes.func,
 		// show the row number
-		showIndexColumn : React.PropTypes.bool,
+		showIndexColumn : PropTypes.bool,
 		// add "odd" & "even" classes rows
-		zebraClasses : React.PropTypes.bool,
+		zebraClasses : PropTypes.bool,
 		// text to display if no data is given
-		emptyText : React.PropTypes.string,
+		emptyText : PropTypes.string,
 		// number of columns to keep "pinned" to the left side
-		pinnedColumns : React.PropTypes.number,
+		pinnedColumns : PropTypes.number,
 		// should scrolling along the x axis snap to each column?
-		snapColumns : React.PropTypes.bool,
+		snapColumns : PropTypes.bool,
 		// width of scrollbars
-		scrollBarWidth : React.PropTypes.number
-	},
+		scrollBarWidth : PropTypes.number
+	}
+	static defaultProps = {
+		pinnedColumns : 0,
+		headerHeight : 60,
+		zebraClasses : true,
+		showIndexColumn : true,
+		snapColumns : true,
+		emptyText : "no data to display",
+		scrollBarWidth : 10
+	}
 
 	// lifecycle
-	getDefaultProps : function () {
-		return {
-			pinnedColumns : 0,
-			headerHeight : 60,
-			zebraClasses : true,
-			showIndexColumn : true,
-			snapColumns : true,
-			emptyText : "no data to display",
-			scrollBarWidth : 10
-		}
-	},
-	getInitialState : function () {
-		var left = 0
+	getInitialState = () => {
+		let left = 0
 			, top = this.props.headerHeight
 			, heights = _.map(this.props.data,this.rowHeight)
 			, widths = _.map(this.props.data[0], this.initialColWidth) 
@@ -57,8 +53,8 @@ var GridView = React.createClass({displayName: "GridView",
 			docWidth : _.reduce(widths, function(memo, w){ return memo + w; }, 0),
 			docHeight : _.reduce(heights, function(memo, h){ return memo + h; }, 0),
 		}
-	},
-	componentDidMount : function () {
+	}
+	componentDidMount = () => {
 		if(window.onwheel !== undefined) {
 		    window.addEventListener('wheel', this.onGlobalScroll)
 		} else if(window.onmousewheel !== undefined) {
@@ -73,8 +69,8 @@ var GridView = React.createClass({displayName: "GridView",
 				this.matchHeaderHeight();
 			}
 		}
-	},
-	componentWillUnmount : function () {
+	}
+	componentWillUnmount = () => {
 		if(window.onwheel !== undefined) {
 		    window.removeEventListener('wheel', this.onGlobalScroll)
 		} else if(window.onmousewheel !== undefined) {
@@ -82,8 +78,8 @@ var GridView = React.createClass({displayName: "GridView",
 		} else {
 		    // unsupported browser
 		}
-	},
-	componentWillReceiveProps : function (nextProps) {
+	}
+	componentWillReceiveProps = (nextProps) => {
 		var left = 0
 			, top = this.props.headerHeight
 			, heights = _.map(nextProps.data,this.rowHeight)
@@ -98,29 +94,29 @@ var GridView = React.createClass({displayName: "GridView",
 			docWidth : _.reduce(widths, function(memo, w){ return memo + w; }, 0),
 			docHeight : _.reduce(heights, function(memo, h){ return memo + h; }, 0),
 		});
-	},
-	componentDidUpdate : function () {
+	}
+	componentDidUpdate = () => {
 		if (this.props.data) {
 			if (this.props.data.length) {
 				this.updateScrollbars();
 				this.matchHeaderHeight();
 			}
 		}
-	},
+	}
 
 	// methods
-	colHeaderName : function (row, i) {
+	colHeaderName = (row, i) => {
 		return (this.props.colHeaderName) ? this.props.colHeaderName(i) : "col. " + (i+1); 
-	},
-	initialColWidth : function (col, i) {
+	}
+	initialColWidth = (col, i) => {
 		return (this.props.initialColWidth) ? this.props.initialColWidth(i) : 80;
-	},
-	rowHeight : function (row, i) {
+	}
+	rowHeight = (row, i) => {
 		return (this.props.rowHeight) ? this.props.rowHeight(i) : 30;
-	},
+	}
 
 	// event handlers
-	onGlobalScroll : function (e) {
+	onGlobalScroll = (e) => {
 		// @todo - constrain to only events that occur over the viewport
 		var vp = React.findDOMNode(this.refs["container"])
 			, x = this.state.scrollX + e.deltaX
@@ -134,18 +130,18 @@ var GridView = React.createClass({displayName: "GridView",
 		else if (y > maxY) { y = maxY; }
 
 		this.setState({ scrollX : x, scrollY : y});
-	},
+	}
 
 	// render
-	matchHeaderHeight : function () {
+	matchHeaderHeight = () => {
 		var vp = React.findDOMNode(this.refs["container"])
 			, h = React.findDOMNode(this.refs["header"]);
 		if (h.clientWidth < vp.clientWidth ) {
 			h.style.width = vp.clientWidth + "px"
 		}
-	},
+	}
 	// return necessary math for scrollbars
-	updateScrollbars : function () {
+	updateScrollbars = () => {
 		var vp = React.findDOMNode(this.refs["container"])
 			, vsb = React.findDOMNode(this.refs["vsb"])
 			, hsb = React.findDOMNode(this.refs["hsb"]);
@@ -159,14 +155,14 @@ var GridView = React.createClass({displayName: "GridView",
 		hsb.style.display = (vp.clientWidth < this.state.docWidth) ? "block" : "none"
 		hsb.style.left = horiz[0] + "px"
 		hsb.style.width = horiz[1] + "px"
-	},
-	render : function () {
+	}
+	render() {
 		var headers = [], pinnedColumns = [], cells = []
 			, scrollX = this.state.scrollX
 			, pinnedColumns = (this.props.pinnedColumns > 0) ? this.props.pinnedColumns - 1 : 0;
 
-		if (!this.props.data) { return (React.createElement("div", {className: "gridView"}, React.createElement("p", null, this.props.emptyText)))}
-		else if (!this.props.data.length) { return (React.createElement("div", {className: "gridView"}, React.createElement("p", null, this.props.emptyText)))}
+		if (!this.props.data) { return (<div className="gridView"><p>{this.props.emptyText}</p></div>)}
+		else if (!this.props.data.length) { return (<div className="gridView"><p>{this.props.emptyText}</p></div>)}
 
 		// @todo - support index columning
 		// if (this.props.showIndexColumn) { row.splice(0,0,i+1); }
@@ -182,15 +178,15 @@ var GridView = React.createClass({displayName: "GridView",
 		}
 
 		_.each(this.state.headerLabels, function (label, i) {
-			headers.push(React.createElement("div", {key: "header-" + i, 
-				className:  (i <= pinnedColumns) ? "pinned colHeader" : "colHeader", 
-				style: {
+			headers.push(<div key={"header-" + i}
+				className={ (i <= pinnedColumns) ? "pinned colHeader" : "colHeader" }
+				style={{
 					position : "absolute",
 					top : 0,
 					width : this.state.widths[i],
 					left : (i <= pinnedColumns) ? this.state.lefts[i] : this.state.lefts[i] - scrollX,
 					height : this.props.headerHeight,
-				}}, label));
+				}}>{label}</div>);
 		}, this);
 
 		_.each(this.props.data, function(row, i){
@@ -200,34 +196,34 @@ var GridView = React.createClass({displayName: "GridView",
 			}
 
 			_.each(row, function(col, j){
-				td.push(React.createElement("div", {className:  (j <= pinnedColumns) ? "pinned cell" : "cell", "data-row": i, "data-col": j, style: {
+				td.push(<div className={ (j <= pinnedColumns) ? "pinned cell" : "cell" } data-row={i} data-col={j} style={{
 					position : "absolute",
 					top : 0,
 					left : (j <= pinnedColumns) ? this.state.lefts[j] : this.state.lefts[j] - scrollX,
 					width : this.state.widths[j],
 					height : "100%"
-				}, key: "row-" + i + "-col-" + j}, col));
+				}} key={"row-" + i + "-col-" + j}>{col}</div>);
 			}, this);
 
-			cells.push(React.createElement("div", {style: {
+			cells.push(<div style={{
 															position : "absolute",
 															top : this.state.tops[i] - this.state.scrollY,
 															width : "100%",
 															height : this.state.heights[i],
-														}, className: className, key: "row-" + i}, td));
+														}} className={className} key={"row-" + i}>{td}</div>);
 		}, this);
 
 		return (
-			React.createElement("div", {ref: "container", className: "gridView"}, 
-				React.createElement("header", {ref: "header", className: "header", style: {position : "absolute", width : this.state.docWidth, left : this.state.scrollLeft, height : this.props.headerHeight}}, 
-					headers
-				), 
-				React.createElement("section", {ref: "table", className: "table"}, 
-					cells
-				), 
-				React.createElement("div", {ref: "vsb", className: "scrollBar vertical", style: { right : 2, width : this.props.scrollBarWidth}}), 
-				React.createElement("div", {ref: "hsb", className: "scrollBar horizontal", style: { bottom : 2, height : this.props.scrollBarWidth}})
-			)
+			<div ref="container" className="gridView">
+				<header ref="header" className="header" style={{position : "absolute", width : this.state.docWidth, left : this.state.scrollLeft, height : this.props.headerHeight }}>
+					{headers}
+				</header>
+				<section ref="table" className="table">
+					{cells}
+				</section>
+				<div ref="vsb" className="scrollBar vertical" style={{ right : 2, width : this.props.scrollBarWidth }}></div>
+				<div ref="hsb" className="scrollBar horizontal" style={{ bottom : 2, height : this.props.scrollBarWidth }}></div>
+			</div>
 		);
 	}
 });
@@ -248,4 +244,4 @@ function calcScrollBar (docSize, vpSize, scrollPos, minSbSize, clampStart, clamp
 	return [pos,size]
 }
 
-module.exports = GridView;
+export default GridView;

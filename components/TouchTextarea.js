@@ -1,51 +1,46 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
-var TouchTextarea = React.createClass({displayName: "TouchTextarea",
-	propTypes : {
+class TouchTextarea extends Component {
+	static propTypes = {
 		// default height for the field
-		defaultHeight : React.PropTypes.number,
+		defaultHeight : PropTypes.number,
 		// you should probably name yo fields
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// value of the field
-		value : React.PropTypes.string.isRequired,
+		value : PropTypes.string.isRequired,
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number,
+		initialInputDelay : PropTypes.number,
 		// if true, the textarea will automatically grow
 		// to match the height of the text it contains
-		autoGrow : React.PropTypes.bool,
+		autoGrow : PropTypes.bool,
 		// Use either onChange, or onValueChange. Not both.
 		// Raw change event
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// change handler in the form (value, name)
-		onValueChange : React.PropTypes.func,
-	},
+		onValueChange : PropTypes.func,
+	}
+	static defaultProps = {
+		name : "textarea",
+		initialInputDelay : 500,
+		autoGrow : true,
+		defaultHeight : 30,
+	}
+	state = {
+		height : 0
+	}
 
-	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			name : "textarea",
-			initialInputDelay : 500,
-			autoGrow : true,
-			defaultHeight : 30,
-		}
-	},
-	getInitialState : function () {
-		return {
-			height : 0
-		}
-	},
-	componentDidMount : function () {
+	// lifecycle
+	componentDidMount = () => {
 		this.mountTime = new Date().valueOf();
 		this.setHeight();
-	},
-	componentDidUpdate : function () {
+	}
+	componentDidUpdate = () => {
 		this.setHeight();
-	},
+	}
 
 	// Methods
-	setHeight : function () {
+	setHeight = () => {
 		var el = this.getDOMNode();
 		if (this.props.autoGrow) {
 			// set the height to 1px before rendering
@@ -58,10 +53,10 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 
 			el.setAttribute('style', "height : " + this.state.height + "px");
 		}
-	},
+	}
 
 	// Event Handlers
-	onChange : function (e) {
+	onChange = (e) => {
 		var value = e.target.value;
 		
 		this.setHeight();
@@ -71,8 +66,8 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		} else if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(value, this.props.name);
 		}
-	},
-	onMouseDown : function (e) {
+	}
+	onMouseDown = (e) => {
 
 		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
@@ -83,20 +78,20 @@ var TouchTextarea = React.createClass({displayName: "TouchTextarea",
 		if (typeof this.props.onMouseDown === "function") {
 			this.props.onMouseDown(e);
 		}
-	},
+	}
 
 	// Render
-	style : function () {
+	style = () => {
 		return {
 			height : (this.state.height || this.props.defaultHeight)
 		}
-	},
+	}
 
-	render : function () {
+	render() {
 		return (
-			React.createElement("textarea", React.__spread({},  this.props, {style: this.style(), onChange: this.onChange, onMouseDown: this.onMouseDown, value: this.props.value}))
+			<textarea {...this.props} style={this.style()} onChange={this.onChange} onMouseDown={this.onMouseDown} value={this.props.value} />
 		);
 	}
-});
+}
 
-module.exports = TouchTextarea;
+export default TouchTextarea;

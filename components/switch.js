@@ -1,41 +1,36 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 
-var Switch = React.createClass({displayName: "Switch",
-	propTypes : {
-		enabled : React.PropTypes.bool,
-		onToggle : React.PropTypes.func.isRequired,
-	},
+var Switch extends Component {
+	static propTypes = {
+		enabled : PropTypes.bool,
+		onToggle : PropTypes.func.isRequired,
+	}
+	static defaultProps = {
+		enabled : true,
+	}
 
-	// lifecycle
-	getDefaultProps : function () {
-		return {
-			enabled : true,
-		}
-	},
-
-	// Event Handlers
-	onToggle : function (e) {
+	// handlers
+	onToggle = (e) => {
 		if (typeof this.props.onToggle === "function") {
 			this.props.onToggle(!this.props.enabled);
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var switchClassName= this.props.enabled ? "onoffswitch on" : "onoffswitch off";
 		return (
-			React.createElement("div", {className: "switch"}, 
-				React.createElement("div", {onClick: this.onToggle, onTouchEnd: this.onToggle, className: switchClassName}, 
-			    React.createElement("label", {className: "label", htmlFor: "myonoffswitch"}, 
-		        React.createElement("span", {className: "inner"}), 
-		        React.createElement("span", {className: "switch"})
-			    )
-				)
-			)
+			<div className="switch">
+				<div onClick={this.onToggle} onTouchEnd={this.onToggle} className={switchClassName}>
+			    <label className="label" htmlFor="myonoffswitch">
+		        <span className="inner"></span>
+		        <span className="switch"></span>
+			    </label>
+				</div>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = Switch
+export default Switch;

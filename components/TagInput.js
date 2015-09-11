@@ -1,55 +1,48 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import KeyCodes from "../constants/KeyCodes";
 
 /*
  *  @stateful
  *	TagInput collects tags
  */
 
-var KeyCodes = require("../constants/KeyCodes");
 
-var TagInput = React.createClass({displayName: "TagInput",
-	propTypes : {
+class TagInput extends Component {
+	static propTypes = {
 		// be sure to include "tags" in your prop if you want
 		// consistent styling
-		className : React.PropTypes.string.isRequired,
-		onValueChange : React.PropTypes.func,
-		placeholder : React.PropTypes.string.isRequired,
+		className : PropTypes.string.isRequired,
+		onValueChange : PropTypes.func,
+		placeholder : PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
-		separator : React.PropTypes.number.isRequired,
-		value : React.PropTypes.array.isRequired,
+		separator : PropTypes.number.isRequired,
+		value : PropTypes.array.isRequired,
 		// set useObjects to true to pass objects instead of strings
-		useObjects : React.PropTypes.bool.isRequired,
+		useObjects : PropTypes.bool.isRequired,
 		// the name of the property that contains a string the tag should display
-		objectNameProp : React.PropTypes.string,
-	},
+		objectNameProp : PropTypes.string,
+	}
+	static defaultProps = {
+		separator : KeyCodes.comma,
+		placeholder : "tags",
+		className : "tags",
+		value : [],
+		useObjects : false,
+		objectNameProp : "name"
+	}
+	state = {
+		focused : false,
+		selected : 0,
+		input : ""
+	}
 
-	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			separator : KeyCodes.comma,
-			placeholder : "tags",
-			className : "tags",
-			value : [],
-			useObjects : false,
-			objectNameProp : "name"
-		}
-	},
-	getInitialState : function () {
-		return {
-			focused : false,
-			selected : 0,
-			input : ""
-		}
-	},
-
-	// Event Handlers
-	onFocus : function (e) {
+	// handlers
+	onFocus = (e) => {
 		e.preventDefault();
 		// this.refs["input"].focus();
 		return false;
-	},
-	onKeyPress : function (e) {
+	}
+	onKeyPress = (e) => {
 		e.preventDefault();
 
 		var v = this.props.value
@@ -81,9 +74,9 @@ var TagInput = React.createClass({displayName: "TagInput",
 			this.setState({ input : this.state.input + String.fromCharCode(k) })
 		}
 		
-	},
+	}
 
-	onRemoveTag : function (e) {
+	onRemoveTag = (e) => {
 		e.preventDefault();
 		var i = +e.target.getAttribute('data-key')
 			, v = this.props.value;
@@ -94,10 +87,10 @@ var TagInput = React.createClass({displayName: "TagInput",
 			this.props.onValueChange(v,this.props.name);
 		}
 		return false;
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var self = this
 			, tags = [];
 
@@ -105,21 +98,21 @@ var TagInput = React.createClass({displayName: "TagInput",
 			if (self.props.useObjects && typeof t === "object") {
 				t = t[self.props.objectNameProp];
 			}
-			tags.push(React.createElement("span", {key: i, className: "tag"}, 
-									t, 
-									React.createElement("span", {"data-key": i, className: "removeTag", onClick: self.onRemoveTag, onTouchEnd: self.onRemoveTag}, "x")
-								));
+			tags.push(<span key={i} className="tag">
+									{t}
+									<span data-key={i} className="removeTag" onClick={self.onRemoveTag} onTouchEnd={self.onRemoveTag}>x</span>
+								</span>);
 		});
 
 		return (
-			React.createElement("div", {className: this.props.className}, 
-				tags, 
-				React.createElement("span", {contentEditable: true, ref: "input", className: "input", onFocus: this.onFocus, onKeyPress: this.onKeyPress}, 
-					this.state.input
-				)
-			)
+			<div className={this.props.className}>
+				{tags}
+				<span contentEditable ref="input" className="input" onFocus={this.onFocus} onKeyPress={this.onKeyPress}>
+					{this.state.input}
+				</span>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = TagInput;
+export default TagInput;

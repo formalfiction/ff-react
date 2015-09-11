@@ -1,32 +1,27 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 /*
  * Tags displays a list of tags.
  * 
  */
 
-var Tags = React.createClass({displayName: "Tags",
-	propTypes : {
-		placeholder : React.PropTypes.string.isRequired,
+class Tags extends Component {
+	static propTypes = {
+		placeholder : PropTypes.string.isRequired,
 		// numerical keyCode, defaults to comma
-		value : React.PropTypes.array.isRequired,
-		useObjects : React.PropTypes.bool.isRequired,
-		objectNameProp : React.PropTypes.string,
-	},
-
-	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			placeholder : "",
-			value : [],
-			useObjects : false,
-			objectNameProp : "name"
-		}
-	},
+		value : PropTypes.array.isRequired,
+		useObjects : PropTypes.bool.isRequired,
+		objectNameProp : PropTypes.string,
+	}
+	static defaultProps = {
+		placeholder : "",
+		value : [],
+		useObjects : false,
+		objectNameProp : "name"
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var self = this
 			, tags = [];
 
@@ -34,15 +29,15 @@ var Tags = React.createClass({displayName: "Tags",
 			if (self.props.useObjects) {
 				t = t[self.props.objectNameProp];
 			}
-			tags.push(React.createElement("span", {key: i, className: "tag"}, t));
+			tags.push(<span key={i} className="tag">{t}</span>);
 		});
 
 		return (
-			React.createElement("div", {className: "tags"}, 
-				tags
-			)
+			<div className="tags">
+				{tags}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = Tags;
+export default Tags;

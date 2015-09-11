@@ -1,23 +1,18 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 // A simple Spinner
 
-var Spinner = React.createClass({displayName: "Spinner",
-	propTypes : {
-		// none
-	},
-
+class Spinner extends Component {
 	// Render
-	render : function () {
+	render() {
 		return (
-			React.createElement("div", {className: "spinner"}, 
-				React.createElement("div", {className: "bounce1"}), 
-				React.createElement("div", {className: "bounce2"}), 
-				React.createElement("div", {className: "bounce3"})
-			)
+			<div className="spinner">
+				<div className="bounce1"></div>
+				<div className="bounce2"></div>
+				<div className="bounce3"></div>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = Spinner;
+export default Spinner;

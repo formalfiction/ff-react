@@ -1,67 +1,62 @@
-/** @jsx React.DOM */
-var React = require('React');
+
+import { Component, PropTypes } from 'react';
 
 /*
  * templateForm takes a template prop & turns it into a form
  * where {fields} are turned into input fields
  */
-var TemplateForm = React.createClass({displayName: "TemplateForm",
-	propTypes : {
-		template : React.PropTypes.string.isRequired,
-		name : React.PropTypes.string.isRequired,
-		value : React.PropTypes.object,
-		onValueChange : React.PropTypes.func.isRequired,
-		split : React.PropTypes.object,
-		match : React.PropTypes.object,
-		disabled : React.PropTypes.bool
-	},
-
+class TemplateForm extends Component {
+	static propTypes = {
+		template : PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
+		value : PropTypes.object,
+		onValueChange : PropTypes.func.isRequired,
+		split : PropTypes.object,
+		match : PropTypes.object,
+		disabled : PropTypes.bool
+	}
 	// ComponentLifecycle
-	getDefaultProps : function () {
-		return {
-			className : "templateForm",
-			name : "templateForm",
-			split : /({.+?})/gi,
-			match : /{(.+?)}/gi,
-			disabled : false
-		}
-	},
+	static defaultProps = {
+		className : "templateForm",
+		name : "templateForm",
+		split : /({.+?})/gi,
+		match : /{(.+?)}/gi,
+		disabled : false
+	}
 
 	// Methods
-	statics : {
-		defaultMatch : function () { return this.getDefaultProps().match },
-		defaultSplit : function () { return this.getDefaultProps().split },
-		stringValue : function (template, values, splitRegex, matchRegex) {
-			matchRegex || (matchRegex = TemplateForm.defaultMatch())
-			splitRegex || (splitRegex = TemplateForm.defaultSplit())
-			values || (values = {})
+	static defaultMatch = () => { return this.getDefaultProps().match },
+	static defaultSplit = () => { return this.getDefaultProps().split },
+	static stringValue = (template, values, splitRegex, matchRegex) => {
+		matchRegex || (matchRegex = TemplateForm.defaultMatch())
+		splitRegex || (splitRegex = TemplateForm.defaultSplit())
+		values || (values = {})
 
-			var str = ""
-				, split = template.split(splitRegex);
+		var str = ""
+			, split = template.split(splitRegex);
 
-			for (var i=0, el; el=split[i]; i++) {
-				var match = matchRegex.exec(el);
-				if (match) {
-					var m = values[match[1]] || "";
-					str += "{" + m + "}";
-				} else {
-					str += el;
-				}
+		for (var i=0, el; el=split[i]; i++) {
+			var match = matchRegex.exec(el);
+			if (match) {
+				var m = values[match[1]] || "";
+				str += "{" + m + "}";
+			} else {
+				str += el;
 			}
+		}
 
-			return str;
-		},
-	},
+		return str;
+	}
 
 	// EventHandlers
-	onChange : function (e) {
+	onChange = (e) => {
 		var o = this.props.value;
 		o[e.target.name] = e.target.value;
 		this.props.onValueChange(o,this.props.name);
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var markup = []
 			, split = this.props.template.split(this.props.split);
 
@@ -69,24 +64,24 @@ var TemplateForm = React.createClass({displayName: "TemplateForm",
 			var match = this.props.match.exec(el);
 			if (match) {
 				match = match[1];
-				markup.push(React.createElement("input", {key: i, 
-														type: "text", 
-														name: match, 
-														placeholder: match, 
-														value: this.props.value[match], 
-														onChange: this.onChange, 
-														disabled: this.props.disabled}));
+				markup.push(<input  key={i}
+														type="text"
+														name={match}
+														placeholder={match}
+														value={this.props.value[match]}
+														onChange={this.onChange}
+														disabled={this.props.disabled} />);
 			} else {
-				markup.push(React.createElement("span", {key: i}, el));
+				markup.push(<span key={i}>{el}</span>);
 			}
 		}
 
 		return (
-			React.createElement("div", {className: this.props.className}, 
-				markup
-			)
+			<div className={this.props.className}>
+				{markup}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = TemplateForm;
+export default TemplateForm;

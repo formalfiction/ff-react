@@ -1,30 +1,24 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import Showdown from '../deps/Showdown';
 
-var Showdown = require('../deps/Showdown');
-
-var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
-	propTypes : {
-		name : React.PropTypes.string.isRequired,
+class MarkdownEditor extends Component{
+	static propTypes = {
+		name : PropTypes.string.isRequired,
 		// Change handler in the form (value, name)
-		onValueChange : React.PropTypes.func.isRequired,
-		value : React.PropTypes.string.isRequired,
+		onValueChange : PropTypes.func.isRequired,
+		value : PropTypes.string.isRequired,
 	},
+	state = {
+		previewing : false
+	}
 
-	// Component lifecycle methods
-	getInitialState : function () {
-		return {
-			previewing : false
-		}
-	},
-
-	// Event Handlers
-	onTogglePreview : function (e) {
+	// handlers
+	onTogglePreview = (e) => {
 		e.preventDefault();
 		this.setState({ previewing : !this.state.previewing });
 		return false;
-	},
-	onChange : function (e) {
+	}
+	onChange = (e) => {
 		e.preventDefault();
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this.props.name, this.refs["editor"].getDOMNode().value);
@@ -33,42 +27,42 @@ var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
 			this.props.onValueChange(this.refs["editor"].getDOMNode().value, this.props.name);
 		}
 		return false;
-	},
-	onSubmit : function (e) {
+	}
+	onSubmit = (e) => {
 		e.preventDefault();
 		if (typeof this.props.onSubmit() === "function") {
 			this.props.onSubmit();
 		}
 		return false;
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var editor
 			, value = this.props.value || ""
 
-		var header = React.createElement("header", null, 
-									React.createElement("a", {className: "ss-icon right", onClick: this.onTogglePreview, onTouchEnd: this.onTogglePreview}, "view")
-								 )
+		var header = <header>
+									<a className="ss-icon right" onClick={this.onTogglePreview} onTouchEnd={this.onTogglePreview}>view</a>
+								 </header>
 
 		if (this.state.previewing) {
 			var converter = new Showdown.converter()
 				, rawMarkup = converter.makeHtml(value.toString());
 
-			editor = React.createElement("div", {className: "markdownEditor"}, 
-				header, 
-				React.createElement("span", {dangerouslySetInnerHTML: { __html : rawMarkup}})
-			)
+			editor = <div className="markdownEditor">
+				{header}
+				<span dangerouslySetInnerHTML={{ __html : rawMarkup}}></span>
+			</div>
 
 		} else {
-			editor = React.createElement("div", {className: "markdownEditor", onSubmit: this.onSubmit}, 
-				header, 
-				React.createElement("textarea", {ref: "editor", value: value, onChange: this.onChange})
-			)
+			editor = <div className="markdownEditor" onSubmit={this.onSubmit}>
+				{header}
+				<textarea ref="editor" value={value} onChange={this.onChange}></textarea>
+			</div>
 		}
 
 		return editor;
 	}
-});
+}
 
-module.exports = MarkdownEditor;
+export default MarkdownEditor;

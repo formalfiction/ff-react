@@ -1,30 +1,24 @@
-/** @jsx React.DOM */
-var React = require('React');
-
+import { Component, PropTypes } from 'react';
+import Clock from './Clock';
 /*
  * TimePicker Pairs the Clock Component with an
  * input field.
  * 
  */
 
-var Clock = require('./Clock');
-
-var TimePicker = React.createClass({displayName: "TimePicker",
-	propTypes : {
+class TimePicker extends Component {
+	static propTypes = {
 		// @todo
-	},
-	hours 	: ["01","02","03","04","05","06","07","08","09","10","11","12"],
-	minutes : ["00","15","30","45"],
-	phase 	: ["am","pm"],
+	}
+	static hours 	= ["01","02","03","04","05","06","07","08","09","10","11","12"]
+	static minutes = ["00","15","30","45"]
+	static phase 	= ["am","pm"]
+	state = {
+		focused : false
+	}
 
-	// Component lifecycle methods
-	getInitialState : function () {
-		return {
-			focused : false
-		}
-	},
 	// return a string representation of the time
-	_stringValue : function () {
+	_stringValue = () => {
 		var val = this.props.value;
 		// if no initial value return blank string
 		if (!val) {
@@ -45,49 +39,49 @@ var TimePicker = React.createClass({displayName: "TimePicker",
 		}
 
 		return this.hours[(h === 0) ? h : h - 1] + ":" + this.minutes[m] + " " + this.phase[ph]
-	},
-	_focus : function () {
+	}
+	_focus = () => {
 		this.setState({ focused : true });
-	},
-	_blur : function () {
+	}
+	_blur = () => {
 		this.setState({ focused : false });
-	},
-	_fakeFn : function () { },
+	}
+	_fakeFn = () => { },
 	// Clicks on the clock div should maintain focus on the element
-	_clockMouseDown : function (e) {
+	_clockMouseDown = (e) => {
 		e.preventDefault();
 		// Cancel Blur event triggered by clicking the clock
 		$(this.refs["field"].getDOMNode()).focus();
 		return false;
-	},
-	_clockChange : function (value) {
+	}
+	_clockChange = (value) => {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange({
 				name : this.props.name,
 				value : value
 			});
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var time
 			, display = this._stringValue();
 
 		// if (this.refs["field"]) {
 		// 	if ($(this.refs["field"]).is(":focus")) {
 		if (this.state.focused) {
-			time = React.createElement(Clock, {onMouseDown: this._clockMouseDown, value: this.props.value, onChange: this._clockChange})	
+			time = <Clock onMouseDown={this._clockMouseDown} value={this.props.value} onChange={this._clockChange} />	
 		}
 
 		return (
-			React.createElement("div", {className: "timePicker field"}, 
-				React.createElement("label", null, this.props.label), 
-				React.createElement("input", {ref: "field", value: display, onChange: this._fakeFn, onFocus: this._focus, onBlur: this._blur}), 
-				time
-			)
+			<div className="timePicker field">
+				<label>{this.props.label}</label>
+				<input ref="field" value={display} onChange={this._fakeFn} onFocus={this._focus} onBlur={this._blur}></input>
+				{time}
+			</div>
 		)
 	}
-});
+}
 
-module.exports = TimePicker;
+export default TimePicker;

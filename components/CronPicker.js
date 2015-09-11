@@ -1,37 +1,31 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
-var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const repeatType = [];
 
-var repeatType = [
-
-];
-
-var RepeatPicker = React.createClass({displayName: "RepeatPicker",
-	propTypes : {
-		name : React.PropTypes.string,
-		value : React.PropTypes.string.isRequired,
-		onValueChange : React.PropTypes.func.isRequired,
-		repeatType : React.PropTypes.string
-	},
+class RepeatPicker extends Component {
+	static propTypes = {
+		name : PropTypes.string,
+		value : PropTypes.string.isRequired,
+		onValueChange : PropTypes.func.isRequired,
+		repeatType : PropTypes.string
+	}
+	static defaultProps = {
+		name : "cronPicker",
+		className : "cronPicker",
+		value : "* 0 0 * * *",
+	}
 
 	// lifecycle
-	getDefaultProps : function () {
-		return {
-			name : "cronPicker",
-			className : "cronPicker",
-			value : "* 0 0 * * *",
-		};
-	},
-	getInitialState : function () {
-		return this.parse(this.props.value );
-	},
-	componentWillReceiveProps : function (nextProps) {
-		this.setState(this.parse(nextProps.value))
-	},
+	getInitialState = () => {
+		return this.parse(this.props.value);
+	}
+	componentWillReceiveProps = (nextProps) => {
+		this.setState(this.parse(nextProps.value));
+	}
 
 	// methods
-	parse : function (value) {
+	static parse(value) {
 		var parsed = {
 			repeatType : "weekdays",
 			weekdays : [false, false, false, false, false, false, false]
@@ -42,13 +36,12 @@ var RepeatPicker = React.createClass({displayName: "RepeatPicker",
 		}
 
 		return parsed;
-	},
+	}
 	// take a parsed object & turn it into a string
-	toString : function (value) {
-		value || (value = this.state)
+	static toString(value) {
 		// parse weekdays
-		var wd = "*";
-		for (var i=0; i < 7; i++) {
+		let wd = "*";
+		for (let i=0; i < 7; i++) {
 			if (value.weekdays[i]) {
 				if (wd == "*") {
 					wd = i.toString();
@@ -58,9 +51,10 @@ var RepeatPicker = React.createClass({displayName: "RepeatPicker",
 			}
 		}
 		return "* 0 0 * * " + wd;
-	},
-	dayOfWeekIsSelected : function (dayInt, value) {
-		var weekdays = value.split(" ");
+	}
+	// check if a day of the week is selected
+	static dayOfWeekIsSelected(dayInt, value) {
+		let weekdays = value.split(" ");
 		weekdays = weekdays[weekdays.length - 1];
 
 		// if it's the wildcard, we're selected
@@ -70,16 +64,16 @@ var RepeatPicker = React.createClass({displayName: "RepeatPicker",
 		// if weekdays contains a range, check to see if the
 		// number is within the range
 		if (~weekdays.indexOf('-')) {
-			var startStop = weekdays.split("-")
+			let startStop = weekdays.split("-")
 				, start = +startStop[0]
 				, stop = +startStop[1];
 			if (dayInt > start && dayInt < stop) { return true; }
 		}
 		return false;
-	},
+	}
 
-	// event handlers
-	onDayOfWeekCheckboxChange : function (e) {
+	// handlers
+	onDayOfWeekCheckboxChange = (e) => {
 		var name = e.target.getAttribute('name')
 			, value = this.state;
 
@@ -91,28 +85,23 @@ var RepeatPicker = React.createClass({displayName: "RepeatPicker",
 		}
 
 		this.props.onValueChange(this.toString(value), this.props.name);
-	},
+	}
 
 	// render 
-	renderDayCheckboxes : function () {
-		var els = [];
-		for (var i=0,d; d=days[i]; i++) {
-			els.push(
-				React.createElement("span", {key: i}, 
-					React.createElement("label", {htmlFor: d}, d), 
-					React.createElement("input", {name: d, type: "checkbox", checked: this.state.weekdays[i], onChange: this.onDayOfWeekCheckboxChange})
-				)
-			);
-		}
-		return els;
-	},
-	render : function () {
+	render() {
 		return (
-			React.createElement("div", {className: this.props.className}, 
-				this.renderDayCheckboxes()
-			)
+			<div className={this.props.className}>
+			{days.map((d, i) => {
+				return (
+					<span key={i}>
+						<label htmlFor={d}>{d}</label>
+						<input name={d} type="checkbox" checked={this.state.weekdays[i]} onChange={this.onDayOfWeekCheckboxChange} />
+					</span>
+				)
+			})}
+			</div>
 		);
 	}
 });
 
-module.exports = RepeatPicker;
+export default RepeatPicker;

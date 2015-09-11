@@ -1,58 +1,53 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 // modal wrapper for any react element
 // stateless, by default shows a header above with
 // no title & a close button that triggers onClose prop
 
-var ElementModal = React.createClass({displayName: "ElementModal",
-	propTypes : {
-		element : React.PropTypes.element.isRequired,
+class ElementModal extends Component {
+	static propTypes = {
+		element : PropTypes.element.isRequired,
 		// supply a close handler func to actually close the
 		// modal
-		onClose : React.PropTypes.func,
+		onClose : PropTypes.func,
 		// title string for the header defaults to ""
-		title : React.PropTypes.string,
+		title : PropTypes.string,
 		// set to false & it will hide the header
 		// this includes the close button, so onClose will
 		// never be called if this is true
-		showHeader : React.PropTypes.bool,
-	},
+		showHeader : PropTypes.bool,
+	}
+	static defaultProps = {
+		title : "",
+		showHeader : true
+	}
 
-	//lifecycle
-	getDefaultProps : function () {
-		return {
-			title : "",
-			showHeader : true
-		}
-	},
-
-	// event handlers
-	onClose: function (e) {
+	// handlers
+	onClose = (e) => {
 		if (typeof this.props.onClose === "function") {
 			this.props.onClose(e);
 		}
-	},
+	}
 
 	// Render
-	header : function () {
+	header = () => {
 		if (this.props.showHeader) {
 			return (
-				React.createElement("header", null, 
-					React.createElement("h4", null, this.props.title), 
-					React.createElement("div", {className: "close ss-icon", onClick: this.onClose, onTouchEnd: this.onClose}, "close")
-				)
+				<header>
+					<h4>{this.props.title}</h4>
+					<div className="close ss-icon" onClick={this.onClose} onTouchEnd={this.onClose}>close</div>
+				</header>
 			);
 		}
-	},
-	render : function () {
+	} 
+	render() {
 		return (
-			React.createElement("div", {className: "modal dialogue"}, 
-				this.header(), 
-				this.props.element
-			)
+			<div className="modal dialogue">
+				{this.header()}
+				{this.props.element}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = ElementModal;
+export default ElementModal;

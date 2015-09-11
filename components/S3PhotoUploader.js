@@ -1,5 +1,5 @@
-/** @jsx React.DOM */
-var React = require('React');
+
+import { Component, PropTypes } from 'react';
 
 /*
  * @stateful
@@ -13,8 +13,8 @@ var React = require('React');
 
 var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
-	propTypes : {
+var S3PhotoUploader extends Component {
+	static propTypes = {
 		// @todo
 	},
 
@@ -91,25 +91,25 @@ var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
 	progress : function () {
 		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
 	},
-	render : function () {
+	render() {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.createElement("a", {className: "delete ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
+			del = <a className="delete ss-icon" onClick={this.removePhoto} onTouchEnd={this.removePhoto}>delete</a>
 		}
 		return (
-			React.createElement("div", {className: "s3PhotoUpload"}, 
-				React.createElement("input", {ref: "file", style: { display : "none"}, disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
-				React.createElement("div", {className: "photo", onClick: this.onClickPhoto, onTouchEnd: this.onClickPhoto}, 
-					del, 
-					React.createElement("img", {className: "preview", src: this.props.src}), 
-					React.createElement("div", {className: "progress"}, 
-						React.createElement("div", {className: "bar", style:  { width : this.progress()} })
-					)
-				), 
-				React.createElement("p", {className: "status"}, this.state.uploadStatus)
-			)
+			<div className="s3PhotoUpload">
+				<input ref="file" style={{ display : "none"}} disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
+				<div className="photo" onClick={this.onClickPhoto} onTouchEnd={this.onClickPhoto}>
+					{del}
+					<img className="preview" src={this.props.src} />
+					<div className="progress">
+						<div className="bar" style={ { width : this.progress() } }></div>
+					</div>
+				</div>
+				<p className="status">{this.state.uploadStatus}</p>
+			</div>
 		);
 	}
 });
 
-module.exports = S3PhotoUploader;
+export default S3PhotoUploader;

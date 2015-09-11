@@ -1,37 +1,32 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 /* Basic 505 Error Component */
 
-var FiveOhFive = React.createClass({displayName: "FiveOhFive",
-	propTypes : {
-		message : React.PropTypes.string,
-		title : React.PropTypes.string,
-	},
+class FiveOhFive extends Component {
+	static propTypes = {
+		message : PropTypes.string,
+		title : PropTypes.string,
+	}
+	static defaultProps = {
+		message : "Something has gone wrong.",
+		title : "Awe Shucks"
+	}
 
-	// Component lifecycle methods
-	getDefaultProps : function () {
-		return {
-			message : "Something has gone wrong.",
-			title : "Awe Shucks",
-		}
-	},
-
-	// Methods
-	reloadPage : function () {
+	// methods
+	reloadPage() {
 		window.location.reload()
-	},
+	}
 	
-	// Render
-	render : function () {
+	// render
+	render() {
 		return (
-			React.createElement("div", {className: "fiveOhFive error"}, 
-				React.createElement("h3", null, this.props.title), 
-				React.createElement("p", null, this.props.message), 
-				React.createElement("button", {onClick: this.reloadPage, onTouchEnd: this.reloadPage}, "Reload")
-			)
+			<div className="fiveOhFive error">
+				<h3>{this.props.title}</h3>
+				<p>{this.props.message}</p>
+				<button onClick={this.reloadPage} onTouchEnd={this.reloadPage}>Reload</button>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = FiveOhFive
+export default FiveOhFive;

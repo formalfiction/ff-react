@@ -1,28 +1,27 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 
 // A placeholder Nestable Item
-var NestableItem = React.createClass({displayName: "NestableItem",
-	render : function () {
-		var items, data = this.props.data
+class NestableItem extends Component {
+	render() {
+		let items, data = this.props.data
 		if (data.data) {
-			items = React.createElement("div", {className: "list"}, 
-								
+			items = <div className="list">
+								{
 									data.data.map(function(d,i){
-										return React.createElement(NestableItem, React.__spread({},  this.props, {"data-list": this.props.index, "data-index": i, key: this.props.index + "." + i, data: d}))
+										return <NestableItem {...this.props} data-list={this.props.index} data-index={i} key={this.props.index + "." + i} data={d} />
 									}, this)
-								
-							)
+								}
+							</div>
 		};
 
 		return (
-			React.createElement("div", React.__spread({},  this.props, {className: "item"}), 
-				React.createElement("p", null, this.props.data.name), 
-				items
-			)
+			<div {...this.props} className="item">
+				<p>{this.props.data.name}</p>
+				{items}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = NestableItem;
+export default NestableItem;

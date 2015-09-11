@@ -1,76 +1,71 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
-var ValidSelectInput = React.createClass({displayName: "ValidSelectInput",
-	propTypes : {
+class ValidSelectInput extends Component {
+	static propTypes = {
 		// gotta name yo fields
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// field value
-		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
+		value : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 		// array of potential options
-		options : React.PropTypes.array,
+		options : PropTypes.array,
 		// use either onChange or onValueChange. Not both
 		// std onChange event
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// onChange in the form of (value, name)
-		onValueChange : React.PropTypes.func,
+		onValueChange : PropTypes.func,
 		// placeholder text
-		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
+		placeholder : PropTypes.oneOfType([PropTypes.string,PropTypes.number]),
 		// leave undefined to display no valid
-		valid : React.PropTypes.bool,
+		valid : PropTypes.bool,
 		// leave undefined to display no message
-		message : React.PropTypes.string,
+		message : PropTypes.string,
 		// enable / disable the field
-		disabled : React.PropTypes.bool,
+		disabled : PropTypes.bool,
 		// className will set on the containing div
-		className : React.PropTypes.string
-	},
+		className : PropTypes.string
+	}
+	static defaultProps = {
+		name : "",
+		placeholder : "",
+		options : [],
+		valid : undefined,
+		message : undefined,
+	}
 
-	// Component lifecycle methods
-	getDefaultProps : function () {
-		return {
-			name : "",
-			placeholder : "",
-			options : [],
-			valid : undefined,
-			message : undefined,
-		}
-	},
-
-	// Event Handlers
-	onChange : function (e) {
+	// handlers
+	onChange = (e) => {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);
 		}
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(e.target.value, this.props.name);
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var props = this.props
 			, label
 			, options = []
 
 		if (props.label) {
-			label = React.createElement("label", null, props.label)
+			label = <label>{props.label}</label>
 		}
 
 		props.options.forEach(function(opt, i){
-			options.push(React.createElement("option", {value: opt.value, key: i}, opt.name))
+			options.push(<option value={opt.value} key={i}>{opt.name}</option>)
 		});
 
 		return(
-			React.createElement("div", {className: props.className + " valdSelectInput field"}, 
-				React.createElement("select", {disabled: props.disabled, type: "text", name: props.name, placeholder: props.placeholder, value: props.value, onFocus: props.onFocus, onBlur: props.onBlur, onChange: this.onChange}, 
-					options
-				), 
-				React.createElement("span", {className: "indicator ss-icon"}, props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") ), 
-				React.createElement("span", {className: "message"}, props.valid ? props.message : "")
-			)
+			<div className={props.className + " valdSelectInput field"}>
+				<select disabled={props.disabled} type="text" name={props.name} placeholder={props.placeholder} value={props.value} onFocus={props.onFocus} onBlur={props.onBlur} onChange={this.onChange}>
+					{options}
+				</select>
+				<span className="indicator ss-icon">{props.valid ? "checked" : ((!props.valid && props.value) ? "close" : "") }</span>
+				<span className="message">{props.valid ? props.message : "" }</span>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = ValidSelectInput;
+export default ValidSelectInput;

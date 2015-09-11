@@ -1,5 +1,5 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import TouchAnchor from './TouchAnchor';
 
 /* @stateful
  * 
@@ -7,34 +7,31 @@ var React = require('React');
  * small day-picker. Uses state to change the month
  * being displayed
  */
-
-var TouchAnchor = require('./TouchAnchor');
-var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	, days = { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 };
 
 
-var MonthCalendar = React.createClass({displayName: "MonthCalendar",
-	propTypes : {
-		name : React.PropTypes.string,
+class MonthCalendar extends Component {
+	static propTypes = {
+		name : PropTypes.string,
 		// we accept onMouseDown & onTouchEnd Handlers
 		// for use in conjunction with an input field
 		// to cancel events that would blur the field.
-		onMouseDown : React.PropTypes.func,
-		onTouchEnd : React.PropTypes.func,
+		onMouseDown : PropTypes.func,
+		onTouchEnd : PropTypes.func,
 		// @todo - make this a date object
-		value : React.PropTypes.object.isRequired,
-		onChange : React.PropTypes.func,
+		value : PropTypes.object.isRequired,
+		onChange : PropTypes.func,
 		// onChange handler in the form (value, name)
-		onValueChange : React.PropTypes.func
-	},
+		onValueChange : PropTypes.func
+	}
+	static defaultProps = {
+		name : "calendar",
+		value : new Date()
+	}
+
 	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			name : "calendar",
-			value : new Date()
-		}
-	},
-	getInitialState : function () {
+	getInitialState = () => {
 		// This looks like the "don't transfer props" anti-pattern,
 		// but I promise it's... not. We need to pull the month into
 		// state to manipulate the month we're displaying, and we need
@@ -47,23 +44,24 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 			// day of the month currently being displayed
 			displayMonth : displayMonth
 		}
-	},
+	}
 
-	// Methods
-	monthString : function (d) {
+	// methods
+	static monthString(d) {
 		return months[d.getMonth()];
-	},
-	isValue : function (date) {
+	}
+
+	isValue = (date) => {
 		var v = this.props.value;
 		return (
 			v.getFullYear() === date.getFullYear()
 			&& v.getMonth() === date.getMonth() 
 			&& v.getDate() === date.getDate()
 		);
-	},
+	}
 
-	// Event Handlers
-	onSelectDay : function (e) {
+	// handlers
+	onSelectDay = (e) => {
 		e.preventDefault();
 		var value = +e.target.getAttribute("data-value")
 			, d = new Date(value);
@@ -73,8 +71,8 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 		} else if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(d, this.props.name);
 		}
-	},
-	onPrevMonth : function (e) {
+	}
+	onPrevMonth = (e) => {
 		var d = this.state.displayMonth;
 		if (d.getMonth() > 0) {
 			d.setMonth(d.getMonth() - 1);
@@ -84,8 +82,8 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 		}
 		
 		this.setState({ displayMonth : d });
-	},
-	onNextMonth : function (e) {
+	}
+	onNextMonth = (e) => {
 		var d = this.state.displayMonth;
 		if (d.getMonth() < 11) {
 			d.setMonth(d.getMonth() + 1);
@@ -95,10 +93,10 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 		}
 
 		this.setState({ displayMonth : d });
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var value = this.props.value
 			, startDay = this.state.displayMonth.toString().split(' ')[0].toLowerCase()
 			, offset = days[startDay]
@@ -122,37 +120,37 @@ var MonthCalendar = React.createClass({displayName: "MonthCalendar",
 
 				// Add buttons in as <a> tags to ensure click / touch events
 				// are picked up
-				week.push(React.createElement("td", {
-										onClick: this.onSelectDay, 
-										onTouchEnd: this.onSelectDay, 
-										className: c, 
-										key:  d + (w * 7), 
-										"data-value": wd.valueOf()
-										}, wd.getDate()));
+				week.push(<td
+										onClick={this.onSelectDay}
+										onTouchEnd={this.onSelectDay}
+										className={c} 
+										key={ d + (w * 7) }
+										data-value={wd.valueOf()}
+										>{wd.getDate()}</td>);
 			}
-			weeks.push(React.createElement("tr", {key: w}, week));
+			weeks.push(<tr key={w}>{week}</tr>);
 		}
 
 		return (
-			React.createElement("div", {className: "calendar cal", onMouseDown: this.props.onMouseDown, onTouchEnd: this.props.onTouchEnd}, 
-				React.createElement("div", {className: "header"}, 
-					React.createElement(TouchAnchor, {className: "backButton ss-icon", onClick: this.onPrevMonth, text: "previous"}), 
-					React.createElement(TouchAnchor, {className: "nextButton ss-icon", onClick: this.onNextMonth, text: "next"}), 
-					React.createElement("h5", {className: "month"}, this.monthString(this.state.displayMonth)), 
-					React.createElement("p", {className: "year"}, this.state.displayMonth.getFullYear()), 
-					React.createElement("hr", null)
-				), 
-				React.createElement("table", {className: "dates"}, 
-					React.createElement("thead", null, 
-						React.createElement("tr", null, 
-							React.createElement("th", null, "S"), React.createElement("th", null, "M"), React.createElement("th", null, "T"), React.createElement("th", null, "W"), React.createElement("th", null, "T"), React.createElement("th", null, "F"), React.createElement("th", null, "S")
-						)
-					), 
-					weeks
-				)
-			)
+			<div className="calendar cal" onMouseDown={this.props.onMouseDown} onTouchEnd={this.props.onTouchEnd}>
+				<div className="header">
+					<TouchAnchor className="backButton ss-icon" onClick={this.onPrevMonth} text="previous" />
+					<TouchAnchor className="nextButton ss-icon" onClick={this.onNextMonth} text="next" />
+					<h5 className="month">{this.monthString(this.state.displayMonth)}</h5>
+					<p className="year">{this.state.displayMonth.getFullYear()}</p>
+					<hr />
+				</div>
+				<table className="dates">
+					<thead>
+						<tr>
+							<th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th>
+						</tr>
+					</thead>
+					{weeks}
+				</table>
+			</div>
 		);
 	}
 });
 
-module.exports = MonthCalendar;
+export default MonthCalendar;

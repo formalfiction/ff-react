@@ -1,14 +1,14 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
-var Address = React.createClass({displayName: "Address",
-	propTypes : {
-		value : React.PropTypes.object.isRequired
-	},
+class Address extends Component {
+	static propTypes = {
+		value : PropTypes.object.isRequired
+	}
 
-	string : function () {
-		var address = this.props.value
-			, out = "";
+	// methods
+	string = () => {
+		const address = this.props.value
+		let out = "";
 
 		if (!address) { return ""; }
 
@@ -22,16 +22,15 @@ var Address = React.createClass({displayName: "Address",
 		if (address.postalCode) { out += " " + address.postalCode }
 
 		return out;
-	},
+	}
 
-	render : function () {
-		var address = this.props.value;
+	render() {
 		return (
-			React.createElement("div", {className: "address"}, 
-				React.createElement("p", null, this.string())
-			)
+			<div className="address">
+				<p>{this.string()}</p>
+			</div>
 		);
 	}
 });
 
-module.exports = Address;
+export default Address;

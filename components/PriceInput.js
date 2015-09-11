@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
-var React = require('React')
-	, $ = require('jquery')
+import { Component, PropTypes } from 'react';
+import $ from 'jquery';
+import maskMoney from '../deps/MaskMoney';
 
 /* 
  *
@@ -11,35 +11,31 @@ var React = require('React')
  * 
  */
 
-var maskMoney = require('../deps/MaskMoney');
-
-var PriceInput = React.createClass({displayName: "PriceInput",
-	propTypes : {
+class PriceInput extends Component {
+	static propTypes = {
 		// Value for the field
-		value : React.PropTypes.number.isRequired,
+		value : PropTypes.number.isRequired,
 		// Name for the field
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// Raw onChange Method
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// Will call with (value, key) on change
-		onValueChange : React.PropTypes.func
-	},
+		onValueChange : PropTypes.func
+	}
+	static defaultProps = {
+		value : 0
+	}
 
 	// Component Lifecycle
-	componentDidMount : function () {
+	componentDidMount = () => {
 		$(this.refs["input"].getDOMNode()).maskMoney({ prefix : "$", suffix : this.props.suffix }).maskMoney('mask',this.props.value / 100);
-	},
-	componentDidUpdate : function () {
+	}
+	componentDidUpdate = () => {
 		$(this.refs["input"].getDOMNode()).maskMoney('mask',this.props.value / 100);
-	},
-	getDefaultProps : function () {
-		return {
-			value : 0
-		};
-	},
+	}
 
 	// Event handlers
-	onKeyUp : function (e) {
+	onKeyUp = (e) => {
 		var val = Math.floor($(e.target).maskMoney('unmasked')[0] * 100);
 		// e.target.value = val;
 
@@ -51,27 +47,27 @@ var PriceInput = React.createClass({displayName: "PriceInput",
 				this.props.onValueChange(val, this.props.name)
 			}
 		}
-	},
-	onChange : function (e) {
+	}
+	onChange = (e) => {
 		// this.props.onChange(e);
-	},
+	}
 
 	// Render Methods
-	render : function () {
+	render() {
 		var disabled = (this.props.editable !== undefined || this.props.editable !== false);
 
 		return (
-			React.createElement("div", {className: "field priceInput " + this.props.className}, 
-				React.createElement("input", {ref: "input", 
-					name: this.props.name, 
-					type: "text", 
-					pattern: "[0-9]*", 
-					value: this.props.value, 
-					onChange: this.onChange, 
-					onKeyUp: this.onKeyUp})
-			)
+			<div className={"field priceInput " + this.props.className}>
+				<input ref="input"
+					name={this.props.name}
+					type="text"
+					pattern="[0-9]*" 
+					value={this.props.value}
+					onChange={this.onChange}
+					onKeyUp={this.onKeyUp} />
+			</div>
 		)
 	}
-});
+}
 
-module.exports = PriceInput;
+export default PriceInput;

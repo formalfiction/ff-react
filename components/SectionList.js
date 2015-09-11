@@ -1,52 +1,47 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import DeviceStore from "../stores/DeviceStore";
+import _ from 'underscore';
+import Spinner from './Spinner';
 
-var DeviceStore = require("../stores/DeviceStore")
-	, _ = require('underscore');
-
-var Spinner = require('./Spinner');
-
-var SectionList = React.createClass({displayName: "SectionList",
-	propTypes : {
+class SectionList extends Component {
+	static propTypes = {
 		// data MUST come in as an array of objects, where each object has:
 		// a "section" property, that is an object to populate the section
 		// header with
 		// a "data" property, that is an array of list items
-		data : React.PropTypes.array.isRequired,
+		data : PropTypes.array.isRequired,
 		// loading flag
-		loading : React.PropTypes.bool,
+		loading : PropTypes.bool,
 		// Func to call when we need more rows, typically 
 		// from scrolling down the screen
-		onLoadMore : React.PropTypes.func,
+		onLoadMore : PropTypes.func,
 		// should be a react component that we can iterate with
-		header : React.PropTypes.func.isRequired,
+		header : PropTypes.func.isRequired,
 		// should be a react element that we can iterate with
-		element : React.PropTypes.func.isRequired,
+		element : PropTypes.func.isRequired,
 		// string to display when we have no items in the list
-		noItemsString : React.PropTypes.string,
+		noItemsString : PropTypes.string,
 		// array of indexes to add "selected" class to.
 		// for a single selection, pass in a single element array :)
-		selected : React.PropTypes.array
-	},
-
-	// Lifecycle
-	getDefaultProps : function() {
-		return {
+		selected : PropTypes.array
+	}
+	static defaultProps = {
 			className : "list",
 			noItemsString : "No Items",
 			data : [],
 			selected : []
-		}
-	},
-	componentDidMount : function () {
+	}
+
+	// Lifecycle
+	componentDidMount = () => {
 		DeviceStore.onScroll(this.onScroll);
-	},
-	componentWillUnmount : function () {
+	}
+	componentWillUnmount = () => {
 		DeviceStore.offScroll(this.onScroll);
-	},
+	}
 
 	// Event Handlers
-	onScroll : function (e) {
+	onScroll = (e) => {
 		if (typeof this.props.onLoadMore == "function" && !this.props.loading && this.isMounted()) {
 			var height = e.target.scrollHeight;
 
@@ -55,39 +50,39 @@ var SectionList = React.createClass({displayName: "SectionList",
 				this.props.onLoadMore();
 			}
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var items = [], loader, selected, num = 0;
 
 		if (this.props.data.length) {
 			for (var i=0,s; s=this.props.data[i]; i++) {
-				items.push(React.createElement(this.props.header, {data: s.section, key: "section-" + i}));
+				items.push(<this.props.header data={s.section} key={"section-" + i} />);
 				for (var j=0,m; m=s.data[j]; j++) {
 					selected = false;
 					for (var k=0; k < this.props.selected.length; k++) {
 						if (num === this.props.selected[k]) { selected = true; break; }
 					}
-					items.push(React.createElement(this.props.element, React.__spread({},  this.props, {selected: selected, data: m, index: num, key: m.id || m.cid || i+"."+j})));
+					items.push(<this.props.element {...this.props} selected={selected} data={m} index={num} key={m.id || m.cid || i+"."+j} />);
 					num++;
 				}
 			}
 		} else if (!this.props.loading) {
-			items = React.createElement("div", {className: "noItems"}, React.createElement("h4", {className: "text-center"}, this.props.noItemsString))
+			items = <div className="noItems"><h4 className="text-center">{this.props.noItemsString}</h4></div>
 		}
 
 		if (this.props.loading) {
-			loader = React.createElement(Spinner, null)
+			loader = <Spinner />
 		}
 
 		return (
-				React.createElement("div", {className: this.props.className}, 
-					items, 
-					loader
-				)
+				<div className={this.props.className}>
+					{items}
+					{loader}
+				</div>
 			);
 	}
-});
+}
 
-module.exports = SectionList;
+export default SectionList;

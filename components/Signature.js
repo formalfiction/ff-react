@@ -1,5 +1,7 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import DeviceStore from '../stores/DeviceStore';
+import SignaturePad from '../deps/SignaturePad';
+import TouchButton from './TouchButton';
 
 /*
  * SignaturePad takes user signatures & spits out
@@ -7,35 +9,30 @@ var React = require('React');
  * 
  */
 
-var DeviceStore = require('../stores/DeviceStore')
-
-var SignaturePad = require('../deps/SignaturePad')
-	, TouchButton = require('./TouchButton');
-
-var Signature = React.createClass({displayName: "Signature",
-	propTypes : {
+class Signature extends Component {
+	static propTypes = {
 		// optional dataURI to populate signature with
-		data : React.PropTypes.string,
+		data : PropTypes.string,
 		// flag for if the canvas has been signed
 		// (contains any drawing)
-		signed : React.PropTypes.bool,
+		signed : PropTypes.bool,
 		// completion handler func
-		done : React.PropTypes.func.isRequired,
+		done : PropTypes.func.isRequired,
 		// heightRatio defaults to 0.5, yeilding an aspect ratio of 2:1
-		heightRatio : React.PropTypes.number,
-	},
-
-	// sure, let's cheat a bunch
-	canvasWidth : undefined,
-
-	// Component Lifecycle methods
-	getDefaultProps : function () {
+		heightRatio : PropTypes.number,
+	}
+	static defaultProps = {
 		return {
 			signed : false,
 			heightRatio : 2.5
 		}
-	},
-	componentDidMount : function () {
+	}
+
+	// sure, let's cheat a bunch
+	canvasWidth : undefined,
+
+	// lifecycle
+	componentDidMount = () => {
 		DeviceStore.onOrientationChange(this.onResizeEnd);
 		DeviceStore.onResizeEnd(this.onResizeEnd);
 		var w = this.getDOMNode().offsetWidth
@@ -55,18 +52,18 @@ var Signature = React.createClass({displayName: "Signature",
 		}
 		
 		this.onResizeEnd();
-	},
-	componentWillUnmount : function () {
+	}
+	componentWillUnmount = () => {
 		DeviceStore.offResizeEnd(this.onResizeEnd);
 		DeviceStore.offOrientationChange(this.onResizeEnd);
-	},
-	componentDidUpdate : function () {
+	}
+	componentDidUpdate = () => {
 		if (this.props.signed) {
 			this.signaturePad.enabled(false);
 		}
-	},
+	}
 	// Methods
-	onResizeEnd : function () {
+	onResizeEnd = () => {
 		var canvas = this.refs.canvas.getDOMNode()
 			, ratio = window.devicePixelRatio || 1
 			, signatureCopy;
@@ -96,14 +93,14 @@ var Signature = React.createClass({displayName: "Signature",
 		}
 
 		this.canvasWidth = canvas.width
-  },
-	reset : function (e) {
+  }
+	reset = (e) => {
 		e.preventDefault();
 		this.signaturePad.clear();
 		this.signaturePad.disabled = false;
 		return false;
-	},
-	done : function (e) {
+	}
+	done = (e) => {
 		e.preventDefault();
 
 		if (this.signaturePad.isEmpty()) {
@@ -116,18 +113,18 @@ var Signature = React.createClass({displayName: "Signature",
 		}
 		this.signaturePad.disabled = true;
 		return false;
-	},
-	render : function () {
+	}
+	render() {
 		return (
-			React.createElement("div", {className: "signature"}, 
-				React.createElement("canvas", {className: "canvas", ref: "canvas"}), 
-				React.createElement("div", {className: "buttons"}, 
-			 		React.createElement(TouchButton, {className: "reset", disabled: this.props.signed, onClick: this.reset, text: "reset"}), 
-					React.createElement(TouchButton, {className: "done", disabled: this.props.signed, onClick: this.done, text: "done"})
-				)
-			)
+			<div className="signature">
+				<canvas className="canvas" ref="canvas"></canvas>
+				<div className="buttons">
+			 		<TouchButton className="reset" disabled={this.props.signed} onClick={this.reset} text="reset" />
+					<TouchButton className="done" disabled={this.props.signed} onClick={this.done} text="done" />
+				</div>
+			</div>
 		);
 	}
-});
+}
 
-module.exports= Signature;
+export default Signature;

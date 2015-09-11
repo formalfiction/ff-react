@@ -1,26 +1,23 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 /* @stateful
  * SlideShow is your classic, one-up slider
  */
 
-var SlideShow = React.createClass({displayName: "SlideShow",
-	propTypes : {
-		loop : React.PropTypes.bool,
-		onSlideEnd : React.PropTypes.func,
-		onSlideBegin : React.PropTypes.func,
-		onSelect : React.PropTypes.func,
-		showButtons : React.PropTypes.bool,
-		showPageIndicators : React.PropTypes.bool,
+class SlideShow extends Component {
+	static propTypes = {
+		loop : PropTypes.bool,
+		onSlideEnd : PropTypes.func,
+		onSlideBegin : PropTypes.func,
+		onSelect : PropTypes.func,
+		showButtons : PropTypes.bool,
+		showPageIndicators : PropTypes.bool,
 		// slides is an array of either components or objects
-		slides : React.PropTypes.array.isRequired,
-		width : React.PropTypes.number,
-		height : React.PropTypes.number
-	},
-
-	// Lifcycle
-	getDefaultProps : function () {
+		slides : PropTypes.array.isRequired,
+		width : PropTypes.number,
+		height : PropTypes.number
+	}
+	static defaultProps = {
 		return {
 			showPageIndicators : true,
 			showButtons : true,
@@ -29,29 +26,29 @@ var SlideShow = React.createClass({displayName: "SlideShow",
 			width : 400,
 			height : 300
 		}
-	},
-	getInitialState : function () {
-		return {
-			slide : 0
-		}
-	},
+	}
+
+	// Lifcycle
+	state = {
+		slide : 0
+	}
 
 	// Methods
-	next : function () {
+	next = () => {
 		if (this.state.slide < (this.props.slides.length - 1)) {
 			this.setState({ slide : this.state.slide + 1 });
 		} else if (this.props.loop) {
 			this.setState({ slide : 0 });
 		}
-	},
-	previous : function () {
+	}
+	previous = () => {
 		if (this.state.slide > 0) {
 			this.setState({ slide : this.state.slide - 1 })
 		} else if (this.props.loop) {
 			this.setState({ slide : this.state.slides.length - 1})
 		}
-	},
-	toSlide : function (i) {
+	}
+	toSlide = (i) => {
 		if (i >= this.props.slides.length) {
 			i = this.props.slides.length - 1;
 		} else if (i < 0) {
@@ -59,96 +56,96 @@ var SlideShow = React.createClass({displayName: "SlideShow",
 		}
 
 		this.setState({ slide : i });
-	},
+	}
 
 	// Event Handlers
-	onPrevious : function (e) {
+	onPrevious = (e) => {
 		this.previous();
-	},
-	onNext : function (e) {
+	}
+	onNext = (e) => {
 		this.next();
-	},
-	onPickIndicator : function (e) {
+	}
+	onPickIndicator = (e) => {
 		this.toSlide(+e.target.getAttribute('data-slide'));
-	},
-	onTouchStart : function (e) {
+	}
+	onTouchStart = (e) => {
 
-	},
-	onTouchEnd : function (e) {
+	}
+	onTouchEnd = (e) => {
 
-	},
-	onMouseDown : function (e) {
+	}
+	onMouseDown = (e) => {
 
-	},
-	onMouseUp : function (e) {
+	}
+	onMouseUp = (e) => {
 
-	},
+	}
 
 	// Render
-	sliderStyle : function () {
+	sliderStyle = () => {
 		return {
 			width : this.props.width,
 			height : this.props.height
 		}
-	},
-	stageStyle : function () {
+	}
+	stageStyle = () => {
 		return {
 			top : 0,
 			left : (-this.state.slide * 100) + "%",
 			width : (100 * this.props.slides.length) + "%",
 			height : "100%"
 		}
-	},
-	slideStyle : function () {
+	}
+	slideStyle = () => {
 		return {
 			width : (100 / this.props.slides.length) + "%",
 			height : "100%",
 			float : "left"
 		}
-	},
-	indicators : function () {
+	}
+	indicators = () => {
 		var self = this
 			, indicators = [];
 		
 		this.props.slides.forEach(function(slide, i){
 			var c = (i === self.state.slide) ? "current indicator" : "indicator";
-			indicators.push(React.createElement("span", {key: i, "data-slide": i, className: c, onClick: self.onPickIndicator, onTouchEnd: this.onPickIndicator}));
+			indicators.push(<span key={i} data-slide={i} className={c} onClick={self.onPickIndicator} onTouchEnd={this.onPickIndicator}></span>);
 		});
 
 		return (
-			React.createElement("div", {className: "indicators"}, 
-				indicators
-			)
+			<div className="indicators">
+				{indicators}
+			</div>
 		);
-	},
-	render : function () {
+	}
+	render() {
 		var self = this
 			, slides = []
 			, pageIndicators, prevButton, nextButton;
 
 		this.props.slides.forEach(function(slide,i){
-			slides.push(React.createElement("div", {className: "slide", key: i, style: self.slideStyle()}, React.createElement("img", {src: slide})))
+			slides.push(<div className="slide" key={i} style={self.slideStyle()}><img src={slide} /></div>)
 		});
 
 		if (this.props.showPageIndicators) {
 			pageIndicators = this.indicators();
 		}
 		if (this.props.showButtons) {
-			prevButton = React.createElement("div", {className: "previous button icon", onClick: this.onPrevious, onTouchEnd: this.onPrevious}, "prev")
-			nextButton = React.createElement("div", {className: "next button icon", onClick: this.onNext, onTouchEnd: this.onNext}, "next")
+			prevButton = <div className="previous button icon" onClick={this.onPrevious} onTouchEnd={this.onPrevious}>prev</div>
+			nextButton = <div className="next button icon" onClick={this.onNext} onTouchEnd={this.onNext}>next</div>
 		}
 
 		return (
-			React.createElement("div", {className: "slideShow", style: this.sliderStyle()}, 
-				React.createElement("div", {className: "stage", style: this.stageStyle()}, 
-					slides
-				), 
-				prevButton, 
-				nextButton, 
-				pageIndicators
-			)
+			<div className="slideShow" style={this.sliderStyle()}>
+				<div className="stage" style={this.stageStyle()}>
+					{slides}
+				</div>
+				{prevButton}
+				{nextButton}
+				{pageIndicators}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = SlideShow;
+export default SlideShow;

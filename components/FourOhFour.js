@@ -1,39 +1,34 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
 
 /* Standard Not-Found Component with a go-back button. */
 
-var FourOhFour = React.createClass({displayName: "FourOhFour",
-	propTypes : {
-		message : React.PropTypes.string,
-		title : React.PropTypes.string
-	},
+class FourOhFour extends Component{
+	static propTypes = {
+		message : PropTypes.string,
+		title : PropTypes.string
+	}
+	static defaultProps =  {
+		title : "Not Found",
+		message : "We Couldn't find what you were looking for."
+	}
 
-	// Component lifecycle methods
-	getDefaultProps : function () {
-		return {
-			title : "Not Found",
-			message : "We Couldn't find what you were looking for."
-		}
-	},
-
-	// Methods
-	goBack : function () {
+	// methods
+	goBack() {
 		if (window.history) {
 			window.history.back()
 		}
-	},
+	}
 
-	// Render
-	render : function () {
+	// render
+	render() {
 		return (
-			React.createElement("div", {className: "fourOhFour"}, 
-				React.createElement("h3", null, this.props.title), 
-				React.createElement("p", null, this.props.message), 
-				React.createElement("button", {onClick: this.reloadPage, onTouchEnd: this.goBack}, "Reload")
-			)
+			<div className="fourOhFour">
+				<h3>{this.props.title}</h3>
+				<p>{this.props.message}</p>
+				<button onClick={this.reloadPage} onTouchEnd={this.goBack}>Reload</button>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = FourOhFour;
+export default FourOhFour;

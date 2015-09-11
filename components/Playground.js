@@ -1,5 +1,3 @@
-/** @jsx React.DOM */
-
 var AddressInput = require('./AddressInput')
 	, CronInput = require('./CronInput')
 	, Clock = require('./Clock')
@@ -54,28 +52,28 @@ nextHour.setMilliseconds(0)
 var threeHoursFromNow = new Date(nextHour);
 threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 
-var SectionHeader = React.createClass({displayName: "SectionHeader",
-	render : function () {
+var SectionHeader extends Component {
+	render() {
 		return (
-			React.createElement("div", {className: "sectionHeader"}, 
-				React.createElement("h4", null, this.props.data.title)
-			)
+			<div className="sectionHeader">
+				<h4>{this.props.data.title}</h4>
+			</div>
 		);
 	}
 });
 
-var ListItem = React.createClass({displayName: "ListItem",
-	render : function () {
+var ListItem extends Component {
+	render() {
 		return (
-			React.createElement("div", {className: "item"}, 
-				React.createElement("p", null, this.props.data.title)
-			)
+			<div className="item">
+				<p>{this.props.data.title}</p>
+			</div>
 		);
 	}
 });
 
 
-var Playground = React.createClass({displayName: "Playground",
+var Playground extends Component {
 	getInitialState : function () {
 		return {
 			component : "NestableList",
@@ -182,96 +180,96 @@ var Playground = React.createClass({displayName: "Playground",
 	onToggleLoading : function () {
 		this.setState({ loading : !this.state.loading });
 	},
- 	render : function () {
+ 	render() {
  		var options = []
  			, component, extras;
 
  		components.forEach(function(c,i){
- 			options.push(React.createElement("option", {key: i, value: c}, c));
+ 			options.push(<option key={i} value={c}>{c}</option>);
  		});
 
  		switch (this.state.component) {
  		case "AddressInput":
- 			component = React.createElement(AddressInput, {name: "AddressInput", value: this.state.values.AddressInput, onValueChange: this.onValueChange, showNameField: true})
+ 			component = <AddressInput name="AddressInput" value={this.state.values.AddressInput} onValueChange={this.onValueChange} showNameField={true} />
  			break;
 		case "Clock":
-			component = React.createElement(Clock, null)
+			component = <Clock />
 			break;
 		case "DatePicker":
-			component = React.createElement(DatePicker, null)
+			component = <DatePicker />
 			break;
 		case "DateTimeRangePicker":
-			component = React.createElement(DateTimeRangePicker, {name: "DateTimePicker", value: this.state.values.DateTimeRangePicker, onValueChange: this.onValueChange})
+			component = <DateTimeRangePicker name="DateTimePicker" value={this.state.values.DateTimeRangePicker} onValueChange={this.onValueChange} />
 			break;
 		case "DraggableList":
-			component = React.createElement(DraggableList, {name: "DraggableList", data: this.state.values.DraggableList, onRearrange: this.onValueChange})
+			component = <DraggableList name="DraggableList" data={this.state.values.DraggableList} onRearrange={this.onValueChange} />
 			break;
 		case "GridView":
-			component = React.createElement(GridView, {data: this.state.values.GridView})
+			component = <GridView data={this.state.values.GridView} />
 			break;
 		case "HoursInput":
-			component = React.createElement(HoursInput, {name: "HoursInput", value: this.state.values.HoursInput, onValueChange: this.onValueChange})
+			component = <HoursInput name="HoursInput" value={this.state.values.HoursInput} onValueChange={this.onValueChange} />
 			break;
 		case "LoadingTouchButton":
-			extras = React.createElement("p", null, React.createElement(TouchAnchor, {onClick: this.onToggleLoading, text: "toggle loading"}))
-			component = React.createElement(LoadingTouchButton, {loading: this.state.loading, onClick: this.onToggleLoading})
+			extras = <p><TouchAnchor onClick={this.onToggleLoading} text="toggle loading" /></p>
+			component = <LoadingTouchButton loading={this.state.loading} onClick={this.onToggleLoading} />
 			break;
 		case "MarkdownEditor":
-			component = React.createElement(MarkdownEditor, null)
+			component = <MarkdownEditor />
 			break;
 		case "MarkdownText":
-			component = React.createElement(MarkdownText, null)
+			component = <MarkdownText />
 			break;
 		case "NestableList":
-			component = React.createElement(NestableList, {name: "NestableList", data: this.state.values.NestableList, onRearrange: this.onValueChange})
+			component = <NestableList name="NestableList" data={this.state.values.NestableList} onRearrange={this.onValueChange} />
 			break;
 		case "PercentageInput":
-			component = React.createElement(PercentageInput, {name: "PercentageInput", value: this.state.values.PercentageInput, onValueChange: this.onValueChange})
+			component = <PercentageInput name="PercentageInput" value={this.state.values.PercentageInput} onValueChange={this.onValueChange} />
 			break;
 		case "PriceInput":
-			component = React.createElement(PriceInput, null)
+			component = <PriceInput />
 			break;
 		case "ResultsTextInput":
-			component = React.createElement(ResultsTextInput, null)
+			component = <ResultsTextInput />
 			break;
 		case "CronPicker":
-			component = React.createElement(CronPicker, {name: "CronPicker", value: this.state.values.CronPicker, onValueChange: this.onValueChange})
+			component = <CronPicker name="CronPicker" value={this.state.values.CronPicker} onValueChange={this.onValueChange} />
 			break;
 		case "S3PhotoUploader":
-			component = React.createElement(S3PhotoUploader, null)
+			component = <S3PhotoUploader />
 			break;
 		case "SectionList":
-			component = React.createElement(SectionList, {data: this.state.SectionListData, header: SectionHeader, element: ListItem})
+			component = <SectionList data={this.state.SectionListData} header={SectionHeader} element={ListItem} />
 			break;
 		case "Signature":
-			component = React.createElement(Signature, null)
+			component = <Signature />
 			break;
 		case "Signup":
-			component = React.createElement(Signup, null)
+			component = <Signup />
 			break;
 		case "TagInput":
-			component = React.createElement(TagInput, {name: "TagInput", value: this.state.values.TagInput, onValueChange: this.onValueChange})
+			component = <TagInput name="TagInput" value={this.state.values.TagInput} onValueChange={this.onValueChange} />
 			break;
 		case "TemplateForm":
-			component = React.createElement(TemplateForm, {name: "TemplateForm", template: "mary {had} a little {lamb} whos fleece was white as {snow}!", value: this.state.values.TemplateForm, onValueChange: this.onValueChange})
+			component = <TemplateForm name="TemplateForm" template="mary {had} a little {lamb} whos fleece was white as {snow}!" value={this.state.values.TemplateForm} onValueChange={this.onValueChange} />
 			break;
 		case "TimePicker":
-			component = React.createElement(TimePicker, null)
+			component = <TimePicker />
 			break;
 		case "TimeSpanInput":
-			component = React.createElement(TimeSpanInput, {name: "TimeSpanInput", value: this.state.values.TimeSpanInput, onValueChange: this.onValueChange})
+			component = <TimeSpanInput name="TimeSpanInput" value={this.state.values.TimeSpanInput} onValueChange={this.onValueChange} />
 			break;
 		case "TouchButton":
-			component = React.createElement(TouchButton, {name: "TouchButton", text: "Button"})
+			component = <TouchButton name="TouchButton" text="Button" />
 			break;
 		case "TouchCheckbox":
-			component = React.createElement(TouchCheckbox, {name: "TouchCheckbox", label: "Checkbox", value: this.state.values.TouchCheckbox, onValueChange: this.onValueChange})
+			component = <TouchCheckbox name="TouchCheckbox" label="Checkbox" value={this.state.values.TouchCheckbox} onValueChange={this.onValueChange} />
 			break;
 		case "DateTimePicker":
-			component = React.createElement(DateTimePicker, {name: "DateTimePicker", value: this.state.values.DateTimePicker, centerDate: this.state.values.DateTimePickerCenter, onValueChange: this.onValueChange})
+			component = <DateTimePicker name="DateTimePicker" value={this.state.values.DateTimePicker} centerDate={this.state.values.DateTimePickerCenter} onValueChange={this.onValueChange} />
 			break;
 		case "ValidTextInput":
-			component = React.createElement(ValidTextInput, {label: "valid text field", placeholder: "stuff", valid: false})
+			component = <ValidTextInput label="valid text field" placeholder="stuff" valid={false} />
 			break;
 		case "SlideShow":
 			var slides = [
@@ -281,10 +279,10 @@ var Playground = React.createClass({displayName: "Playground",
 					"http://i.imgur.com/QSImV2B.jpg",
 					"http://i.imgur.com/iQXytyM.jpg"
 				]
-			component = React.createElement(SlideShow, {slides: slides})
+			component = <SlideShow slides={slides} />
 			break;
 		case "Slider":
-			component = React.createElement(Slider, null)
+			component = <Slider />
 			break;
 		case "Select":
 			var opts = [
@@ -295,38 +293,38 @@ var Playground = React.createClass({displayName: "Playground",
 				[4,"dates"],
 				[5,"prunes"]
 			];
-			component = React.createElement(Select, {name: "Select", value: this.state.values.Select, options: opts, onValueChange: this.onValueChange})
+			component = <Select name="Select" value={this.state.values.Select} options={opts} onValueChange={this.onValueChange} />
 			break;
 		case "ValidTextareaInput":
-			component = React.createElement(ValidTextareaInput, {id: "ValidTextArea", label: "Text Area Input", value: this.state.values.ValidTextareaInput, name: "ValidTextareaInput", onValueChange: this.onValueChange})
+			component = <ValidTextareaInput id="ValidTextArea" label="Text Area Input" value={this.state.values.ValidTextareaInput} name="ValidTextareaInput" onValueChange={this.onValueChange} />
 			break;
 		case "WeekCalendar":
-			component = React.createElement(WeekCalendar, {data: this.state.values.WeekCalendar, height: 500})
+			component = <WeekCalendar data={this.state.values.WeekCalendar} height={500} />
 			break;
  		}
 		return (
-			React.createElement("div", {className: "components playground"}, 
-				React.createElement("header", null, 
-					React.createElement("div", {className: "content"}, 
-						React.createElement("h1", null, "Component Playground"), 
-						React.createElement("select", {value: this.state.component, onChange: this.pickComponent}, 
-							options
-						), 
-						React.createElement("h3", {className: "title"}, "Component: ", this.state.component)
-					)
-				), 
-				React.createElement("div", {className: "component"}, 
-					React.createElement("div", {className: "extras"}, 
-						extras
-					), 
-					React.createElement("div", {className: "wrapper"}, 
-						component
-					)
-				)
-			)
+			<div className="components playground">
+				<header>
+					<div className="content">
+						<h1>Component Playground</h1>
+						<select value={this.state.component} onChange={this.pickComponent}>
+							{options}
+						</select>
+						<h3 className="title">Component: {this.state.component}</h3>
+					</div>
+				</header>
+				<div className="component">
+					<div className="extras">
+						{extras}
+					</div>
+					<div className="wrapper">
+						{component}
+					</div>
+				</div>
+			</div>
 		);
 	}
 });
 
 window.playground = Playground;
-module.exports = Playground;
+export default Playground;

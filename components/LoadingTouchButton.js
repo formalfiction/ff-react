@@ -1,5 +1,5 @@
-/** @jsx React.DOM */
-var React = require('React');
+import { Component, PropTypes } from 'react';
+import clickbuster from '../utils/clickbuster';
 
 /*
 	TouchButtons work in conjunction with utils/clickbuster
@@ -7,39 +7,36 @@ var React = require('React');
 	the delayed "ghost click" problem.
 */
 
-var clickbuster = require('../utils/clickbuster');
-
-var startX, startY;
-
-var LoadingTouchButton = React.createClass({displayName: "LoadingTouchButton",
-	propTypes : {
+class LoadingTouchButton extends Component {
+	static propTypes = {
 		// the text label for the button
-		text : React.PropTypes.string,
-		moveThreshold : React.PropTypes.number,
+		text : PropTypes.string,
+		moveThreshold : PropTypes.number,
 		// unified click fn handler will also be called on touchEnd
-		onClick : React.PropTypes.func.isRequired,
+		onClick : PropTypes.func.isRequired,
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number,
-		loading : React.PropTypes.bool
-	},
+		initialInputDelay : PropTypes.number,
+		loading : PropTypes.bool
+	}
+	static defaultProps = {
+		className : "loadingTouchButton",
+		text : "button",
+		moveThreshold : 10,
+		initialInputDelay : 500,
+		loading : false
+	}
+
+	startX = undefined
+	startY = undefined
 
 	// lifecycle
-	getDefaultProps : function () {
-		return {
-			className : "loadingTouchButton",
-			text : "button",
-			moveThreshold : 10,
-			initialInputDelay : 500,
-			loading : false
-		}
-	},
-	componentDidMount : function () {
+	componentDidMount = () => {
 		this.mountTime = new Date().valueOf();
-	},
+	}
 
 	// Event Handlers
-	onTouchStart : function (e) {
+	onTouchStart = (e) => {
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
@@ -51,35 +48,36 @@ var LoadingTouchButton = React.createClass({displayName: "LoadingTouchButton",
 	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
 	  document.body.addEventListener('touchmove', this.onTouchMove, false);
 
-	  startX = e.touches[0].clientX;
-	  startY = e.touches[0].clientY;
-	},
-	onTouchMove : function (e){
-	  if (Math.abs(e.touches[0].clientX - startX) > this.props.moveThreshold ||
-	      Math.abs(e.touches[0].clientY - startY) > this.props.moveThreshold) {
+	  this.startX = e.touches[0].clientX;
+	  this.startY = e.touches[0].clientY;
+	}
+
+	onTouchMove = (e) => {
+	  if (Math.abs(e.touches[0].clientX - this.startX) > this.props.moveThreshold ||
+	      Math.abs(e.touches[0].clientY - this.startY) > this.props.moveThreshold) {
 	    this.onReset(e);
 	  }
-	},
-	onTouchEnd : function (e) {
+	}
+	onTouchEnd = (e) =>  {
 		this.onClick(e);
-	},
-	onInput : function (e) {
+	}
+	onInput = (e) =>  {
 		// check too make sure input is after the specified delay
 		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
-	},
-	onReset : function (e) {
+	}
+	onReset = (e) =>  {
 		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
 	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
-	},
-	onClick : function (e) {
+	}
+	onClick = (e) =>  {
 		e.stopPropagation();
 	  this.onReset(e);
 
 	  if (e.type == 'touchend') {
-	    clickbuster.preventGhostClick(startX, startY);
+	    clickbuster.preventGhostClick(this.startX, this.startY);
 	  }
 
 		// check too make sure input is after the specified delay
@@ -91,20 +89,20 @@ var LoadingTouchButton = React.createClass({displayName: "LoadingTouchButton",
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		return (
-			React.createElement("button", React.__spread({},  this.props, {disabled: this.props.disabled || this.props.loading, onClick: this.onClick, onMouseDown: this.onInput, onTouchStart: this.onTouchStart}), 
-				(this.props.loading) ? React.createElement("div", {className: "spinner"}, 
-																	React.createElement("div", {className: "bounce1"}), 
-																	React.createElement("div", {className: "bounce2"}), 
-																	React.createElement("div", {className: "bounce3"})
-																) : this.props.text
-			)
+			<button {...this.props} disabled={this.props.disabled || this.props.loading} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>
+				{(this.props.loading) ? <div className="spinner">
+																	<div className="bounce1"></div>
+																	<div className="bounce2"></div>
+																	<div className="bounce3"></div>
+																</div> : this.props.text}
+			</button>
 		);
 	}
-});
+}
 
-module.exports = LoadingTouchButton;
+export default LoadingTouchButton;

@@ -1,32 +1,24 @@
-/** @jsx React.DOM */
-var React = require('React');
-
-var iScroll = require('../deps/iscroll');
-var time = require('../utils/time');
+import { Component, PropTypes } from 'react';
+import iScroll from '../deps/iscroll';
+import time from '../utils/time';
 
 function copyTouch (t) {
 	return { identifier: t.identifier, pageX: t.pageX, pageY: t.pageY, screenX : t.screenX, screenY : t.screenY };
 }
 
 // A Single Column Time Picker
-var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
-	propTypes : {
-		value : React.PropTypes.object.isRequired,
-		mustBefore : React.PropTypes.object,
-		mustAfter : React.PropTypes.object,
+class TimeWheelPicker extends Component {
+	static propTypes = {
+		value : PropTypes.object.isRequired,
+		mustBefore : PropTypes.object,
+		mustAfter : PropTypes.object,
 		// interval in minutes
-		interval : React.PropTypes.number,
+		interval : PropTypes.number,
 		// how far (in pixels) a touch event has to move before
 		// it's considered scrolling instead of a tap
-		yTouchThreshold : React.PropTypes.number,
-	},
-
-	// And now a little uglyness:
-	startTouch : undefined,
-	endTouch : undefined,
-
-	// Lifecycle
-	getDefaultProps : function () {
+		yTouchThreshold : PropTypes.number,
+	}
+	static defaultProps = {
 		return {
 			className : "timeColumnPicker",
 			interval : 15,
@@ -38,23 +30,28 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 				snapThreshold : 0.334,
 			}
 		}
-	},
+	}
 
-	componentDidMount : function () {
+	// And now a little uglyness:
+	startTouch : undefined,
+	endTouch : undefined,
+
+	// lifecycle
+	componentDidMount = () => {
 		this.scroller = new iScroll(this.refs["scroller"].getDOMNode(), this.props.scrollerOptions);
 		this.scroller.on('scrollEnd', this.scrollEnder());
 		// this.scroller.on('touchEnd', this.props.onTouchEnd);
 
 		this.locked = true;
 		this.scrollToTime(this.props.value);
-	},
-	componentDidUpdate : function () {
+	}
+	componentDidUpdate = () => {
 		this.locked = true;
 		this.scrollToTime(this.props.value);
-	},
+	}
 
 	// Methods
-	scrollToTime : function (date) {
+	scrollToTime = (date) => {
 		var i = date.getHours()
 			, minutes;
 
@@ -71,15 +68,15 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 
 		this.setSelected(this.scroller, i + 2);
 		this.scroller.goToPage(0,i,150);
-	},
-	setSelected : function (iscroll, sel) {
+	}
+	setSelected = (iscroll, sel) => {
 		for (var i=0; i < iscroll.scroller.children.length; i++){
 			iscroll.scroller.children[i].className = (sel === i) ? "selected" : "";
 		}
-	},
+	}
 
 	// Factory Funcs
-	scrollEnder : function () {
+	scrollEnder = () => {
 		var self = this
 		return function () {
 			// add 2 to choose the center element (hopefully in the middle)
@@ -99,13 +96,13 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 				self.props.onValueChange(value, self.props.name);
 			}
 		}
-	},
+	}
 
 	// Event Handlers
-	onTouchStart : function (e) {
+	onTouchStart = (e) => {
 		this.startTouch = copyTouch(e.touches[0]);
-	},
-	onTouchEnd : function (e) {
+	}
+	onTouchEnd = (e) => {
 		var el = e.target
 			, value = new Date(el.getAttribute("data-value"));
 
@@ -122,8 +119,8 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 
 		this.startTouch = undefined;
 		this.endTouch = undefined;
-	},
-	onClick : function (e) {
+	}
+	onClick = (e) => {
 		var el = e.target
 			, value = new Date(el.getAttribute("data-value"));
 
@@ -131,11 +128,11 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 			e.stopPropagation();
 			this.props.onValueChange(value, this.props.name);
 		}
-	},
+	}
 
 	// iterate over each time, calling func
 	// with (hour, min, phase, index)
-	eachTime : function (func) {
+	eachTime = (func) => {
 		var l = 23, interval, d;
 
 		// count by hours if interval is either 0 or 60
@@ -154,29 +151,29 @@ var TimeWheelPicker = React.createClass({displayName: "TimeWheelPicker",
 				}
 			}
 		}
-	},
+	}
 
 	// Render 
-	render : function () {
+	render() {
 		var times = []
 			, self = this
 
 		this.eachTime(function (value,index) {
-			times.push(React.createElement("li", {key: index, onClick: self.onClick, onTouchStart: self.onTouchStart, onTouchEnd: self.onTouchEnd, "data-value": value.toString()}, time.timeString(value)));
+			times.push(<li key={index} onClick={self.onClick} onTouchStart={self.onTouchStart} onTouchEnd={self.onTouchEnd} data-value={value.toString()}>{time.timeString(value)}</li>);
 		});
 
 		return (
-			React.createElement("div", React.__spread({},  this.props, {ref: "scroller"}), 
-				React.createElement("ul", null, 
-					React.createElement("li", null), 
-					React.createElement("li", null), 
-					times, 
-					React.createElement("li", null), 
-					React.createElement("li", null)
-				)
-			)
+			<div {...this.props} ref="scroller">
+				<ul>
+					<li></li>
+					<li></li>
+					{times}
+					<li></li>
+					<li></li>
+				</ul>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = TimeWheelPicker;
+export default TimeWheelPicker;
