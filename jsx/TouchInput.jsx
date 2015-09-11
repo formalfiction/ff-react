@@ -35,7 +35,9 @@ var TouchInput = React.createClass({
 		// clicks from focusing the field (which would activate
 		// the keyboard on touch devices)
 		setTimeout(function () {
-			self.setState({ readOnly : self.props.readOnly || false });
+			if (self.isMounted()) {
+				self.setState({ readOnly : self.props.readOnly || false });
+			}
 		}, this.props.initialInputDelay);
 	},
 

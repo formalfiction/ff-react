@@ -25718,7 +25718,9 @@ var TouchInput = React.createClass({displayName: "TouchInput",
 		// clicks from focusing the field (which would activate
 		// the keyboard on touch devices)
 		setTimeout(function () {
-			self.setState({ readOnly : self.props.readOnly || false });
+			if (self.isMounted()) {
+				self.setState({ readOnly : self.props.readOnly || false });
+			}
 		}, this.props.initialInputDelay);
 	},
 
@@ -33103,7 +33105,7 @@ var clickbuster = {
 	coordinates : [],
 	preventGhostClick : function(x, y) {
 	  clickbuster.coordinates.push(x, y);
-	  window.setTimeout(clickbuster.pop, 250);
+	  window.setTimeout(clickbuster.pop, 300);
 	},
 	pop : function() {
 	  clickbuster.coordinates.splice(0, 2);
@@ -33121,7 +33123,7 @@ var clickbuster = {
 }
 
 if (typeof window !== "undefined") {
-	document.addEventListener('click', clickbuster.onClick, true);
+	clickbuster.listener = document.addEventListener('click', clickbuster.onClick, true);
 }
 
 module.exports = clickbuster;

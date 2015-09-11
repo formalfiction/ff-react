@@ -4,7 +4,7 @@ var clickbuster = {
 	coordinates : [],
 	preventGhostClick : function(x, y) {
 	  clickbuster.coordinates.push(x, y);
-	  window.setTimeout(clickbuster.pop, 250);
+	  window.setTimeout(clickbuster.pop, 500);
 	},
 	pop : function() {
 	  clickbuster.coordinates.splice(0, 2);
@@ -22,7 +22,7 @@ var clickbuster = {
 }
 
 if (typeof window !== "undefined") {
-	document.addEventListener('click', clickbuster.onClick, true);
+	clickbuster.listener = document.addEventListener('click', clickbuster.onClick, true);
 }
 
 module.exports = clickbuster;

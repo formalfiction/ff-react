@@ -199,7 +199,21 @@ var time = {
         + ':' + pad(date.getSeconds()) 
         + dif + pad(tzo / 60) 
         + ':' + pad(tzo % 60);
-	}
+	},
+	// http://stackoverflow.com/questions/11887934/check-if-daylight-saving-time-is-in-effect-and-if-it-is-for-how-many-hours
+	standardTimezoneOffset : function(date) {
+    var jan = new Date(date.getFullYear(), 0, 1);
+    var jul = new Date(date.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+	},
+	dst : function(date) {
+    return date.getTimezoneOffset() < time.standardTimezoneOffset(date);
+	},
+	dstCompensate : function (date) {
+		var offset = (date.getTimezoneOffset() - time.standardTimezoneOffset(date)) * 60 * 1000;
+		console.log(new Date(date.valueOf() + offset));
+		return new Date(date.valueOf() + offset);
+	},
 }
 
 module.exports = time;
