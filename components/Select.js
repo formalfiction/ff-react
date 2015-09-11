@@ -20,12 +20,10 @@ class Select extends Component {
 		onChange : PropTypes.func,
 		// onChange in the form value, name
 		onValueChange : PropTypes.func
-	},
+	}
 	static defaultProps = {
-		return {
-			className : "select",
-			name : "select"
-		}
+		className : "select",
+		name : "select"
 	}
 
 	// LifeCycle
@@ -36,7 +34,7 @@ class Select extends Component {
 	// Event Handlers
 	onToggleOptions = () => {
 		this.setState({ showingOptions : !this.state.showingOptions });
-	},
+	}
 	onSelectOption = (e) => {
 		var value = e.target.getAttribute('data-value');
 
@@ -51,13 +49,10 @@ class Select extends Component {
 		}
 
 		this.setState({ showingOptions : false });
-	},
-
-
-	// Render
+	}
 
 	// takes an option & returns it's label.
-	selectedLabel : function () {
+	selectedLabel = () => {
 		var v = this.props.value;
 		if (!isNaN(+v)) {
 			v = +v
@@ -71,7 +66,7 @@ class Select extends Component {
 		}
 
 		return "select an option";
-	},
+	}
 
 	// turns option into a tuple of the form [value, label]
 	formatOption(option) {
@@ -120,6 +115,6 @@ class Select extends Component {
 			</div>
 		);
 	}
-});
+}
 
 export default Select;

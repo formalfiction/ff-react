@@ -19,22 +19,20 @@ class TimeWheelPicker extends Component {
 		yTouchThreshold : PropTypes.number,
 	}
 	static defaultProps = {
-		return {
-			className : "timeColumnPicker",
-			interval : 15,
-			value : new Date(),
-			yTouchThreshold : 5,
-			scrollerOptions : {
-				mouseWheel : true,
-				snap : 'li',
-				snapThreshold : 0.334,
-			}
+		className : "timeColumnPicker",
+		interval : 15,
+		value : new Date(),
+		yTouchThreshold : 5,
+		scrollerOptions : {
+			mouseWheel : true,
+			snap : 'li',
+			snapThreshold : 0.334,
 		}
 	}
 
 	// And now a little uglyness:
-	startTouch : undefined,
-	endTouch : undefined,
+	startTouch : undefined
+	endTouch : undefined
 
 	// lifecycle
 	componentDidMount = () => {

@@ -13,27 +13,23 @@ import { Component, PropTypes } from 'react';
 
 var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader extends Component {
+class S3PhotoUploader extends Component {
 	static propTypes = {
 		// @todo
-	},
-
-	// Component lifecycle methods
-	getInitialState : function () {
-		return {
-			uploadError : undefined,
-			uploadProgress : undefined,
-			photoUrl : this.props.src,
-			disableUpload : false,
-			showCancel : true
-		}
-	},
+	}
+	state = {
+		uploadError : undefined,
+		uploadProgress : undefined,
+		photoUrl : this.props.src,
+		disableUpload : false,
+		showCancel : true
+	}
 
 	// Methods
-	pickFile : function () {
+	pickFile = () => {
 		this.refs['file'].getDOMNode().click()
-	},
-	s3Upload : function (e) {
+	}
+	s3Upload = (e) => {
 		var el = this.refs['file'].getDOMNode();
 
 		this._uploader = new S3Upload(el,{
@@ -47,28 +43,28 @@ var S3PhotoUploader extends Component {
 		this.setState({
 			disableUpload : true
 		});
-	},
+	}
 
 	// Event Handlers
 
-	uploadProgress : function (percent, message) {
+	uploadProgress = (percent, message) => {
 		this.setState({ uploadProgress : percent + "% Complete" });
-	},
-	finishS3Put : function (publicURL) {
+	}
+	finishS3Put = (publicURL) => {
 		this.setState({
 			uploadProgress : "",
 			uploadError : "",
 			photoUrl : publicURL
 		});
 		this.change();
-	},
-	uploadError : function (status) {
+	}
+	uploadError = (status) => {
 		this.setState({
 			uploadError : status,
 			disableUpload : false
 		});
-	},
-	removePhoto : function (e) {
+	}
+	removePhoto = (e) => {
 		e.preventDefault();
 		this.setState({
 			uploadProgress : "",
@@ -77,20 +73,20 @@ var S3PhotoUploader extends Component {
 		});
 		this.change();
 		return false;
-	},
-	change : function () {
+	}
+	change = () => {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(this.state.photoUrl);
 		}
-	},
-	onClickPhoto : function (e) {
+	}
+	onClickPhoto = (e) => {
 		this.refs["file"].getDOMNode().click();
-	},
+	}
 
 	// Render
-	progress : function () {
+	progress = () => {
 		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
-	},
+	}
 	render() {
 		var del 
 		if (this.state.photoUrl) {
@@ -110,6 +106,6 @@ var S3PhotoUploader extends Component {
 			</div>
 		);
 	}
-});
+}
 
 export default S3PhotoUploader;

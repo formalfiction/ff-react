@@ -7,7 +7,7 @@ class MarkdownEditor extends Component{
 		// Change handler in the form (value, name)
 		onValueChange : PropTypes.func.isRequired,
 		value : PropTypes.string.isRequired,
-	},
+	}
 	state = {
 		previewing : false
 	}

@@ -2,7 +2,7 @@ import { Component, PropTypes } from 'react';
 
 var startX, startY;
 
-var Slider extends Component {
+class Slider extends Component {
 	static propTypes = {
 	  min: PropTypes.number,
 	  max: PropTypes.number,

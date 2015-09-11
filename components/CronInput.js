@@ -24,9 +24,7 @@ class CronInput extends Component {
 		// an object in the form:
 		// { input : *input string*, pattern : *cron pattern* }
 		value : PropTypes.object,
-	},
-
-	// lifecycle
+	}
 	static defaultProps = {
 		className : "cronInput",
 		placeholder : "eg. Every Other Tuesday",
@@ -66,16 +64,16 @@ class CronInput extends Component {
 							 onBlur={onBlur}
 							 value={vlaue} />
 				<div className="ss-icon">{this.validation()}</div>
-				{()=>
+				{()=> {
 						if (this.props.showPattern) {
 							return (
 								<div className="pattern">this.props.value.pattern</div>
 							);
 						}
-				}
+				}}
 			</div>
 		);
 	}
-});
+}
 
 export default CronInput;

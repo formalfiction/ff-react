@@ -46,7 +46,7 @@ class TimePicker extends Component {
 	_blur = () => {
 		this.setState({ focused : false });
 	}
-	_fakeFn = () => { },
+	_fakeFn = () => { }
 	// Clicks on the clock div should maintain focus on the element
 	_clockMouseDown = (e) => {
 		e.preventDefault();

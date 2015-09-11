@@ -1,6 +1,6 @@
 import { Component, PropTypes } from 'react';
-import DatePicker from './DatePicker');
-import TimeWheelPicker from './TimeWheelPicker');
+import DatePicker from './DatePicker';
+import TimeWheelPicker from './TimeWheelPicker';
 
 /* children are @stateful
  * A Picker for choosing a time range on a specific day

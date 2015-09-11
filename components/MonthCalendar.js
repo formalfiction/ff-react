@@ -151,6 +151,6 @@ class MonthCalendar extends Component {
 			</div>
 		);
 	}
-});
+}
 
 export default MonthCalendar;

@@ -1,39 +1,39 @@
-var AddressInput = require('./AddressInput')
-	, CronInput = require('./CronInput')
-	, Clock = require('./Clock')
-	, DatePicker = require('./DatePicker')
-	, DateTimePicker = require('./DateTimePicker')
-	, DateTimeRangePicker = require('./DateTimeRangePicker')
-	, DraggableList = require('./DraggableList')
-	, GridView = require('./GridView')
-	, HoursInput = require('./HoursInput')
-	, LoadingTouchButton = require('./LoadingTouchButton')
-	, Map = require('./Map')
-	, MarkdownEditor = require('./MarkdownEditor')
-	, MarkdownText = require('./MarkdownText')
-	, NestableList = require('./NestableList')
-	, PercentageInput = require('./PercentageInput')
-	, PriceInput = require('./PriceInput')
-	, CronPicker = require('./CronPicker')
-	, ResultsTextInput = require('./ResultsTextInput')
-	, S3PhotoUploader = require('./S3PhotoUploader')
-	, Select = require('./Select')
-	, SectionList = require('./SectionList')
-	, Signature = require('./Signature')
-	, Slider = require('./Slider')
-	, SlideShow = require('./SlideShow')
-	, TouchAnchor = require('./TouchAnchor')
-	, TouchButton = require('./TouchButton')
-	, TouchCheckbox = require('./TouchCheckbox')
-	, TagInput = require('./TagInput')
-	, TemplateForm = require('./TemplateForm')
-	, TimePicker = require('./TimePicker')
-	, TimeSpanInput = require('./TimeSpanInput')
-	, ValidTextInput = require('./ValidTextInput')
-	, ValidTextareaInput = require('./ValidTextareaInput')
-	, WeekCalendar = require('./WeekCalendar');
+import { Component } from 'react';
+import { connect } from 'react-redux';
+import { changeComponent, changeValue } from './actions';
 
-var components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "NestableList", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
+import AddressInput from './components/AddressInput';
+import CronInput from './components/CronInput';
+import Clock from './components/Clock';
+import DatePicker from './components/DatePicker';
+import DateTimePicker from './components/DateTimePicker';
+import DateTimeRangePicker from './components/DateTimeRangePicker';
+import DraggableList from './components/DraggableList';
+import GridView from './components/GridView';
+import LoadingTouchButton from './components/LoadingTouchButton';
+import MarkdownEditor from './components/MarkdownEditor';
+import MarkdownText from './components/MarkdownText';
+import NestableList from './components/NestableList';
+import PercentageInput from './components/PercentageInput';
+import PriceInput from './components/PriceInput';
+import CronPicker from './components/CronPicker';
+import S3PhotoUploader from './components/S3PhotoUploader';
+import Select from './components/Select';
+import SectionList from './components/SectionList';
+import Signature from './components/Signature';
+import Slider from './components/Slider';
+import SlideShow from './components/SlideShow';
+import TouchAnchor from './components/TouchAnchor';
+import TouchButton from './components/TouchButton';
+import TouchCheckbox from './components/TouchCheckbox';
+import TagInput from './components/TagInput';
+import TemplateForm from './components/TemplateForm';
+import TimePicker from './components/TimePicker';
+import TimeSpanInput from './components/TimeSpanInput';
+import ValidTextInput from './components/ValidTextInput';
+import ValidTextareaInput from './components/ValidTextareaInput';
+
+const components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "NestableList", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
 									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
 
 var thirtyDaysAgo = new Date()
@@ -52,7 +52,7 @@ nextHour.setMilliseconds(0)
 var threeHoursFromNow = new Date(nextHour);
 threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
 
-var SectionHeader extends Component {
+class SectionHeader extends Component {
 	render() {
 		return (
 			<div className="sectionHeader">
@@ -60,9 +60,9 @@ var SectionHeader extends Component {
 			</div>
 		);
 	}
-});
+}
 
-var ListItem extends Component {
+class ListItem extends Component {
 	render() {
 		return (
 			<div className="item">
@@ -70,116 +70,24 @@ var ListItem extends Component {
 			</div>
 		);
 	}
-});
+}
 
 
-var Playground extends Component {
-	getInitialState : function () {
-		return {
-			component : "NestableList",
-			values : {
-				AddressInput : {},
-				Clock : new Date(),
-				DateTimePicker : thirtyDaysAgo,
-				DateTimePickerCenter : thirtyDaysAgo,
-				DraggableList : [
-					"Apples",
-					"Oranges",
-					"Bananas",
-					"Michael Jordan",
-					"Dragonfruit",
-					"Molly & O.J's"
-				],
-				CronPicker : "0 0 * * *",
-				GridView : [
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["I","will","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-					["LAST","ROW","not","instruct","my","classmates","on","ancient","gelatin", "production", "processes"],
-				],
-				NestableList : [
-					{ name : "Apples" },
-					{ name : "Oranges" },
-					{ name : "Bananas" },
-					{ name : "Michael Jordan" },
-					{ name : "Dragonfruit" },
-					{ name : "Molly & O.J's",
-						data : [
-							{ name : "Potato" },
-							{ name : "Norwegian Club" }
-						]
-					},
-				],
-				TagInput : ["a tag","taggie","tag","snag"],
-				Select : 0,
-				PercentageInput : 0.20,
-				HoursInput : "Mo-Sa 9:00-17:00",
-				DateTimeRangePicker : [new Date(), new Date()],
-				TimeSpanInput : [new Date(), new Date()],
-				ValidTextareaInput : "huh? asdfkljhads flkjhasfa \n asdfasfdas df \n werd.",
-				TemplateForm : {},
-				TouchCheckbox : false,
-				WeekCalendar : [{ startDate : nextHour, endDate : threeHoursFromNow, title : "Booking", allDay : false }]
-			},
-			SectionListData : [
-				{
-					section : {
-						title : "This is a section",
-					},
-					data : [
-						{ title : "one" },
-						{ title : "two" },
-						{ title : "three" },
-					]
-				},
-				{
-					section : {
-						title : "Another Section",
-					},
-					data : [
-						{ title : "four" },
-						{ title : "five" },
-					]
-				},
-				{
-					section : {
-						title : "Third Section"
-					},
-					data : [
-						{ title : "six" },
-						{ title : "seven" },
-						{ title : "eight" },
-						{ title : "nine" },
-					]
-				}
-			],
-			loading : false
-		}
-	},
-	pickComponent : function (e) {
+class Playground extends Component {
+	pickComponent = (e) => {
 		var component = e.target.value;
 		this.setState({ 
 			component : component
 		});
-	},
-	onValueChange : function (value, name) {
-		console.log(value, name);
+	}
+	onValueChange = (value, name) => {
 		var values = this.state.values
 		values[name] = value;
 		this.setState({ values : values });
-	},
-	onToggleLoading : function () {
+	}
+	onToggleLoading = () => {
 		this.setState({ loading : !this.state.loading });
-	},
+	}
  	render() {
  		var options = []
  			, component, extras;
@@ -324,7 +232,17 @@ var Playground extends Component {
 			</div>
 		);
 	}
-});
+}
 
-window.playground = Playground;
-export default Playground;
+function mapStateToProps(state) {
+	return state.default;
+}
+
+function mapDispatchToProps(dispatch) {
+	return {
+		onChangeComponent : (component) => dispatch(changeComponent(component)),
+		onValueChange : (name, value) => dispatch(changeValue(name, value)),
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Playground);

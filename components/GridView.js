@@ -226,7 +226,7 @@ class GridView extends Component {
 			</div>
 		);
 	}
-});
+}
 
 // calculates the position & size of a scrollbar
 function calcScrollBar (docSize, vpSize, scrollPos, minSbSize, clampStart, clampEnd) {

@@ -26,20 +26,18 @@ class DatePicker extends Component {
 		// Should be a Date object. Defaults to today.
 		value : PropTypes.object,
 	}
-
-	// Lifecycle
-	getDefaultProps() {
-		var value = new Date()
-				value = new Date(value.getFullYear(),value.getMonth(),01,0,0,0,0)
-		return {
-			className : "datePicker",
-			value : value
-		}
-	}
 	state = {
 		focused : false
 	}
 
+	// Lifecycle
+	getDefaultProps() {
+		const value = new Date()
+		return {
+			className : "datePicker",
+			value : new Date(year,value.getMonth(),1,0,0,0,0)
+		}
+	}
 
 	// methods
 	blur = () => {

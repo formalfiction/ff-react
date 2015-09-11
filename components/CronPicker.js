@@ -102,6 +102,6 @@ class RepeatPicker extends Component {
 			</div>
 		);
 	}
-});
+}
 
 export default RepeatPicker;

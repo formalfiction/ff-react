@@ -22,14 +22,12 @@ class Signature extends Component {
 		heightRatio : PropTypes.number,
 	}
 	static defaultProps = {
-		return {
-			signed : false,
-			heightRatio : 2.5
-		}
+		signed : false,
+		heightRatio : 2.5
 	}
 
 	// sure, let's cheat a bunch
-	canvasWidth : undefined,
+	canvasWidth : undefined
 
 	// lifecycle
 	componentDidMount = () => {

@@ -25,8 +25,8 @@ class TemplateForm extends Component {
 	}
 
 	// Methods
-	static defaultMatch = () => { return this.getDefaultProps().match },
-	static defaultSplit = () => { return this.getDefaultProps().split },
+	static defaultMatch = () => { return this.getDefaultProps().match }
+	static defaultSplit = () => { return this.getDefaultProps().split }
 	static stringValue = (template, values, splitRegex, matchRegex) => {
 		matchRegex || (matchRegex = TemplateForm.defaultMatch())
 		splitRegex || (splitRegex = TemplateForm.defaultSplit())

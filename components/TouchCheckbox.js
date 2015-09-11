@@ -6,7 +6,7 @@ class Checkbox extends Component {
 		name : PropTypes.string,
 		onValueChange : PropTypes.func,
 		onChange : PropTypes.func
-	},
+	}
 	static defaultProps = {
 		label : "",
 		name : "Checkbox",

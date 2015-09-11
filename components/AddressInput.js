@@ -77,6 +77,6 @@ class AddressInput extends Component {
 			</div>
 		);
 	}
-});
+}
 
 export default AddressInput;

@@ -1,6 +1,6 @@
 import { Component, PropTypes } from 'react';
 import MonthCalendar from './MonthCalendar';
-import TouchAnchor deom './TouchAnchor';
+import TouchAnchor from './TouchAnchor';
 import iScroll from '../deps/iscroll';
 
 /* @stateful
@@ -161,7 +161,7 @@ class DateTimePicker extends Component {
 			</div>
 		);
 	}
-});
+}
 
 
 /* @private

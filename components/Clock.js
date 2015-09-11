@@ -103,12 +103,12 @@ class Clock extends Component {
 				</div>
 				<div className="phase segment">
 					<a onClick={this.up("phase")} onTouchEnd={this.up("phase")} className="ss-icon">ascend</a>
-					<h5>{value.getHours() < 12) ? "am" : "pm"}</h5>
+					<h5>{(value.getHours() < 12) ? "am" : "pm"}</h5>
 					<a onClick={this.down("phase")} onTouchEnd={this.down("phase")} className="ss-icon">descend</a>
 				</div>
 			</div>
 		);
 	}
-});
+}
 
 export default Clock

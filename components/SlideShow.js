@@ -18,14 +18,12 @@ class SlideShow extends Component {
 		height : PropTypes.number
 	}
 	static defaultProps = {
-		return {
 			showPageIndicators : true,
 			showButtons : true,
 			loop : false,
 			slides : [],
 			width : 400,
 			height : 300
-		}
 	}
 
 	// Lifcycle

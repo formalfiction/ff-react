@@ -1,6 +1,6 @@
 import { Component, PropTypes } from 'react';
-import Time from '../utils/time');
-import TimeWheelPicker from './TimeWheelPicker');
+import Time from '../utils/time';
+import TimeWheelPicker from './TimeWheelPicker';
 
 class TimeSpanInput extends Component {
 	static propTypes = {
