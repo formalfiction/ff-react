@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Item from './Item';
 
 var placeholder = document.createElement("div");

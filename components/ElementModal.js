@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 // modal wrapper for any react element
 // stateless, by default shows a header above with

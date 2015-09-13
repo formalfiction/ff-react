@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { changeComponent, changeValue } from './actions';
 
@@ -32,6 +32,8 @@ import TimePicker from './components/TimePicker';
 import TimeSpanInput from './components/TimeSpanInput';
 import ValidTextInput from './components/ValidTextInput';
 import ValidTextareaInput from './components/ValidTextareaInput';
+
+require('./style/playground.styl')
 
 const components = ["Clock","DatePicker","DateTimePicker", "DateTimeRangePicker", "DraggableList", "GridView","HoursInput","LoadingTouchButton","MarkdownEditor","MarkdownText", "NestableList", "PercentageInput","PriceInput","ResultsTextInput","CronPicker",
 									"S3PhotoUploader", "SectionList", "Select","Signature","Signup","Slider","SlideShow","TagInput","TemplateForm","TimePicker","TimeSpanInput", "TouchButton","TouchCheckbox","ValidTextInput","ValidTextareaInput","WeekCalendar"];
@@ -75,18 +77,17 @@ class ListItem extends Component {
 
 class Playground extends Component {
 	pickComponent = (e) => {
-		var component = e.target.value;
-		this.setState({ 
-			component : component
-		});
+		this.props.onChangeComponent(e.target.value);
 	}
 	onValueChange = (value, name) => {
-		var values = this.state.values
-		values[name] = value;
-		this.setState({ values : values });
+		this.props.changeValue(name, value);
+		// var values = this.props.values
+		// values[name] = value;
+		// this.setState({ values : values });
 	}
 	onToggleLoading = () => {
-		this.setState({ loading : !this.state.loading });
+		// this.props.changeValue(name, value);
+		// this.setState({ loading : !this.props.loading });
 	}
  	render() {
  		var options = []
@@ -96,9 +97,9 @@ class Playground extends Component {
  			options.push(<option key={i} value={c}>{c}</option>);
  		});
 
- 		switch (this.state.component) {
+ 		switch (this.props.component) {
  		case "AddressInput":
- 			component = <AddressInput name="AddressInput" value={this.state.values.AddressInput} onValueChange={this.onValueChange} showNameField={true} />
+ 			component = <AddressInput name="AddressInput" value={this.props.values.AddressInput} onValueChange={this.onValueChange} showNameField={true} />
  			break;
 		case "Clock":
 			component = <Clock />
@@ -107,32 +108,32 @@ class Playground extends Component {
 			component = <DatePicker />
 			break;
 		case "DateTimeRangePicker":
-			component = <DateTimeRangePicker name="DateTimePicker" value={this.state.values.DateTimeRangePicker} onValueChange={this.onValueChange} />
+			component = <DateTimeRangePicker name="DateTimePicker" value={this.props.values.DateTimeRangePicker} onValueChange={this.onValueChange} />
 			break;
 		case "DraggableList":
-			component = <DraggableList name="DraggableList" data={this.state.values.DraggableList} onRearrange={this.onValueChange} />
+			component = <DraggableList name="DraggableList" data={this.props.values.DraggableList} onRearrange={this.onValueChange} />
 			break;
 		case "GridView":
-			component = <GridView data={this.state.values.GridView} />
+			component = <GridView data={this.props.values.GridView} />
 			break;
 		case "HoursInput":
-			component = <HoursInput name="HoursInput" value={this.state.values.HoursInput} onValueChange={this.onValueChange} />
+			component = <HoursInput name="HoursInput" value={this.props.values.HoursInput} onValueChange={this.onValueChange} />
 			break;
 		case "LoadingTouchButton":
 			extras = <p><TouchAnchor onClick={this.onToggleLoading} text="toggle loading" /></p>
-			component = <LoadingTouchButton loading={this.state.loading} onClick={this.onToggleLoading} />
+			component = <LoadingTouchButton loading={this.props.loading} onClick={this.onToggleLoading} />
 			break;
 		case "MarkdownEditor":
-			component = <MarkdownEditor />
+			component = <MarkdownEditor value={this.props.values.MarkdownEditor} />
 			break;
 		case "MarkdownText":
-			component = <MarkdownText />
+			component = <MarkdownText value={this.props.values.MarkdownText}/>
 			break;
 		case "NestableList":
-			component = <NestableList name="NestableList" data={this.state.values.NestableList} onRearrange={this.onValueChange} />
+			component = <NestableList name="NestableList" data={this.props.values.NestableList} onRearrange={this.onValueChange} />
 			break;
 		case "PercentageInput":
-			component = <PercentageInput name="PercentageInput" value={this.state.values.PercentageInput} onValueChange={this.onValueChange} />
+			component = <PercentageInput name="PercentageInput" value={this.props.values.PercentageInput} onValueChange={this.onValueChange} />
 			break;
 		case "PriceInput":
 			component = <PriceInput />
@@ -141,13 +142,13 @@ class Playground extends Component {
 			component = <ResultsTextInput />
 			break;
 		case "CronPicker":
-			component = <CronPicker name="CronPicker" value={this.state.values.CronPicker} onValueChange={this.onValueChange} />
+			component = <CronPicker name="CronPicker" value={this.props.values.CronPicker} onValueChange={this.onValueChange} />
 			break;
 		case "S3PhotoUploader":
 			component = <S3PhotoUploader />
 			break;
 		case "SectionList":
-			component = <SectionList data={this.state.SectionListData} header={SectionHeader} element={ListItem} />
+			component = <SectionList data={this.props.SectionListData} header={SectionHeader} element={ListItem} />
 			break;
 		case "Signature":
 			component = <Signature />
@@ -156,25 +157,25 @@ class Playground extends Component {
 			component = <Signup />
 			break;
 		case "TagInput":
-			component = <TagInput name="TagInput" value={this.state.values.TagInput} onValueChange={this.onValueChange} />
+			component = <TagInput name="TagInput" value={this.props.values.TagInput} onValueChange={this.onValueChange} />
 			break;
 		case "TemplateForm":
-			component = <TemplateForm name="TemplateForm" template="mary {had} a little {lamb} whos fleece was white as {snow}!" value={this.state.values.TemplateForm} onValueChange={this.onValueChange} />
+			component = <TemplateForm name="TemplateForm" template="mary {had} a little {lamb} whos fleece was white as {snow}!" value={this.props.values.TemplateForm} onValueChange={this.onValueChange} />
 			break;
 		case "TimePicker":
 			component = <TimePicker />
 			break;
 		case "TimeSpanInput":
-			component = <TimeSpanInput name="TimeSpanInput" value={this.state.values.TimeSpanInput} onValueChange={this.onValueChange} />
+			component = <TimeSpanInput name="TimeSpanInput" value={this.props.values.TimeSpanInput} onValueChange={this.onValueChange} />
 			break;
 		case "TouchButton":
 			component = <TouchButton name="TouchButton" text="Button" />
 			break;
 		case "TouchCheckbox":
-			component = <TouchCheckbox name="TouchCheckbox" label="Checkbox" value={this.state.values.TouchCheckbox} onValueChange={this.onValueChange} />
+			component = <TouchCheckbox name="TouchCheckbox" label="Checkbox" value={this.props.values.TouchCheckbox} onValueChange={this.onValueChange} />
 			break;
 		case "DateTimePicker":
-			component = <DateTimePicker name="DateTimePicker" value={this.state.values.DateTimePicker} centerDate={this.state.values.DateTimePickerCenter} onValueChange={this.onValueChange} />
+			component = <DateTimePicker name="DateTimePicker" value={this.props.values.DateTimePicker} centerDate={this.props.values.DateTimePickerCenter} onValueChange={this.onValueChange} />
 			break;
 		case "ValidTextInput":
 			component = <ValidTextInput label="valid text field" placeholder="stuff" valid={false} />
@@ -201,13 +202,13 @@ class Playground extends Component {
 				[4,"dates"],
 				[5,"prunes"]
 			];
-			component = <Select name="Select" value={this.state.values.Select} options={opts} onValueChange={this.onValueChange} />
+			component = <Select name="Select" value={this.props.values.Select} options={opts} onValueChange={this.onValueChange} />
 			break;
 		case "ValidTextareaInput":
-			component = <ValidTextareaInput id="ValidTextArea" label="Text Area Input" value={this.state.values.ValidTextareaInput} name="ValidTextareaInput" onValueChange={this.onValueChange} />
+			component = <ValidTextareaInput id="ValidTextArea" label="Text Area Input" value={this.props.values.ValidTextareaInput} name="ValidTextareaInput" onValueChange={this.onValueChange} />
 			break;
 		case "WeekCalendar":
-			component = <WeekCalendar data={this.state.values.WeekCalendar} height={500} />
+			component = <WeekCalendar data={this.props.values.WeekCalendar} height={500} />
 			break;
  		}
 		return (
@@ -215,10 +216,10 @@ class Playground extends Component {
 				<header>
 					<div className="content">
 						<h1>Component Playground</h1>
-						<select value={this.state.component} onChange={this.pickComponent}>
+						<select value={this.props.component} onChange={this.pickComponent}>
 							{options}
 						</select>
-						<h3 className="title">Component: {this.state.component}</h3>
+						<h3 className="title">Component: {this.props.component}</h3>
 					</div>
 				</header>
 				<div className="component">
@@ -235,7 +236,7 @@ class Playground extends Component {
 }
 
 function mapStateToProps(state) {
-	return state.default;
+	return state;
 }
 
 function mapDispatchToProps(dispatch) {

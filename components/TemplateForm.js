@@ -1,5 +1,5 @@
 
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 /*
  * templateForm takes a template prop & turns it into a form

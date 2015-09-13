@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import DeviceStore from '../stores/DeviceStore';
 import SignaturePad from '../deps/SignaturePad';
 import TouchButton from './TouchButton';
@@ -31,16 +31,17 @@ class Signature extends Component {
 
 	// lifecycle
 	componentDidMount = () => {
+		console.log('componentDidMount');
 		DeviceStore.onOrientationChange(this.onResizeEnd);
 		DeviceStore.onResizeEnd(this.onResizeEnd);
-		var w = this.getDOMNode().offsetWidth
-			, canvas = this.refs.canvas.getDOMNode()
+		var w = React.findDOMNode(this).offsetWidth
+			, canvas = React.findDOMNode(this.refs.canvas)
 			, ratio = window.devicePixelRatio || 1
 
 		// initialize canvas dimensions
 		this.props.canvasWidth = canvas.width = w
 		// canvas.height = Math.floor(w/this.props.heightRatio)
-		this.signaturePad = new SignaturePad(this.refs.canvas.getDOMNode());
+		this.signaturePad = new SignaturePad(React.findDOMNode(this.refs.canvas));
 
 		if (this.props.data) {
 			this.signaturePad.fromDataURL(this.props.data);
@@ -62,7 +63,7 @@ class Signature extends Component {
 	}
 	// Methods
 	onResizeEnd = () => {
-		var canvas = this.refs.canvas.getDOMNode()
+		var canvas = React.findDOMNode(this.refs.canvas)
 			, ratio = window.devicePixelRatio || 1
 			, signatureCopy;
 

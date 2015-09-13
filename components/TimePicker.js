@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import Clock from './Clock';
 /*
  * TimePicker Pairs the Clock Component with an

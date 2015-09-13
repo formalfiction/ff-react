@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import TouchInput from './TouchInput';
 
 class ValidTouchInput extends Component {

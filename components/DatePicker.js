@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import MonthCalendar from './MonthCalendar';
 
 /*
@@ -12,7 +12,6 @@ import MonthCalendar from './MonthCalendar';
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const days = ["Mon", "Tue","Wed", "Thu", "Fri", "Sat", "Sun"];
-
 
 class DatePicker extends Component {
 	static propTypes = {

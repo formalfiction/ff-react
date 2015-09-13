@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import cronizer from  'cronizer';
 
 /* CronInput takes a human-readable string input & tries to

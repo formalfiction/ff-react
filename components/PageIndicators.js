@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import TouchAnchor from './TouchAnchor';
 
 class PageIndicators extends Component {

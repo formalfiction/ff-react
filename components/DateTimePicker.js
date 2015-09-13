@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import MonthCalendar from './MonthCalendar';
 import TouchAnchor from './TouchAnchor';
 import iScroll from '../deps/iscroll';

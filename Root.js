@@ -12,7 +12,7 @@ class Root extends Component {
   render() {
     return (
       <div>
-        <Provider store={store}>{()=><App />}</Provider>
+        <Provider store={store}>{()=><Playground />}</Provider>
         <DebugPanel top right bottom>
           <DevTools store={store} monitor={LogMonitor} />
         </DebugPanel>

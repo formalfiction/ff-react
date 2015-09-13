@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import $ from 'jquery';
 import maskMoney from '../deps/MaskMoney';
 

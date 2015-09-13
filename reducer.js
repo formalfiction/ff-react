@@ -1,5 +1,21 @@
 import { CHANGE_COMPONENT, CHANGE_VALUE } from './actions';
 
+var thirtyDaysAgo = new Date()
+thirtyDaysAgo.setDate(-30);
+thirtyDaysAgo.setHours(18);
+
+var foFive = new Date();
+// foFive.setMinutes(25);
+
+var nextHour = new Date();
+nextHour.setHours(nextHour.getHours() + 1)
+nextHour.setMinutes(0)
+nextHour.setSeconds(0)
+nextHour.setMilliseconds(0)
+
+var threeHoursFromNow = new Date(nextHour);
+threeHoursFromNow.setHours(threeHoursFromNow.getHours() + 2);
+
 const defaultState = {
 	component : "NestableList",
 	values : {

@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import ValidTouchInput from './ValidTouchInput';
 import * as _ from 'underscore';
 

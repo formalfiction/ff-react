@@ -1,4 +1,4 @@
-import { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import iScroll from '../deps/iscroll';
 import time from '../utils/time';
 
