@@ -1,4 +1,13 @@
 var time = {
+	scale : {
+		second : 1000,
+		minute : 1000 * 60, 
+			hour : 1000 * 60 * 60,
+			 day : 1000 * 60 * 60 * 24,
+			week : 1000 * 60 * 60 * 24 * 7,
+		 month : 1000 * 60 * 60 * 24 * 30,
+			year : 1000 * 60 * 60 * 24 * 365
+	},
 	months : ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'],
 	days : { sun : 0, mon : 1, tue : 2, wed : 3, thu : 4, fri : 5, sat : 6 },
 	hours : [1,2,3,4,5,6,7,8,9,10,11,12],
@@ -128,6 +137,12 @@ var time = {
 		return (date.valueOf() > now.valueOf()) ? time.relativeFutureDateString(date, now) : time.relativePastDateString(date, now);
 	},
 
+	daysFromNow : function(days) {
+		var d = new Date();
+		d.setDate(d.getDate() + days);
+		return d;
+	},
+
 	newDate : function (year, month, date, hours, minutes, seconds, millseconds) {
 		var d = new Date();
 		d.setFullYear(year || d.getFullYear());
@@ -199,6 +214,9 @@ var time = {
         + ':' + pad(date.getSeconds()) 
         + dif + pad(tzo / 60) 
         + ':' + pad(tzo % 60);
+	},
+	simpleDateFormat : function (date) {
+		return time.months[date.getMonth()]  + " " + date.getDate() + " " + date.getFullYear();
 	},
 	// http://stackoverflow.com/questions/11887934/check-if-daylight-saving-time-is-in-effect-and-if-it-is-for-how-many-hours
 	standardTimezoneOffset : function(date) {

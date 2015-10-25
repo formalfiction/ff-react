@@ -1,5 +1,4 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
 
 
 // *******
@@ -8,22 +7,20 @@ var React = require('React');
 // *******
 // *******
 
-var TouchSelect = React.createClass({displayName: "TouchSelect",
-	propTypes : {
+class TouchSelect extends Component {
+	static propTypes = {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number
-	},
+		initialInputDelay : PropTypes.number
+	}
+	static defaultProps = {
+		initialInputDelay : 500
+	}
 
 	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			initialInputDelay : 500
-		}
-	},
 	componentDidMount : function () {
 		this.mountTime = new Date().valueOf();
-	},
+	}
 
 	// Event Handlers
 	onMouseDown : function (e) {
@@ -37,13 +34,13 @@ var TouchSelect = React.createClass({displayName: "TouchSelect",
 		if (typeof this.props.onMouseDown === "function") {
 			this.props.onMouseDown(e);
 		}
-	},
+	}
 
-	render : function () {
+	render() {
 		return (
-			React.createElement("select", React.__spread({},  this.props, {onMouseDown: this.onMouseDown}), options)
+			<select {...this.props} onMouseDown={this.onMouseDown} >{options}</select>
 		);
 	}
-});
+}
 
-module.exports = TouchSelect;
+export default TouchSelect;

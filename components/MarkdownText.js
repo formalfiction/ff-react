@@ -1,30 +1,27 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import Showdown from '../deps/Showdown';
 
 /*
  * Straight Markdown renderer
  * No Editing
  */
 
-var Showdown = require('../deps/Showdown');
-
-var MarkdownText = React.createClass({displayName: "MarkdownText",
-	propTypes : {
+class MarkdownText extends Component {
+	static propTypes = {
 		// The Markdown to render
-		value : React.PropTypes.string.isRequired
-	},
-
-	// Render
-	render : function () {
+		value : PropTypes.string.isRequired
+	}
+	// render
+	render() {
 		var value = this.props.value || ""
 			, converter = new Showdown.converter()
 			, rawMarkup = converter.makeHtml(value);
 		
 		return (
-			React.createElement("div", {className: "markdownText", dangerouslySetInnerHTML: { __html : rawMarkup}}
-			)
+			<div className="markdownText" dangerouslySetInnerHTML={{ __html : rawMarkup }}>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = MarkdownText;
+export default MarkdownText;

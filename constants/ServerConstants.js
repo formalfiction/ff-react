@@ -1,9 +1,7 @@
-var keyMirror = require('react/lib/keyMirror');
-
-module.exports = keyMirror({
-	GET : null,
-	PUT : null,
-	POST : null,
-	DELETE : null,
-	OPTIONS : null
-});
+module.exports = {
+	GET : 'get',
+	PUT : 'put',
+	POST : 'post',
+	DELETE : 'delete',
+	OPTIONS : 'options'
+}

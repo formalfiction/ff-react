@@ -1,47 +1,42 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
 
 var startX, startY;
 
-var Slider = React.createClass({displayName: "Slider",
-	propTypes: {
-	  min: React.PropTypes.number,
-	  max: React.PropTypes.number,
-	  step : React.PropTypes.number,
-	  onChange: React.PropTypes.func,
-	},
+class Slider extends Component {
+	static propTypes = {
+	  min: PropTypes.number,
+	  max: PropTypes.number,
+	  step : PropTypes.number,
+	  onChange: PropTypes.func,
+	}
+	static defaultProps = {
+		min: 0,
+		max: 100,
+		step: 1,
+		defaultValue: 0,
+		disabled: false
+	}
 
 	// Lifecycle
-	getDefaultProps: function () {
-	  return {
-			min: 0,
-			max: 100,
-			step: 1,
-			defaultValue: 0,
-			disabled: false
-	  };
-	},
-	getInitialState: function () {
-	  return {
-	  	value : 50
-	  };
-	},
+	state = {
+  	value : 50
+	}
 
 	// Event Handlers
-	onTouchStart : function (e) {
+	onTouchStart = (e) => {
 		e.stopPropagation();
 		if (this.state.disabled) { return; }
 
-		this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
+		React.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, false);
 		document.body.addEventListener('touchmove', this.onTouchMove, false);
 
 		startX = e.touches[0].clientX;
 		this.setState({ select : true, startX : this.state.x });
-	},
-	onTouchMove : function () {
-		var handle = this.refs['handle'].getDOMNode()
+	}
+	onTouchMove = () => {
+		var handle = React.findDOMNode(this.refs['handle'])
 			, select = this.state.select
-			, track = this.refs['track'].getDOMNode()
+			, track = React.findDOMNode(this.refs['track'])
 			, newX = this.state.startX + (e.touches[0].clientX - startX)
 
 		if (newX < -(scroller.offsetWidth - track.offsetWidth)) {
@@ -63,39 +58,37 @@ var Slider = React.createClass({displayName: "Slider",
 			select : select,
 			x : newX,
 		});
-	},
-	onTouchEnd : function () {
+	}
+	onTouchEnd = () => {
 		this.onTouchReset.call(this, e);
 		if (this.state.select) {
 			this.onSelect(e);
 		}
-	},
+	}
+	onMouseDown = () => {
 
-	onMouseDown : function () {
+	}
+	onMouseMove = () => {
 
-	},
-	onMouseMove : function () {
+	}
+	onMouseUp = () => {
 
-	},
-	onMouseUp : function () {
-
-	},
+	}
 
 	// Render
-	style : function () {
-		return {
-		}
-	},
-	render : function () {
+	style = () => {
+		return {}
+	}
+	render() {
 		return (
-			React.createElement("div", {className: "slider", style: this.style()}, 
-				React.createElement("div", {ref: "track", className: "track"}, 
-					React.createElement("div", {className: "highlight"}), 
-					React.createElement("div", {ref: "handle", className: "handle", onMouseDown: this.onMouseDown, onTouchStart: this.onTouchStart})
-				)
-			)
+			<div className="slider" style={this.style()}>
+				<div ref="track" className="track">
+					<div className="highlight"></div>
+					<div ref="handle" className="handle" onMouseDown={this.onMouseDown} onTouchStart={this.onTouchStart}></div>
+				</div>
+			</div>
 		)
 	}
-});
+}
 
-module.exports = Slider;
+export default Slider;

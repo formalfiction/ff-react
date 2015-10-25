@@ -1,5 +1,5 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+const S3Upload = require('../libs/S3Upload')
 
 /*
  * @stateful
@@ -11,64 +11,68 @@ var React = require('React');
  * 
  */
 
-var S3Upload = require('../deps/S3Upload');
 
-var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
-	propTypes : {
-		// @todo
-	},
+class S3PhotoUploader extends Component {
+	static propTypes = {
+		name : PropTypes.string.isRequired,
+		onProgress : PropTypes.func,
+		onValueChange : PropTypes.func.isRequired,
+		uploadDirectory : PropTypes.string,
+		src : PropTypes.string
+	}
 
-	// Component lifecycle methods
-	getInitialState : function () {
-		return {
-			uploadError : undefined,
-			uploadProgress : undefined,
-			photoUrl : this.props.src,
-			disableUpload : false,
-			showCancel : true
-		}
-	},
+	static DefaultProps = {
+		signingUrl : "/signS3"
+	}
+
+	state = {
+		uploadError : undefined,
+		uploadProgress : undefined,
+		photoUrl : this.props.src,
+		disableUpload : false,
+		showCancel : true
+	}
 
 	// Methods
-	pickFile : function () {
-		this.refs['file'].getDOMNode().click()
-	},
-	s3Upload : function (e) {
-		var el = this.refs['file'].getDOMNode();
+	pickFile = () => {
+		React.findDOMNode(this.refs['file']).click()
+	}
+
+	// Event Handlers
+	s3Upload = (e) => {
+		var el = React.findDOMNode(this.refs['file']);
 
 		this._uploader = new S3Upload(el,{
-			s3_sign_put_url: '/signS3',
+			s3_sign_put_url: this.props.signingUrl,
 			onProgress: this.uploadProgress,
 			onFinishS3Put: this.finishS3Put,
 			onError: this.uploadError,
-			s3ObjectName : new Date().valueOf() + ".jpg"
+			s3ObjectName : this.props.uploadDirectory + new Date().valueOf() + ".jpg"
 		});
 
 		this.setState({
 			disableUpload : true
 		});
-	},
+	}
 
-	// Event Handlers
-
-	uploadProgress : function (percent, message) {
+	uploadProgress = (percent, message) => {
 		this.setState({ uploadProgress : percent + "% Complete" });
-	},
-	finishS3Put : function (publicURL) {
+	}
+	finishS3Put = (publicURL) => {
 		this.setState({
 			uploadProgress : "",
 			uploadError : "",
 			photoUrl : publicURL
 		});
 		this.change();
-	},
-	uploadError : function (status) {
+	}
+	uploadError = (status) => {
 		this.setState({
 			uploadError : status,
 			disableUpload : false
 		});
-	},
-	removePhoto : function (e) {
+	}
+	removePhoto = (e) => {
 		e.preventDefault();
 		this.setState({
 			uploadProgress : "",
@@ -76,40 +80,39 @@ var S3PhotoUploader = React.createClass({displayName: "S3PhotoUploader",
 			photoUrl : undefined
 		});
 		this.change();
-		return false;
-	},
-	change : function () {
-		if (typeof this.props.onChange === "function") {
-			this.props.onChange(this.state.photoUrl);
+	}
+	change = () => {
+		if (typeof this.props.onValueChange === "function") {
+			this.props.onValueChange(this.state.photoUrl, this.props.name);
 		}
-	},
-	onClickPhoto : function (e) {
-		this.refs["file"].getDOMNode().click();
-	},
+	}
+	onClickPhoto = (e) => {
+		React.findDOMNode(this.refs["file"]).click();
+	}
 
 	// Render
-	progress : function () {
+	progress = () => {
 		return this.state.uploadProgress ? (this.state.uploadProgress * 100) + "%" : 0;
-	},
-	render : function () {
+	}
+	render() {
 		var del 
 		if (this.state.photoUrl) {
-			del = React.createElement("a", {className: "delete ss-icon", onClick: this.removePhoto, onTouchEnd: this.removePhoto}, "delete")
+			del = <a className="delete ss-icon" onClick={this.removePhoto} onTouchEnd={this.removePhoto}>delete</a>
 		}
 		return (
-			React.createElement("div", {className: "s3PhotoUpload"}, 
-				React.createElement("input", {ref: "file", style: { display : "none"}, disabled: this.state.disableUpload, ref: "file", onChange: this.s3Upload, type: "file"}), 
-				React.createElement("div", {className: "photo", onClick: this.onClickPhoto, onTouchEnd: this.onClickPhoto}, 
-					del, 
-					React.createElement("img", {className: "preview", src: this.props.src}), 
-					React.createElement("div", {className: "progress"}, 
-						React.createElement("div", {className: "bar", style:  { width : this.progress()} })
-					)
-				), 
-				React.createElement("p", {className: "status"}, this.state.uploadStatus)
-			)
+			<div className="s3PhotoUpload">
+				<input ref="file" style={{ display : "none"}} disabled={this.state.disableUpload} ref="file" onChange={this.s3Upload} type="file" />
+				<div className="photo" onClick={this.onClickPhoto} onTouchEnd={this.onClickPhoto}>
+					{del}
+					<img className="preview" src={this.props.src} />
+					<div className="progress">
+						<div className="bar" style={ { width : this.progress() } }></div>
+					</div>
+				</div>
+				<p className="status">{this.state.uploadStatus}</p>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = S3PhotoUploader;
+export default S3PhotoUploader;

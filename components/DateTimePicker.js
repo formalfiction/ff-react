@@ -1,53 +1,44 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import MonthCalendar from './MonthCalendar';
+import TouchAnchor from './TouchAnchor';
+import iScroll from '../deps/iscroll';
 
 /* @stateful
- * @jQuery
- *
  * Wheelie Time Picker
  * 
  * **Picker Show / Hiding & Touch Events**
  * 
  */
 
+const months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
+const days = { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 };
+const hours = [1,2,3,4,5,6,7,8,9,10,11,12];
+const minutes = [0,15,30,45];
 
-var MonthCalendar = require('./MonthCalendar')
-	, TouchAnchor = require('./TouchAnchor');
-
-var iScroll = require('../deps/iscroll');
-
-var months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
-	, days = { mon : -1 , tue : 0, wed : 1, thu : 2, fri : 3, sat : 4, sun : 5 }
-	, hours = [1,2,3,4,5,6,7,8,9,10,11,12]
-	, minutes = [0,15,30,45];
-
-
-var DateTimePicker = React.createClass({displayName: "DateTimePicker",
-	propTypes : {
+class DateTimePicker extends Component {
+	static propTypes = {
 		// Center date to choose around. Defaults to the current time.
 		// Should be a js Date object
-		centerDate : React.PropTypes.object,
+		centerDate : PropTypes.object,
 		// name of the field
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// onChange handler
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// onChange handler in the form (value, name)
-		onValueChange : React.PropTypes.func,
+		onValueChange : PropTypes.func,
 		// Value for the datepicker. Should be a js Date object
-		value : React.PropTypes.object,
+		value : PropTypes.object,
 		// show the button to toggle the calendar component?
-		showCalendarOption : React.PropTypes.bool,
-	},
-
+		showCalendarOption : PropTypes.bool,
+	}
 	// Component Lifecycle
-	getDefaultProps : function () {
-		return {
-			centerDate : new Date(),
-			value : new Date(),
-			showCalendarOption : true
-		}
-	},
-	getInitialState : function () {
+	static defualtProps = {
+		centerDate : new Date(),
+		value : new Date(),
+		showCalendarOption : true
+	}
+
+	getInitialState = () => {
 		var d = this.dateValue(this.props.value)
 		d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
 		d.setSeconds(0);
@@ -57,24 +48,24 @@ var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 			value : d,
 			showCalendar : false,
 		}
-	},
+	}
 
 	// Method
-	focus : function () {
+	focus = () => {
 		this.setState({ focused : true });
-	},
-	blur : function () {
+	}
+	blur = () => {
 		this.setState({ focused : false });
-	},
+	}
 
 	// Event Handlers
-	onFocus : function (e) {
+	onFocus = (e) => {
 		this.setState({ focused : true });
-	},
-	onBlur : function (e) {
+	}
+	onBlur = (e) => {
 		this.setState({ focused : false });
-	},
-	onChange : function (value) {
+	}
+	onChange = (value) => {
 		// for now we're providing a sort of fake event. 
 		// probably a bad idea.
 		if (typeof this.props.onChange === "function") {
@@ -88,37 +79,37 @@ var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(value, this.props.name);
 		}
-	},
-	onKeyUp : function (e) {
+	}
+	onKeyUp = (e) => {
 		// kill keyboard input
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
-	},
-	onPickerChange : function (val, name) {
+	}
+	onPickerChange = (val, name) => {
 		this.onChange(val);
-	},
-	onInputChange : function (e) {
+	}
+	onInputChange = (e) => {
 		// no-op
-	},
-	onPickerMouseDown : function (e) {
+	}
+	onPickerMouseDown = (e) => {
 		e.preventDefault();
 		// Cancel Blur event triggered by focusing the picker
-		$(this.refs["field"].getDOMNode()).focus();
+		React.findDOMNode(this.refs["field"]).focus();
 		return false;
-	},
-	onPickerChange : function () {
+	}
+	onPickerChange = () =>{
 
-	},
-	onToggleCalendar : function () {
+	}
+	onToggleCalendar = () => {
 		var o = {};
 		o.showCalendar = !this.state.showCalendar;
 		this.setState(o);
-	},
+	}
 
 	// Render Methods
 	// Conform Various date inputs to a valid date object
-	dateValue : function (value) {
+	dateValue = (value) => {
 		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
 		// Ensure Value is a valid date.
 		if (!isDate) {
@@ -131,8 +122,8 @@ var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 		}
 
 		return value;
-	},
-	stringValue : function (value) {
+	}
+	stringValue = (value) => {
 		if (!value) { return ""; }
 		var date = this.dateValue(value)
 			, mins = (Math.round(date.getMinutes() / 15) * 15)
@@ -147,61 +138,70 @@ var DateTimePicker = React.createClass({displayName: "DateTimePicker",
 		} else {
 			return months[date.getMonth()]  + " " + date.getDate() + " " + hours + ":" + mins + " " + phase;
 		}
-	},
-	render : function () {
+	}
+	render() {
 		var value = new Date(this.dateValue(this.props.value))
 			, stringValue = this.stringValue(value)
 			, picker;
 
 		if (this.state.focused) {
 			if (this.state.showCalendar) {
-				picker = React.createElement(MonthCalendar, {name: "calendar", value: value, onMouseDown: this.onPickerMouseDown, onChange: this.onCalendarChange})
+				picker = <MonthCalendar name="calendar" value={value} onMouseDown={this.onPickerMouseDown} onChange={this.onCalendarChange} />
 			} else {
-				picker = React.createElement(WheelPicker, {onShowCalendar: this.onToggleCalendar, showCalendarOption: this.props.showCalendarOption, onMouseDown: this.onPickerMouseDown, killTouch: true, value: value, centerDate: this.props.centerDate, onValueChange: this.onPickerChange, name: this.props.name})
+				picker = <WheelPicker onShowCalendar={this.onToggleCalendar} showCalendarOption={this.props.showCalendarOption} onMouseDown={this.onPickerMouseDown} killTouch={true} value={value} centerDate={this.props.centerDate} onValueChange={this.onPickerChange} name={this.props.name} />
 			}
 		}
 
 		return (
-			React.createElement("div", {className: "dateTimePicker"}, 
-				React.createElement("input", {readOnly: true, ref: "field", type: "text", onClick: this.onFocus, onTouchEnd: this.onFocus, onFocus: this.onFocus, onBlur: this.onBlur, value: stringValue, onChange: this.onInputChange, onKeyUp: this.onKeyUp, onChange: this.onInputChange}), 
-				picker
-			)
+			<div className="dateTimePicker">
+				<input readOnly ref="field" type="text" onClick={this.onFocus} onTouchEnd={this.onFocus} onFocus={this.onFocus} onBlur={this.onBlur} value={stringValue} onChange={this.onInputChange} onKeyUp={this.onKeyUp} onChange={this.onInputChange} />
+				{picker}
+			</div>
 		);
 	}
-});
+}
 
 
 /* @private
  * WheelPicker
  */
-var WheelPicker = React.createClass({displayName: "WheelPicker",
-	propTypes : {
+class WheelPicker extends Component {
+	static propTypes = {
 		// The date to center the picker to. Defaults to now.
-		centerDate : React.PropTypes.object.isRequired,
+		centerDate : PropTypes.object.isRequired,
 		// @private for now, don't modify this
-		daysBack : React.PropTypes.number.isRequired,
+		daysBack : PropTypes.number.isRequired,
 		// @private for now, don't modify this
-		daysForward : React.PropTypes.number.isRequired,
+		daysForward : PropTypes.number.isRequired,
 		// @private for now, don't modify this
-		itemsShowing : React.PropTypes.number.isRequired,
-		killTouch : React.PropTypes.bool.isRequired,
-		name : React.PropTypes.string.isRequired,
-		onMouseDown : React.PropTypes.func,
-		onTouchEnd : React.PropTypes.func,
-		onShowCalendar : React.PropTypes.func,
+		itemsShowing : PropTypes.number.isRequired,
+		killTouch : PropTypes.bool.isRequired,
+		name : PropTypes.string.isRequired,
+		onMouseDown : PropTypes.func,
+		onTouchEnd : PropTypes.func,
+		onShowCalendar : PropTypes.func,
 		// Change in the form of (value, name)
-		onValueChange : React.PropTypes.func.isRequired,
+		onValueChange : PropTypes.func.isRequired,
 		// @private for now, don't modify.
-		segments : React.PropTypes.array.isRequired,
+		segments : PropTypes.array.isRequired,
 		// should be a js date object
-		value : React.PropTypes.object.isRequired,
+		value : PropTypes.object.isRequired,
 		// should we show the button to toggle the month calendar?
-		showCalendarOption : React.PropTypes.bool,
-	},
-
+		showCalendarOption : PropTypes.bool,
+	}
+	static defaultProps = {
+		segments : ['day','hour','minute','phase'],
+		centerDate : new Date(),
+		daysBack : 14,
+		daysForward : 14,
+		itemsShowing : 5,
+		killTouch : false,
+		value : new Date(),
+		showCalendarOption : true
+	}
 
 	// Component Lifecycle
-	componentDidMount : function () {
+	componentDidMount = () => {
 		var self = this
 			, options = {
 					mouseWheel : true,
@@ -211,28 +211,16 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 
 		this.props.segments.forEach(function(segment){
 			var name = segment + 'Scroll';
-			self[name] = new iScroll(self.refs[segment].getDOMNode(), options);
+			self[name] = new iScroll(React.findDOMNode(self.refs[segment]), options);
 			self[name].on('scrollEnd', self.scrollEnder(segment));
 			self[name].on('touchEnd', self.props.onTouchEnd);
 		});
 
 		this.scrollToDate(this.props.value);
-	},
-	getDefaultProps : function () {
-		return {
-			segments : ['day','hour','minute','phase'],
-			centerDate : new Date(),
-			daysBack : 14,
-			daysForward : 14,
-			itemsShowing : 5,
-			killTouch : false,
-			value : new Date(),
-			showCalendarOption : true
-		}
-	},
+	}
 
-	// Methods
-	scrollToDate : function (date) {
+	// methods
+	scrollToDate = (date) => {
 		var startDate = new Date(this.props.centerDate)
 		startDate.setDate(this.props.centerDate.getDate() - (this.props.daysBack));
 
@@ -257,15 +245,15 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 		this.hourScroll.goToPage(0,hours,200);
 		this.minuteScroll.goToPage(0,minutes,200);
 		this.phaseScroll.goToPage(0, pm ? 1 : 0,200);
-	},
-	setSelected : function (iscroll, sel) {
+	}
+	setSelected = (iscroll, sel) => {
 		for (var i=0; i < iscroll.scroller.children.length; i++){
 			iscroll.scroller.children[i].className = (sel === i) ? "selected" : "";
 		}
-	},
+	}
 
 	// Factory Funcs
-	scrollEnder : function (segment) {
+	scrollEnder = (segment) => {
 		var self = this;
 		return function () {
 			// add two to choose the center element (hopefully in the middle)
@@ -309,36 +297,35 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 				}
 			}
 		}
-	},
+	}
 
-	// Event Handlers
-	onTouchEnd : function (e) {
+	// handlers
+	onTouchEnd = (e) => {
 		if (this.props.killTouch) {
 			e.stopPropagation();
 			this[e.currentTarget.getAttribute('data-name') + "Scroll"].handleEvent(e);
 		}
-	},
-
-	onShowCalendar : function (e) {
+	}
+	onShowCalendar = (e) => {
 		if (typeof this.props.onShowCalendar === "function") {
 			e.stopPropagation();
 			this.props.onShowCalendar();
 		}
-	},
+	}
 
 	// Render Methods
-	day : function (date, key) {
+	day = (date, key) => {
 		return (
-			React.createElement("li", {
-			"data-year": date.getFullYear(), 
-			"data-month": date.getMonth(), 
-			"data-value": date.getDate(), 
-			key: key}, 
-				this.stringValue(date)
-		)
+			<li 
+			data-year={date.getFullYear()} 
+			data-month={date.getMonth()} 
+			data-value={date.getDate()} 
+			key={key}>
+				{this.stringValue(date)}
+		</li>
 		);
-	},
-	days : function () {
+	}
+	days = () => {
 		var days = []
 			, i = 0
 			, v = new Date(this.props.centerDate);
@@ -356,95 +343,95 @@ var WheelPicker = React.createClass({displayName: "WheelPicker",
 			i++;
 		}
 		return days;
-	},
-	hour : function (value, hour) {
-		return React.createElement("li", {"data-value": value, key: hour}, hour)
-	},
-	hours : function (pm) {
+	}
+	hour = (value, hour) => {
+		return <li data-value={value} key={hour}>{hour}</li>
+	}
+	hours = (pm) => {
 		var hrs = [];
 		for (var i=1; i<=12; i++) {
 			hrs.push(this.hour(pm ? i + 12 : i, i));
 		}
 		return hrs;
-	},
-	minute : function (value, key) {
-		return React.createElement("li", {"data-value": value, key: key}, value)
-	},
-	minutes : function () {
+	}
+	minute = (value, key) => {
+		return <li data-value={value} key={key}>{value}</li>
+	}
+	minutes = () => {
 		var mins = [];
 		for (var i=0; i<4; i++) {
 			mins.push(this.minute(minutes[i],i))
 		}
 		return mins;
-	},
-	dateValue : function (value) {
-		var isDate = (Object.prototype.toString.call(value) === "[object Date]");
+	}
+	dateValue = (value) => {
+		let isDate = (Object.prototype.toString.call(value) === "[object Date]");
 		// Ensure Value is a valid date.
 		if (!isDate) {
 			if (typeof value === "number" && value != NaN) {
 				value = new Date(this.props.value)
 			} else {
-				var now = new Date()
+				let now = new Date()
 				value = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0)
 			}
 		}
 
 		return value;
-	},
-	stringValue : function (value) {
+	}
+	stringValue = (value) => {
 		if (!value) { return ""; }
 		date = this.dateValue(value);
 		return months[date.getMonth()]  + " " + date.getDate();
-	},
-	render : function () {
-		var value = this.props.value
+	}
+	render() {
+		let value = this.props.value
 			, days = this.days()
 			, hours = this.hours(this.props.centerDate.getHours() > 11)
 			, minutes = this.minutes();
 
 		return (
-			React.createElement("div", {className: "picker", onMouseDown: this.props.onMouseDown}, 
-				React.createElement(TouchAnchor, {className: "showCalendar right", text: "cal.", onClick: this.onShowCalendar}), 
-				React.createElement("div", {ref: "day", "data-name": "day", className: "day segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						days, 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				), 
-				React.createElement("div", {ref: "hour", "data-name": "hour", className: "hour segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						hours, 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				), 
-				React.createElement("div", {ref: "minute", "data-name": "minute", className: "minute segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						minutes, 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				), 
-				React.createElement("div", {ref: "phase", "data-name": "phase", className: "phase segment", onTouchEnd: this.onTouchEnd}, 
-					React.createElement("ul", null, 
-						React.createElement("li", null), 
-						React.createElement("li", null), 
-						React.createElement("li", {"data-value": 0}, "am"), 
-						React.createElement("li", {"data-value": 1}, "pm"), 
-						React.createElement("li", null), 
-						React.createElement("li", null)
-					)
-				)
-			)
+			<div className="picker" onMouseDown={this.props.onMouseDown}>
+				<TouchAnchor className="showCalendar right" text="cal." onClick={this.onShowCalendar} />
+				<div ref="day" data-name="day" className="day segment" onTouchEnd={this.onTouchEnd}>
+					<ul>
+						<li></li>
+						<li></li>
+						{days}
+						<li></li>
+						<li></li>
+					</ul>
+				</div>
+				<div ref="hour" data-name="hour" className="hour segment" onTouchEnd={this.onTouchEnd}>
+					<ul>
+						<li></li>
+						<li></li>
+						{hours}
+						<li></li>
+						<li></li>
+					</ul>
+				</div>
+				<div ref="minute" data-name="minute" className="minute segment" onTouchEnd={this.onTouchEnd}>
+					<ul>
+						<li></li>
+						<li></li>
+						{minutes}
+						<li></li>
+						<li></li>
+					</ul>
+				</div>
+				<div ref="phase" data-name="phase" className="phase segment" onTouchEnd={this.onTouchEnd}>
+					<ul>
+						<li></li>
+						<li></li>
+						<li data-value={0}>am</li>
+						<li data-value={1}>pm</li>
+						<li></li>
+						<li></li>
+					</ul>
+				</div>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = DateTimePicker;
+export default DateTimePicker;

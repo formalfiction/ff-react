@@ -1,49 +1,42 @@
-/** @jsx React.DOM */
-var React = require('React')
+import React, { Component, PropTypes } from 'react';
 
-var PriceInput = React.createClass({displayName: "PriceInput",
-	propTypes : {
+class PriceInput extends Component {
+	static propTypes = {
 		// Value for the field
-		value : React.PropTypes.number.isRequired,
+		value : PropTypes.number.isRequired,
 		// Name for the field
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
+		// Raw onChange Method
+		onChange : PropTypes.func,
 		// Will call with (value, key) on change
-		onValueChange : React.PropTypes.func,
-		// flag for if values should be passed in & returned as
-		// cents (integers). It's highly reccommended you track money
-		// in cents:
-		centsValue : React.PropTypes.bool
-	},
+		onValueChange : PropTypes.func,
+		centsValue : PropTypes.bool
+	}
+	static defaultProps = {
+		value : 0,
+		centsValue : true
+	}
 
-	// Component Lifecycle
-	getDefaultProps : function () {
-		return {
-			value : 0,
-			centsValue : true
-		};
-	},
+	// Mask takes our number value & turns it into a string for display
+	static mask(value) {
+		value || (value = 0)
+		// ripped thousands separator regex from:
+		// http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+		return "$" + (value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+	// Unmask undoes masking, turning a displayed string back into a number
+	static unmask(value) {
+		value = +value.replace(/\,/g,'').replace('$','');
+		return (typeof value === "number") ? value : undefined;
+	}
 
-	statics : {
-		// Mask takes our number value & turns it into a string for display
-		mask : function (value) {
-			// ripped thousands separator regex from:
-			// http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-			return "$" + (value).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-		},
-		// Unmask undoes masking, turning a displayed string back into a number
-		unmask : function (value) {
-			value = +value.replace(/\,/g,'').replace('$','');
-			return (typeof value === "number" && !isNaN(value)) ? value : undefined;
-		}
-	},
-
-	// handlers
-	forceEndInput : function (e) {
-		var el = e.target;
+	// Handlers
+	forceEndInput = (e) => {
+		let el = e.target;
 		el.selectionStart = el.selectionEnd = el.value.length;
-	},
-	onChange : function (e) {
-		var value = PriceInput.unmask(e.target.value)
+	}
+	onChange = (e) => {
+		let value = PriceInput.unmask(e.target.value)
 			, prev = this.props.centsValue ? this.props.value / 100 : this.props.value;
 		// only do work if the change parses to a number.
 		// this will have the effect of ignoring all non-numerical changes
@@ -69,25 +62,25 @@ var PriceInput = React.createClass({displayName: "PriceInput",
 			if (this.props.centsValue) { value = Math.round(value * 100); }
 			this.props.onValueChange(value, this.props.name);
 		}
-	},
+	}
 
 	// Render Methods
-	render : function () {
-		var disabled = (this.props.editable !== undefined || this.props.editable !== false),
-				value = this.props.centsValue ? this.props.value / 100 : this.props.value;
-
+	render() {
+		var disabled = (this.props.editable !== undefined || this.props.editable !== false);
+		var value = this.props.centsValue ? this.props.value / 100 : this.props.value;
 		return (
-			React.createElement("div", {className: "field priceInput " + this.props.className}, 
-				React.createElement("input", {name: this.props.name, 
-					type: "text", 
-					pattern: "[0-9]*", 
-					value: PriceInput.mask(value), 
-					onChange: this.onChange, 
-					onKeyUp: this.forceEndInput, 
-					onMouseUp: this.forceEndInput})
-			)
+			<div className={"field priceInput " + this.props.className}>
+				<input ref="input"
+					name={this.props.name}
+					type="text"
+					pattern="[0-9]*" 
+					value={PriceInput.mask(value)}
+					onKeyUp={this.forceEndInput}
+					onMouseUp={this.forceEndInput}
+					onChange={this.onChange} />
+			</div>
 		)
 	}
-});
+}
 
-module.exports = PriceInput;
+export default PriceInput;

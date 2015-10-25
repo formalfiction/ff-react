@@ -1,49 +1,46 @@
-/** @jsx React. DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import TouchAnchor from './TouchAnchor';
 
-var TouchAnchor = require('./TouchAnchor');
-
-var PageIndicators = React.createClass({displayName: "PageIndicators",
-	propTypes : {
-		page : React.PropTypes.number.isRequired,
-		numPages : React.PropTypes.number.isRequired,
-		onSelectPage : React.PropTypes.func
-	},
+class PageIndicators extends Component {
+	static propTypes = {
+		page : PropTypes.number.isRequired,
+		numPages : PropTypes.number.isRequired,
+		onSelectPage : PropTypes.func
+	}
 
 	// Factory Methods
-	pageSelector : function (i) {
-		var self = this;
-		if (typeof self.props.onSelectPage === "function") {
-			return function () {
-				self.props.onSelectPage(i);
+	pageSelector = (i) => {
+		if (typeof this.props.onSelectPage === "function") {
+			return () => {
+				this.props.onSelectPage(i);
 			}
 		} else {
 			return function() {}
 		}
 
 		return undefined;
-	},
+	}
 
-	// Render
-	render : function () {
+	// render
+	render() {
 		var pages = [];
 		if (this.props.numPages <= 1) {
-			return (React.createElement("div", {className: "pageIndicators"}));
+			return (<div className="pageIndicators"></div>);
 		}
 
 		for (var i=1; i <= this.props.numPages; i++) {
-			pages.push(React.createElement(TouchAnchor, {className: (i === this.props.page) ? "current indicator" : "indicator", 
-															key: i, 
-															text: "", 
-															onClick: this.pageSelector(i)}))
+			pages.push(<TouchAnchor className={(i === this.props.page) ? "current indicator" : "indicator"}
+															key={i}
+															text=""
+															onClick={this.pageSelector(i)} />)
 		}
 
 		return (
-			React.createElement("div", {className: "pageIndicators"}, 
-				pages
-			)
+			<div className="pageIndicators">
+				{pages}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = PageIndicators;
+export default PageIndicators;

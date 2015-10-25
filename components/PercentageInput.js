@@ -1,38 +1,23 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
 
-/* 
- * @jQuery
- *
- * Text input field with currency input mask.
- * relies on the MaskMoney Plugin for currency-formatting logic
- *
- * @todo - Bring this MaskMoney Lib within the component
- * 
- */
-
-var PercentageInput = React.createClass({displayName: "PercentageInput",
-	propTypes : {
+class PercentageInput extends Component {
+	static propTypes = {
 		// Value for the field
-		value : React.PropTypes.number.isRequired,
+		value : PropTypes.number.isRequired,
 		// Name for the field
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// Raw onChange Method
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// Will call with (value, key) on change
-		onValueChange : React.PropTypes.func
-	},
+		onValueChange : PropTypes.func
+	}
+	static defaultProps = {
+		value : 0,
+		name : "percentageInput"
+	}
 
-	// Component Lifecycle
-	getDefaultProps : function () {
-		return {
-			value : 0,
-			name : "percentageInput"
-		};
-	},
-
-	// Event handlers
-	onChange : function (e) {
+	// handlers
+	onChange = (e) => {
 		var val = +e.target.value / 100;
 		if (isNaN(val)) { val = 0; }
 
@@ -44,24 +29,24 @@ var PercentageInput = React.createClass({displayName: "PercentageInput",
 				this.props.onValueChange(val, this.props.name)
 			}
 		}
-	},
+	}
 
 	// Render Methods
-	render : function () {
+	render() {
 		var disabled = (this.props.editable !== undefined || this.props.editable !== false)
 			, val = this.props.value || 0;
 
 		return (
-			React.createElement("div", {className: "field percentageInput " + this.props.className}, 
-				React.createElement("input", {ref: "input", 
-					name: this.props.name, 
-					type: "text", 
-					pattern: "[0-9]*", 
-					value: val * 100, 
-					onChange: this.onChange})
-			)
+			<div className={"field percentageInput " + this.props.className}>
+				<input ref="input"
+					name={this.props.name}
+					type="text"
+					pattern="[0-9]*" 
+					value={val * 100}
+					onChange={this.onChange} />
+			</div>
 		)
 	}
-});
+}
 
-module.exports = PercentageInput;
+export default PercentageInput;

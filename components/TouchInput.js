@@ -1,32 +1,27 @@
-/** @jsx React.DOM */
-var React = require('React');
-
+import React, { Component, PropTypes } from 'react';
 
 // @stateful
-var TouchInput = React.createClass({displayName: "TouchInput",
-	propTypes : {
+
+class TouchInput extends Component {
+	static propTypes = {
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number,
+		initialInputDelay : PropTypes.number,
 		// gotta name yo fields
-		name : React.PropTypes.string.isRequired,
-		onChange : React.PropTypes.func,
-		onValueChange : React.PropTypes.func,
-	},
+		name : PropTypes.string.isRequired,
+		onChange : PropTypes.func,
+		onValueChange : PropTypes.func,
+	}
+	static defaultProps = {
+		initialInputDelay : 450,
+		name : "touchInput"
+	}
+	state = {
+		readOnly : true
+	}
 
 	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			initialInputDelay : 450,
-			name : "touchInput"
-		}
-	},
-	getInitialState : function () {
-		return {
-			readOnly : true
-		}
-	},
-	componentDidMount : function () {
+	componentDidMount = () => {
 		var self = this;
 		this.mountTime = new Date().valueOf();
 		
@@ -34,15 +29,16 @@ var TouchInput = React.createClass({displayName: "TouchInput",
 		// of the initialInputDelay time. This prevents ghost
 		// clicks from focusing the field (which would activate
 		// the keyboard on touch devices)
-		setTimeout(function () {
-			if (self.isMounted()) {
-				self.setState({ readOnly : self.props.readOnly || false });
-			}
+		this.timer = setTimeout(function () {
+			self.setState({ readOnly : self.props.readOnly || false });
 		}, this.props.initialInputDelay);
-	},
+	}
+	componentWillUnmount = () => {
+		clearTimeout(this.timer)
+	}
 
 	// Event Handlers
-	onMouseDown : function (e) {
+	onMouseDown = (e) => {
 
 		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
@@ -53,20 +49,20 @@ var TouchInput = React.createClass({displayName: "TouchInput",
 		if (typeof this.props.onMouseDown === "function") {
 			this.props.onMouseDown(e);
 		}
-	},
-	onChange : function (e) {
+	}
+	onChange = (e) => {
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(e.target.value, this.props.name);
 		} else if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);
 		}
-	},
+	}
 
-	render : function () {
+	render() {
 		return (
-			React.createElement("input", React.__spread({},  this.props, {readOnly: this.state.readOnly, onChange: this.onChange, onMouseDown: this.onMouseDown}))
+			<input {...this.props} readOnly={this.state.readOnly} onChange={this.onChange} onMouseDown={this.onMouseDown} />
 		);
 	}
-});
+}
 
-module.exports = TouchInput;
+export default TouchInput;

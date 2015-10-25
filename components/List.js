@@ -1,47 +1,42 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import Device from "../utils/Device";
+import _ from 'underscore';
+import Spinner from './Spinner';
 
-var DeviceStore = require("../stores/DeviceStore")
-	, _ = require('underscore');
-
-var Spinner = require('./Spinner');
-
-var List = React.createClass({displayName: "List",
-	propTypes : {
-		className : React.PropTypes.string,
-		data : React.PropTypes.array.isRequired,
-		loading : React.PropTypes.bool,
+class List extends Component {
+	static propTypes = {
+		className : PropTypes.string,
+		data : PropTypes.array.isRequired,
+		loading : PropTypes.bool,
 		// Func to call when we need more rows, typically 
 		// from scrolling down the screen
-		onLoadMore : React.PropTypes.func,
+		onLoadMore : PropTypes.func,
 		// should be a react element that we can iterate with
-		element : React.PropTypes.func,
+		element : PropTypes.func,
 		// string to display when we have no items in the list
-		noItemsString : React.PropTypes.string,
+		noItemsString : PropTypes.string,
 		// array of indexes to add "selected" class to.
 		// for a single selection, pass in a single element array :)
-		selected : React.PropTypes.array
-	},
-
-	// Lifecycle
-	getDefaultProps : function() {
-		return {
+		selected : PropTypes.array
+	}
+	static defaultProps = {
 			className : "list",
 			noItemsString : "No Items",
 			data : [],
 			selected : []
-		}
-	},
-	componentDidMount : function () {
-		DeviceStore.onScroll(this.onScroll);
-	},
-	componentWillUnmount : function () {
-		DeviceStore.offScroll(this.onScroll);
-	},
+	}
 
-	// Event Handlers
-	onScroll : function (e) {
-		if (typeof this.props.onLoadMore == "function" && !this.props.loading && this.isMounted()) {
+	// lifecycle
+	componentDidMount = () => {
+		Device.onScroll(this.onScroll);
+	}
+	componentWillUnmount = () => {
+		Device.offScroll(this.onScroll);
+	}
+
+	// handlers
+	onScroll = (e) => {
+		if (typeof this.props.onLoadMore == "function" && !this.props.loading) {
 			var height = e.target.scrollHeight;
 
 			// only call onLoadMore if we're in the bottom 85% of the page and scrolling down
@@ -49,10 +44,10 @@ var List = React.createClass({displayName: "List",
 				this.props.onLoadMore();
 			}
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		var items = [], loader, selected;
 
 		if (this.props.data.length) {
@@ -62,23 +57,23 @@ var List = React.createClass({displayName: "List",
 					if (i === this.props.selected[j]) { selected = true; break; }
 				}
 				
-				return (React.createElement(this.props.element, React.__spread({},  this.props, {selected: selected, data: m, index: i, key: m.id || m.cid || i})));
+				return (<this.props.element {...this.props} selected={selected} data={m} index={i} key={m.id || m.cid || i} />);
 			}, this);
 		} else if (!this.props.loading) {
-			items = React.createElement("div", {className: "noItems"}, React.createElement("h4", {className: "text-center"}, this.props.noItemsString))
+			items = <div className="noItems"><h4 className="text-center">{this.props.noItemsString}</h4></div>
 		}
 
 		if (this.props.loading) {
-			loader = React.createElement(Spinner, null)
+			loader = <Spinner />
 		}
 
 		return (
-				React.createElement("div", {className: this.props.className}, 
-					items, 
-					loader
-				)
+				<div className={this.props.className}>
+					{items}
+					{loader}
+				</div>
 			);
 	}
-});
+}
 
-module.exports = List;
+export default List;

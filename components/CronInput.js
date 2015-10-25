@@ -1,5 +1,5 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import cronizer from  'cronizer';
 
 /* CronInput takes a human-readable string input & tries to
  * create a cron pattern from it.
@@ -7,85 +7,73 @@ var React = require('React');
  * interpretation
  */
 
-var cronizer = require('cronizer');
-
-var CronInput = React.createClass({displayName: "CronInput",
-	propTypes : {
-		// name this thing.
-		name : React.PropTypes.string.isRequired,
-
+class CronInput extends Component {
+	static propTypes = {
+		name : PropTypes.string.isRequired,
 		// className will set on the containing div
-		className : React.PropTypes.string,
+		className : PropTypes.string,
 		// enable / disable the field
-		disabled : React.PropTypes.bool,
-		// onChange : React.PropTypes.func,
-		onValueChange : React.PropTypes.func,
+		disabled : PropTypes.bool,
+		// onChange : PropTypes.func,
+		onValueChange : PropTypes.func,
 		// placeholder text
-		placeholder : React.PropTypes.string,
-		showPattern : React.PropTypes.bool,
+		placeholder : PropTypes.string,
+		showPattern : PropTypes.bool,
 		// leave undefined to display no validation
-		valid : React.PropTypes.bool,
+		valid : PropTypes.bool,
 		// an object in the form:
 		// { input : *input string*, pattern : *cron pattern* }
-		value : React.PropTypes.object,
-	},
-
-	// lifecycle
-	getDefaultProps : function () {
-		return {
-			className : "cronInput",
-			placeholder : "eg. Every Other Tuesday",
-			showPattern : false,
-			value : { input : "", pattern : undefined }
-		}
-	},
+		value : PropTypes.object,
+	}
+	static defaultProps = {
+		className : "cronInput",
+		placeholder : "eg. Every Other Tuesday",
+		showPattern : false,
+		value : { input : "", pattern : undefined }
+	}
 
 	// Event Handlers
-	onChange : function (e) {
-
+	onChange = (e) => {
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange({ input : e.value,  });
 		}
-	},
-	onFocus : function (e) {
+	}
+	onFocus = (e) => {
 
-	},
-	onBlur : function (e) {
+	}
+	onBlur = (e) => {
 
-	},
+	}
 
 	// render
-	validation : function () {
+	validation() {
 		var valid = "";
-
 		return valid;
-	},
-	pattern : function () {
-		if (this.props.showPattern) {
-			return (
-				React.createElement("div", {className: "pattern"}, "this.props.value.pattern")
-			);
-		}
-		
-		return;
-	},
-	render : function () {
-		var input = this.props.value.input
-			, pattern = this.props.value.pattern;
+	}
+
+	render() {
+		const { input, pattern, disabled, className, onChange, onFocus, onBlur } = this.props;
 
 		return (
-			React.createElement("div", {className: this.props.className}, 
-				React.createElement("input", {ref: "input", 
-							 type: "text", 
-							 disabled: this.props.disabled, 
-							 onChange: this.onChange, 
-							 onFocus: this.onFocus, 
-							 onBlur: this.onBlur}), 
-				React.createElement("div", {className: "ss-icon"}, this.validation()), 
-				"this.pattern()"
-			)
+			<div className={className}>
+				<input ref="input" 
+							 type="text"
+							 disabled={disabled}
+							 onChange={onChange}
+							 onFocus={onFocus}
+							 onBlur={onBlur}
+							 value={vlaue} />
+				<div className="ss-icon">{this.validation()}</div>
+				{()=> {
+						if (this.props.showPattern) {
+							return (
+								<div className="pattern">this.props.value.pattern</div>
+							);
+						}
+				}}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = CronInput;
+export default CronInput;

@@ -1,30 +1,24 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import TimeWheelPicker from './TimeWheelPicker';
+import Time from '../utils/time';
 
-var Time = require('../utils/time')
-	, TimeWheelPicker = require('./TimeWheelPicker')
-
-var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
-	propTypes : {
-		name : React.PropTypes.string,
+class TimeSpanInput extends Component {
+	static propTypes = {
+		name : PropTypes.string,
 		// must be a tuple of two date objects:
 		// [statDate, endDate]
-		value : React.PropTypes.array.isRequired,
-		onChange : React.PropTypes.func,
-		onValueChange : React.PropTypes.func,
-	},
-
-	// Lifecycle
-	getDefaultProps : function () {
-		return {
-			name : "timeSpanPicker",
-			interval : 15,
-			value : [new Date(), new Date()],
-		}
-	},
+		value : PropTypes.array.isRequired,
+		onChange : PropTypes.func,
+		onValueChange : PropTypes.func,
+	}
+	static defaultProps = {
+		name : "timeSpanPicker",
+		interval : 15,
+		value : [new Date(), new Date()],
+	}
 
 	// Methods
-	roundDate : function (date){
+	roundDate = (date) => {
 		if (this.props.interval > 60 && this.props.interval !== 0) {
 			// Hour only
 			date.setMinutes(0);
@@ -37,10 +31,10 @@ var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 		date.setMilliseconds(0);
 
 		return date;
-	},
+	}
 
 	// Event Handlers
-	onValueChange : function (value, name) {
+	onValueChange = (value, name) => {
 		if (name === "start") {
 			// always deliver round dates.
 			var end = this.roundDate(this.props.value[1]);
@@ -59,18 +53,18 @@ var TimeSpanInput = React.createClass({displayName: "TimeSpanInput",
 
 			this.props.onValueChange([start, value], this.props.name);
 		}
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		return (
-			React.createElement("div", {className: "timeSpanInput"}, 
-				React.createElement(TimeWheelPicker, {className: "start picker", name: "start", value: this.props.value[0], mustBefore: this.props.value[1], interval: this.props.interval, onValueChange: this.onValueChange}), 
-				React.createElement("p", {className: "divider"}, "-"), 
-				React.createElement(TimeWheelPicker, {className: "end picker", name: "end", value: this.props.value[1], mustAfter: this.props.value[0], interval: this.props.interval, onValueChange: this.onValueChange})
-			)
+			<div className="timeSpanInput">
+				<TimeWheelPicker className="start picker" name="start" value={this.props.value[0]} mustBefore={this.props.value[1]}  interval={this.props.interval} onValueChange={this.onValueChange} />
+				<p className="divider">-</p>
+				<TimeWheelPicker className="end picker" name="end" value={this.props.value[1]} mustAfter={this.props.value[0]} interval={this.props.interval} onValueChange={this.onValueChange} />
+			</div>
 		);
 	}
-});
+}
 
-module.exports = TimeSpanInput;
+export default TimeSpanInput;

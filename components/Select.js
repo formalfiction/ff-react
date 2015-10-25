@@ -1,46 +1,41 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
 
-var Select = React.createClass({displayName: "Select",
-	propTypes : {
+class Select extends Component {
+	static propTypes = {
 		// Name of the select field
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		// an array of possible options.
 		// if you'd like the textual representation of the option to be different
 		// from the actual value, pass an array of tuples in this form: 
 		// [[value, label],[value, label], ...]
-		options : React.PropTypes.array.isRequired,
+		options : PropTypes.array.isRequired,
 		// Selected Value. Must be updated in external change handler
-		value : React.PropTypes.oneOfType([
-			React.PropTypes.string,
-			React.PropTypes.number
+		value : PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.number
 		]).isRequired,
 
-		className : React.PropTypes.string,
+		className : PropTypes.string,
 		// Use either onChange or onValueChange, not both
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// onChange in the form value, name
-		onValueChange : React.PropTypes.func
-	},
+		onValueChange : PropTypes.func
+	}
+	static defaultProps = {
+		className : "select",
+		name : "select"
+	}
 
 	// LifeCycle
-	getDefaultProps : function () {
-		return {
-			className : "select",
-			name : "select"
-		}
-	},
-	getInitialState : function () {
-		return {
-			showingOptions : false,
-		}
-	},
+	state = {
+		showingOptions : false,
+	}
 
 	// Event Handlers
-	onToggleOptions : function () {
+	onToggleOptions = () => {
 		this.setState({ showingOptions : !this.state.showingOptions });
-	},
-	onSelectOption : function (e) {
+	}
+	onSelectOption = (e) => {
 		var value = e.target.getAttribute('data-value');
 
 		if (!isNaN(+value)) {
@@ -54,13 +49,10 @@ var Select = React.createClass({displayName: "Select",
 		}
 
 		this.setState({ showingOptions : false });
-	},
-
-
-	// Render
+	}
 
 	// takes an option & returns it's label.
-	selectedLabel : function () {
+	selectedLabel = () => {
 		var v = this.props.value;
 		if (!isNaN(+v)) {
 			v = +v
@@ -74,10 +66,10 @@ var Select = React.createClass({displayName: "Select",
 		}
 
 		return "select an option";
-	},
+	}
 
 	// turns option into a tuple of the form [value, label]
-	formatOption : function (option) {
+	formatOption(option) {
 		switch (Object.prototype.toString.call(option)) {
 			case "[object Array]":
 				return option
@@ -90,11 +82,11 @@ var Select = React.createClass({displayName: "Select",
 				return [option, option];
 				break;
 		}
-	},
-	options : function () {
+	}
+	options = () => {
 		if (!this.state.showingOptions) {
 			return (
-				React.createElement("div", {className: "options hidden"})
+				<div className="options hidden"></div>
 			);
 		}
 
@@ -102,28 +94,27 @@ var Select = React.createClass({displayName: "Select",
 
 		for (var i=0,opt; opt=this.props.options[i]; i++) {
 			opt = this.formatOption(opt);
-			options.push(React.createElement("li", {key: i, "data-value": opt[0], onClick: this.onSelectOption}, opt[1]))
+			options.push(<li key={i} data-value={opt[0]} onClick={this.onSelectOption}>{opt[1]}</li>)
 		}
 
 		return (
-			React.createElement("div", {className: "options showing"}, 
-				React.createElement("ul", null, 
-					options
-				)
-			)
+			<div className="options showing">
+				<ul>
+					{options}
+				</ul>
+			</div>
 		);
-
-	},
-	render : function () {
+	}
+	render() {
 		var value = this.selectedLabel(this.props.value);
 
 		return (
-			React.createElement("div", {className: this.props.className}, 
-				React.createElement("div", {className: "selected", onClick: this.onToggleOptions}, value), 
-				this.options()
-			)
+			<div className={this.props.className}>
+				<div className="selected" onClick={this.onToggleOptions}>{value}</div>
+				{this.options()}
+			</div>
 		);
 	}
-});
+}
 
-module.exports = Select;
+export default Select;

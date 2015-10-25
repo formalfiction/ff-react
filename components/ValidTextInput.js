@@ -1,91 +1,83 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import TouchInput from './TouchInput';
 
-var TouchInput = require('./TouchInput');
-
-var ValidTextInput = React.createClass({displayName: "ValidTextInput",
-	propTypes : {
+class ValidTextInput extends Component {
+	static propTypes = {
 		// gotta name yo fields
-		name : React.PropTypes.string.isRequired,
+		name : PropTypes.string.isRequired,
 		
 		// className will set on the containing div
-		className : React.PropTypes.string,
+		className : PropTypes.string,
 		// enable / disable the field
-		disabled : React.PropTypes.bool,
+		disabled : PropTypes.bool,
 		// a delay (in ms) before the component will respond.
 		// good for when ui is changing under a ghost click
-		initialInputDelay : React.PropTypes.number,
+		initialInputDelay : PropTypes.number,
 		// if specificed, will place a label above the input field
-		label : React.PropTypes.string,
+		label : PropTypes.string,
 		// validation message. leave undefined to display no message
 		// only appears on invalid
-		message : React.PropTypes.string,
+		message : PropTypes.string,
 		// placeholder text
-		placeholder : React.PropTypes.oneOfType([React.PropTypes.string,React.PropTypes.number]),
+		placeholder : PropTypes.oneOfType([PropTypes.string,PropTypes.number]),
 		// leave undefined to display no valid
-		valid : React.PropTypes.bool,
+		valid : PropTypes.bool,
 		// field value
-		value : React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.number]),
+		value : PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 		// use either onChange or onValueChange. Not both
 		// std onChange event
-		onChange : React.PropTypes.func,
+		onChange : PropTypes.func,
 		// onChange in the form of (value, name)
-		onValueChange : React.PropTypes.func,
+		onValueChange : PropTypes.func,
 		// master switch for showing / hiding validation
-		showValidation : React.PropTypes.bool,
+		showValidation : PropTypes.bool,
 		// flag for controlling display of a √ or x icon along with validation
 		// defaults to false (not-showing)
-		showValidationIcon : React.PropTypes.bool
-	},
-
-	// Component lifecycle methods
-	getDefaultProps : function () {
-		return {
-			className : "validTextInput field",
-			name : "",
-			placeholder : "",
-			valid : undefined,
-			message : undefined,
-			initialInputDelay : 500,
-			showValidationIcon : false
-		}
-	},
-
-	// Event Handlers
-	onChange : function (e) {
+		showValidationIcon : PropTypes.bool
+	}
+	static defaultProps = {
+		className : "validTextInput field",
+		name : "",
+		placeholder : "",
+		valid : undefined,
+		message : undefined,
+		initialInputDelay : 500,
+		showValidationIcon : false
+	}
+	// handlers
+	onChange = (e) => {
 		if (typeof this.props.onChange === "function") {
 			this.props.onChange(e);
 		}
 		if (typeof this.props.onValueChange === "function") {
 			this.props.onValueChange(e.target.value, this.props.name);
 		}
-	},
-
+	}
 	// Render
-	render : function () {
+	render() {
 		var validClass = "", label, message, icon;
 
 		if (this.props.label) {
-			label = React.createElement("label", null, this.props.label)
+			label = <label>{this.props.label}</label>
 		}
 
 		if (this.props.showValidation) {
 			if (this.props.showValidationIcon) {
-				icon = React.createElement("span", {className: "validation icon ss-icon"}, this.props.valid ? "checked" : "close")
+				icon = <span className="validation icon ss-icon">{this.props.valid ? "checked" : "close" }</span>
 			}
 			message = (this.props.valid) ? "" : this.props.message
 			validClass = (this.props.valid) ? "valid " : "invalid "
 		}
 
 		return(
-			React.createElement("div", React.__spread({},  this.props, {className: validClass + this.props.className}), 
-				label, 
-				React.createElement(TouchInput, {initialInputDelay: this.props.initialInputDelay, disabled: this.props.disabled, type: "text", name: this.props.name, onFocus: this.props.onFocus, onBlur: this.props.onBlur, onChange: this.onChange, placeholder: this.props.placeholder, value: this.props.value}), 
-				icon, 
-				React.createElement("span", {className: "message"}, message)
-			)
+			<div {...this.props} className={validClass + this.props.className}>
+				{label}
+				<TouchInput initialInputDelay={this.props.initialInputDelay} disabled={this.props.disabled} type="text" name={this.props.name} onFocus={this.props.onFocus} onBlur={this.props.onBlur} onChange={this.onChange} placeholder={this.props.placeholder} value={this.props.value} />
+				{icon}
+				<span className="message">{message}</span>
+			</div>
 		);
 	}
-});
+}
 
-module.exports = ValidTextInput;
+export default ValidTextInput;

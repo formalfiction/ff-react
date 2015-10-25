@@ -1,41 +1,37 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React, { Component, PropTypes } from 'react';
+import clickbuster from '../utils/clickbuster';
 
 /*
 	TouchAnchor is TouchButton for anchor (<a>) tags.
 */
 
-var clickbuster = require('../utils/clickbuster');
-
 var startX, startY;
 
-var TouchAnchor = React.createClass({displayName: "TouchAnchor",
-	propTypes : {
+class TouchAnchor extends Component {
+	static propTypes = {
 		// the text label for the button
-		text : React.PropTypes.string,
-		moveThreshold : React.PropTypes.number,
+		text : PropTypes.string,
+		moveThreshold : PropTypes.number,
 		// unified click fn handler will also be called on touchEnd
-		onClick : React.PropTypes.func.isRequired,
+		onClick : PropTypes.func.isRequired,
 		// a delay (in ms) before the component will respond
-		initialInputDelay : React.PropTypes.number,
+		initialInputDelay : PropTypes.number,
 		// disable click handler
-		disabled : React.PropTypes.bool
-	},
+		disabled : PropTypes.bool
+	}
+	static defaultProps = {
+		text : "link",
+		moveThreshold : 10,
+		initialInputDelay : 200,
+	}
 
 	// lifecycle
-	getDefaultProps : function () {
-		return {
-			text : "link",
-			moveThreshold : 10,
-			initialInputDelay : 200,
-		}
-	},
-	componentDidMount : function () {
+	componentDidMount = () => {
 		this.mountTime = new Date().valueOf();
-	},
+	}
 
-	// Event Handlers
-	onTouchStart : function (e) {
+	// handlers
+	onTouchStart = (e) => {
 		e.stopPropagation();
 
 		// check too make sure input is after the specified delay
@@ -44,35 +40,33 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 			return;
 		}
 
-	  this.getDOMNode().addEventListener('touchend', this.onTouchEnd, false);
+	  React.findDOMNode(this).addEventListener('touchend', this.onTouchEnd, false);
 	  document.body.addEventListener('touchmove', this.onTouchMove, false);
 
 	  startX = e.touches[0].clientX;
 	  startY = e.touches[0].clientY;
-	},
-	onTouchMove : function (e){
+	}
+	onTouchMove = (e) =>{
 	  if (Math.abs(e.touches[0].clientX - startX) > this.props.moveThreshold ||
 	      Math.abs(e.touches[0].clientY - startY) > this.props.moveThreshold) {
 	    this.onReset(e);
 	  }
-	},
-	onTouchEnd : function (e) {
+	}
+	onTouchEnd = (e) => {
 		this.onClick(e);
-	},
-	onInput : function (e) {
+	}
+	onInput = (e) => {
 		// check too make sure input is after the specified delay
 		if (new Date().valueOf() < (this.mountTime + this.props.initialInputDelay)) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
-	},
-	onReset : function (e) {
-		if (this.isMounted()) {
-			React.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd, false);
-		}
+	}
+	onReset = (e) => {
+		React.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd, false);
 	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
-	},
-	onClick : function (e) {
+	}
+	onClick = (e) => {
 		e.stopPropagation();
 	  this.onReset(e);
 
@@ -91,14 +85,14 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 	  if (typeof this.props.onClick === "function") {
 	  	this.props.onClick(e);
 	  }
-	},
+	}
 
 	// Render
-	render : function () {
+	render() {
 		return (
-			React.createElement("a", React.__spread({},  this.props, {className: this.props.className + (this.props.disabled ? " disabled" : ""), onClick: this.onClick, onMouseDown: this.onInput, onTouchStart: this.onTouchStart}), this.props.text)
+			<a {...this.props} className={this.props.className + (this.props.disabled ? " disabled" : "")} onClick={this.onClick} onMouseDown={this.onInput} onTouchStart={this.onTouchStart}>{this.props.text}</a>
 		);
 	}
-});
+}
 
-module.exports = TouchAnchor;
+export default TouchAnchor;

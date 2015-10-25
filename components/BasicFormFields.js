@@ -1,5 +1,10 @@
-/** @jsx React.DOM */
-var React = require('React');
+import React from 'react';
+import _ from 'underscore';
+import ValidTextInput from './ValidTextInput';
+import ValidTextareaInput from './ValidTextareaInput';
+import AddressInput from './AddressInput';
+import PercentageInput from './PercentageInput';
+import PriceInput from './PriceInput';
 
 /*
  * ** NOT A COMPONENT **
@@ -24,106 +29,122 @@ var React = require('React');
  *
  */
 
-var _ = require('underscore')
-
-var ValidTextInput = require('./ValidTextInput')
-	, ValidTextareaInput = require('./ValidTextareaInput')
-	, AddressInput = require('./AddressInput');
 
 // Default Form Fields takes an array of objects
 // with label, name, type, and placeholder values
-function BasicFormFields (fieldObjs) {
-	var self = this, fields = [], type;
+export default function BasicFormFields (model, fieldObjs, context) {
+	let fields = [];
 
 	if (typeof fieldObjs !== "object") { return fields; }
-
-	fieldArray.call(self, fieldObjs, 0, fields);
+	fieldArray.call(context, model, fieldObjs, 0, fields);
 
 	return fields;
 };
 
-function fieldArray(fields, j, result) {
-	var self = this;
-
-	fields.forEach(function(obj,i){
+function fieldArray(model, fields, j, result) {
+	fields.forEach((obj,i) => {
 		if (_.isArray(obj)){
-			fieldArray.call(self, obj, j + "." + i, result);
+			fieldArray.call(this, model, obj, j + "." + i, result);
 		} else {
-			result.push(handleField.call(self, obj, j + "." + i, result));
+			result.push(handleField.call(this, model, obj, j + "." + i, result));
 		}
 	});
 
 	return result;
 }
 
-function handleField (obj, i, fields) {
-	var self = this
-		, model = self.state[self.modelName] || {}
-		, validation = self.state.validation || {}
-		, value = model[obj.name]
-		, showValidation = (self.state.showValidation && typeof obj.validate === "function") ? true : false;
+function handleField (model, obj, i, fields) {
+	let self = this, value = model[obj.name]
 	
 	switch (obj.type) {
 	case "hidden":
-		fields.push(React.createElement("input", {type: "hidden", name: obj.name, value: value}));
+		fields.push(<input type="hidden" name={obj.name} value={value} />);
 		break;
 	case "text":
-		fields.push(React.createElement(ValidTextInput, {
-					key: i, 
-					name: obj.name, 
-					value: value, 
-					label: obj.label, 
-					className: obj.className, 
-					placeholder: obj.placeholder, 
-					disabled: obj.disabled, 
-					showValidation: showValidation, 
-					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur, 
-					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]}));
+		fields.push(<ValidTextInput
+					key={i}
+					name={obj.name}
+					value={value}
+					label={obj.label}
+					className={obj.className}
+					placeholder={obj.placeholder}
+					disabled={obj.disabled}
+					onValueChange={self.onValueChange}
+					showValidation={!self.props.hideValidation}
+					message={self.props.validationErrors ? self.props.validationErrors[obj.name] : ""}
+					valid={self.props.validationErrors ? !self.props.validationErrors[obj.name] : true} />);
 		break;
 	case "textarea":
 		fields.push(
-				React.createElement(ValidTextareaInput, {
-					key: i, 
-					name: obj.name, 
-					value: value, 
-					label: obj.label, 
-					className: obj.className, 
-					placeholder: obj.placeholder, 
-					disabled: obj.disabled, 
-					showValidation: showValidation, 
-					onChange: self._onFieldChange, 
-					onBlur: self._onFieldBlur, 
-					message: validation[obj.name + "ErrMsg"], 
-					valid: validation[obj.name + "Valid"]}));
+				<ValidTextareaInput
+					key={i}
+					name={obj.name}
+					value={value}
+					label={obj.label}
+					className={obj.className}
+					placeholder={obj.placeholder}
+					disabled={obj.disabled}
+					onValueChange={self.onValueChange}
+					showValidation={!self.props.hideValidation}
+					message={self.props.validationErrors ? self.props.validationErrors[obj.name] : ""}
+					valid={self.props.validationErrors ? !self.props.validationErrors[obj.name] : true} />);
 		break;
 	case "address":
 		fields.push(
-			React.createElement(AddressInput, {
-				key: i, 
-				name: obj.name, 
-				value: value, 
-				label: obj.label, 
-				className: obj.className, 
-				placeholder: obj.placeholder, 
-				disabled: obj.disabled, 
-				showValidation: showValidation, 
-				onValueChange: self.onValueChange, 
-				onBlur: self._onFieldBlur, 
-				message: validation[obj.name + "ErrMsg"], 
-				valid: validation[obj.Name + "Valid"]}));
+			<AddressInput
+				key={i}
+				name={obj.name}
+				value={value}
+				label={obj.label}
+				className={obj.className}
+				placeholder={obj.placeholder}
+				disabled={obj.disabled}
+				onValueChange={self.onValueChange}
+				showValidation={!self.props.hideValidation}
+				message={self.props.validationErrors ? self.props.validationErrors[obj.name] : ""}
+				valid={self.props.validationErrors ? !self.props.validationErrors[obj.name] : true} />);
+		break;
+	case "price":
+		fields.push(
+			<PriceInput
+				key={i}
+				name={obj.name}
+				value={value}
+				label={obj.label}
+				className={obj.className}
+				placeholder={obj.placeholder}
+				disabled={obj.disabled}
+				onValueChange={self.onValueChange}
+				showValidation={!self.props.hideValidation}
+				message={self.props.validationErrors ? self.props.validationErrors[obj.name] : ""}
+				valid={self.props.validationErrors ? !self.props.validationErrors[obj.name] : true} />
+		);
+		break;
+	case "percent":
+		fields.push(
+			<PercentageInput
+				key={i}
+				name={obj.name}
+				value={value}
+				label={obj.label}
+				showValidation={!self.props.hideValidation}
+				className={obj.className}
+				placeholder={obj.placeholder}
+				disabled={obj.disabled}
+				message={self.props.validationErrors ? self.props.validationErrors[obj.name] : ""}
+				valid={self.props.validationErrors ? !self.props.validationErrors[obj.name] : true} />
+		);
 		break;
 	case "fieldSet":
-		var subFields = [];
-		fieldArray.call(self, obj['fields'], i, subFields);
-		fields.push(React.createElement("div", {className: "fieldSet", key: i}, 
-			React.createElement("hr", null), 
-			React.createElement("h3", {className: "span10"}, obj['name']), 
-			subFields
-		));
+		let subFields = [];
+		fieldArray.call(this, obj['fields'], i, subFields);
+		fields.push(
+			<div className="fieldSet" key={i}>
+				<hr />
+				<h3 className="span10">{obj['name']}</h3>
+				{subFields}
+			</div>
+		);
 		break;
 	}
 }
-
-module.exports = BasicFormFields;
