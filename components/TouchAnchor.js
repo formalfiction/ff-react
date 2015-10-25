@@ -67,7 +67,9 @@ var TouchAnchor = React.createClass({displayName: "TouchAnchor",
 		}
 	},
 	onReset : function (e) {
-		this.getDOMNode().removeEventListener('touchend', this.onTouchEnd, false);
+		if (this.isMounted()) {
+			React.findDOMNode(this).removeEventListener('touchend', this.onTouchEnd, false);
+		}
 	  document.body.removeEventListener('touchmove', this.onTouchMove, false);
 	},
 	onClick : function (e) {

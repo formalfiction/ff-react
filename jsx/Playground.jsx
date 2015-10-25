@@ -78,7 +78,7 @@ var ListItem = React.createClass({
 var Playground = React.createClass({
 	getInitialState : function () {
 		return {
-			component : "NestableList",
+			component : "PriceInput",
 			values : {
 				AddressInput : {},
 				Clock : new Date(),
@@ -124,6 +124,7 @@ var Playground = React.createClass({
 				TagInput : ["a tag","taggie","tag","snag"],
 				Select : 0,
 				PercentageInput : 0.20,
+				PriceInput : 100,
 				HoursInput : "Mo-Sa 9:00-17:00",
 				DateTimeRangePicker : [new Date(), new Date()],
 				TimeSpanInput : [new Date(), new Date()],
@@ -229,7 +230,7 @@ var Playground = React.createClass({
 			component = <PercentageInput name="PercentageInput" value={this.state.values.PercentageInput} onValueChange={this.onValueChange} />
 			break;
 		case "PriceInput":
-			component = <PriceInput />
+			component = <PriceInput name="PriceInput" value={this.state.values.PriceInput} onValueChange={this.onValueChange}/>
 			break;
 		case "ResultsTextInput":
 			component = <ResultsTextInput />
